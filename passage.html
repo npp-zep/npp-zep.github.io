@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章导航 —— npp-zep</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 代码高亮样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/206399566?v=4">
+    <style>
+        /* Markdown查看器样式 */
+        .markdown-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .markdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .back-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--highlight-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .back-btn:hover {
+            background: var(--highlight-color);
+            color: var(--primary-color);
+        }
+        
+        .markdown-title {
+            margin: 0;
+            color: var(--highlight-color);
+            font-size: 1.3rem;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .markdown-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            border-color: var(--highlight-color);
+            color: var(--highlight-color);
+        }
+        
+        .markdown-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .markdown-sidebar {
+            width: 280px;
+            background: var(--secondary-color);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+        
+        .markdown-sidebar.hidden {
+            transform: translateX(-100%);
+            width: 0;
+            padding: 0;
+            border-right: none;
+        }
+        
+        .markdown-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6 {
+            color: var(--highlight-color);
+            margin-top: 1.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .markdown-content h1 { font-size: 2rem; }
+        .markdown-content h2 { font-size: 1.7rem; }
+        .markdown-content h3 { font-size: 1.4rem; }
+        .markdown-content h4 { font-size: 1.2rem; }
+        .markdown-content h5 { font-size: 1.1rem; }
+        .markdown-content h6 { font-size: 1rem; }
+        
+        .markdown-content p {
+            margin: 1rem 0;
+            color: var(--text-color);
+        }
+        
+        .markdown-content ul,
+        .markdown-content ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        .markdown-content li {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+        
+        .markdown-content blockquote {
+            border-left: 4px solid var(--highlight-color);
+            padding: 0.5rem 1rem;
+            margin: 1rem 0;
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .markdown-content code {
+            background: var(--secondary-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--highlight-color);
+        }
+        
+        .markdown-content pre {
+            background: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .markdown-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        
+        .markdown-content th,
+        .markdown-content td {
+            border: 1px solid var(--border-color);
+            padding: 0.8rem;
+            text-align: left;
+        }
+        
+        .markdown-content th {
+            background: var(--card-bg);
+            color: var(--highlight-color);
+            font-weight: 600;
+        }
+        
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .markdown-content a {
+            color: var(--highlight-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--highlight-color);
+        }
+        
+        .markdown-content a:hover {
+            border-bottom-style: solid;
+        }
+        
+        .markdown-content hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+        
+        .toc-title {
+            color: var(--highlight-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .toc-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc-item {
+            margin: 0.5rem 0;
+        }
+        
+        .toc-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            display: block;
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .toc-link:hover {
+            color: var(--highlight-color);
+            background: var(--card-bg);
+        }
+        
+        .toc-level-2 { padding-left: 1rem; }
+        .toc-level-3 { padding-left: 2rem; }
+        .toc-level-4 { padding-left: 3rem; }
+        
+        .theme-options {
+            margin-top: 2rem;
+        }
+        
+        .theme-options h4 {
+            color: var(--highlight-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .theme-select {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .markdown-sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                height: calc(100% - 60px);
+                z-index: 1001;
+                box-shadow: var(--shadow-lg);
+            }
+            
+            .markdown-header {
+                padding: 1rem;
+            }
+            
+            .markdown-content {
+                padding: 1rem;
+            }
+            
+            .markdown-title {
+                font-size: 1.1rem;
+                margin: 0 0.5rem;
+            }
+        }
+        
+        /* 文章卡片样式 */
+        .articles-section {
+            margin-top: 2.5rem;
+        }
+        
+        .articles-section h3 {
+            color: var(--highlight-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .articles-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .article-card {
+            background: var(--secondary-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--highlight-color);
+        }
+        
+        .article-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .article-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .article-meta i {
+            margin-right: 0.3rem;
+        }
+        
+        .article-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            flex-grow: 1;
+            margin: 0;
+        }
+        
+        .article-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        
+        .article-tag {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            background: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        .tag-web { background: rgba(59, 130, 246, 0.2); }
+        .tag-lua { background: rgba(0, 154, 216, 0.2); }
+        .tag-python { background: rgba(53, 114, 165, 0.2); }
+        .tag-tutorial { background: rgba(16, 185, 129, 0.2); }
+        .tag-note { background: rgba(245, 158, 11, 0.2); }
+        .tag-c { background: rgba(139, 92, 246, 0.2); }
+        
+        .article-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .article-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .article-btn:hover {
+            background: var(--highlight-color);
+            color: var(--primary-color);
+            border-color: var(--highlight-color);
+        }
+        
+        /* 筛选按钮样式 */
+        .filter-section {
+            margin: 1.5rem 0;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--secondary-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--highlight-color);
+            color: var(--highlight-color);
+        }
+        
+        .filter-btn.active {
+            background: var(--highlight-color);
+            color: var(--primary-color);
+            border-color: var(--highlight-color);
+        }
+        
+        /* 统计卡片样式 */
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        
+        .stats-card h4 {
+            color: var(--highlight-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--highlight-color);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .articles-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .article-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .article-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .filter-buttons {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .article-meta {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-buttons {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- 背景图片容器 -->
+    <div class="bg-container" id="bgContainer">
+        <div class="bg-overlay"></div>
+        <img src="assets/pic/bg.png" alt="背景" class="bg-image" id="bgImage">
+        <button class="bg-toggle" id="bgToggle" title="切换背景显示">
+            <i class="fas fa-eye"></i>
+        </button>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <header>
+            <h1>文章导航
+                <small>知识分享 · 学习笔记</small>
+            </h1>
+            <p class="tagline">记录思考，分享见解</p>
+        </header>
+
+        <main class="main-content">
+            <section class="description">
+                <div class="profile-header">
+                    <img src="https://avatars.githubusercontent.com/u/206399566?v=4" alt="头像" class="avatar">
+                    <h2>我的文章</h2>
+                </div>
+                
+                <div class="info-section">
+                    <h3><i class="fas fa-info-circle"></i> 说明</h3>
+                    <p>这里是我在学习过程中整理的笔记和心得分享，内容涵盖编程技术、学习方法和项目经验等。所有文章都以Markdown格式编写，支持代码高亮和目录导航。</p>
+                    
+                    <h3><i class="fas fa-filter"></i> 筛选文章</h3>
+                    <div class="filter-section">
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">全部文章</button>
+                            <button class="filter-btn" data-filter="web">Web开发</button>
+                            <button class="filter-btn" data-filter="lua">Lua开发</button>
+                            <button class="filter-btn" data-filter="python">Python</button>
+                            <button class="filter-btn" data-filter="tutorial">教程</button>
+                            <button class="filter-btn" data-filter="note">笔记</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文章列表 -->
+                <div class="articles-section">
+                    <h3><i class="fas fa-book-open"></i> 文章列表</h3>
+                    <div class="articles-list" id="articlesList">
+                        <!-- 文章将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            </section>
+
+            <aside class="cta-section">
+                <a href="index.html" class="btn">
+                    <i class="fas fa-home"></i> 返回首页
+                </a>
+                
+                <a href="https://github.com/npp-zep" target="_blank" class="btn">
+                    <i class="fab fa-github"></i> GitHub 主页
+                </a>
+                
+                <div class="quick-links">
+                    <h4>快速链接</h4>
+                    <a href="#articles" class="quick-link">查看文章</a>
+                    <a href="#about" class="quick-link">关于本站</a>
+                    <a href="https://github.com/npp-zep/npp-zep.github.io" target="_blank" class="quick-link">源代码</a>
+                </div>
+                
+                <div class="stats-section" id="statsSection">
+                    <!-- 统计信息将通过JavaScript动态加载 -->
+                </div>
+            </aside>
+        </main>
+
+        <footer>
+            <p>遵循 <a href="https://opensource.org/licenses/MIT" target="_blank" class="license-link">MIT 协议</a></p>
+            <p class="footer-note">文章内容采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议</p>
+        </footer>
+    </div>
+
+    <!-- Markdown查看器 -->
+    <div class="markdown-viewer" id="markdownViewer">
+        <div class="markdown-header">
+            <button class="back-btn" id="backBtn">
+                <i class="fas fa-arrow-left"></i> 返回文章列表
+            </button>
+            <h2 class="markdown-title" id="markdownTitle"></h2>
+            <div class="markdown-actions">
+                <button class="action-btn" id="toggleSidebarBtn">
+                    <i class="fas fa-bars"></i> 目录
+                </button>
+                <button class="action-btn" id="themeToggleBtn">
+                    <i class="fas fa-palette"></i> 主题
+                </button>
+                <button class="action-btn" id="copyBtn">
+                    <i class="far fa-copy"></i> 复制
+                </button>
+            </div>
+        </div>
+        
+        <div class="markdown-container">
+            <div class="markdown-sidebar" id="markdownSidebar">
+                <h3 class="toc-title"><i class="fas fa-list"></i> 目录</h3>
+                <ul class="toc-list" id="tocList">
+                    <!-- 目录将通过JavaScript动态生成 -->
+                </ul>
+                
+                <div class="theme-options">
+                    <h4><i class="fas fa-palette"></i> 代码主题</h4>
+                    <select class="theme-select" id="codeThemeSelect">
+                        <option value="github-dark">GitHub Dark</option>
+                        <option value="github">GitHub Light</option>
+                        <option value="vs2015">VS 2015</option>
+                        <option value="atom-one-dark">Atom One Dark</option>
+                        <option value="monokai">Monokai</option>
+                        <option value="solarized-dark">Solarized Dark</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="markdown-content" id="markdownContent">
+                <!-- Markdown内容将在这里渲染 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 主题切换按钮 -->
+    <button class="theme-switcher" id="themeSwitcher">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- 引入highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/lua.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+    
+    <!-- 引入marked.js库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- 引入renderMd.js -->
+    <script src="script/renderMd.js"></script>
+    
+    <script>
+        // 文章数据
+        const articles = [
+            {
+                id: 1,
+                title: "Web开发入门指南",
+                description: "从零开始学习Web开发的基础知识，包括HTML、CSS和JavaScript的核心概念。",
+                date: "2024-01-15",
+                tags: ["web", "tutorial"],
+                readTime: "10分钟",
+                file: "web-intro.md"
+            },
+            {
+                id: 2,
+                title: "Lua编程技巧分享",
+                description: "分享一些在Lua开发中实用的编程技巧和最佳实践。",
+                date: "2024-01-10",
+                tags: ["lua", "note"],
+                readTime: "8分钟",
+                file: "lua-tips.md"
+            },
+            {
+                id: 3,
+                title: "Python数据分析基础",
+                description: "使用Python进行数据分析的入门教程，涵盖pandas和numpy的基本使用。",
+                date: "2024-01-05",
+                tags: ["python", "tutorial"],
+                readTime: "15分钟",
+                file: "python-data-analysis.md"
+            },
+            {
+                id: 4,
+                title: "Git版本控制实战",
+                description: "通过实际案例学习Git的基本操作和团队协作流程。",
+                date: "2023-12-28",
+                tags: ["tutorial", "note"],
+                readTime: "12分钟",
+                file: "git-practical.md"
+            },
+            {
+                id: 5,
+                title: "响应式Web设计原则",
+                description: "探讨响应式Web设计的基本原则和实践方法，确保网站在各种设备上都能良好显示。",
+                date: "2023-12-20",
+                tags: ["web", "tutorial"],
+                readTime: "14分钟",
+                file: "responsive-web-design.md"
+            },
+            {
+                id: 6,
+                title: "Lua与C交互编程",
+                description: "深入探讨Lua与C语言之间的交互机制和实现方法。",
+                date: "2023-12-15",
+                tags: ["lua", "c", "note"],
+                readTime: "20分钟",
+                file: "lua-c-interaction.md"
+            }
+        ];
+
+        // 等待页面加载
+        window.addEventListener('load', function() {
+            // 隐藏加载动画
+            setTimeout(() => {
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 500);
+            }, 800);
+            
+            // 初始化文章列表
+            initArticles();
+            
+            // 初始化筛选功能
+            initFilter();
+            
+            // 初始化Markdown查看器
+            initMarkdownViewer();
+            
+            // 初始化主题切换
+            initThemeSwitcher();
+            
+            // 初始化背景切换
+            initBackgroundToggle();
+        });
+
+        // 初始化文章列表
+        function initArticles() {
+            const articlesList = document.getElementById('articlesList');
+            
+            // 清空现有内容
+            articlesList.innerHTML = '';
+            
+            // 添加文章卡片
+            articles.forEach(article => {
+                const articleElement = createArticleCard(article);
+                articlesList.appendChild(articleElement);
+            });
+            
+            // 更新统计信息
+            updateStats();
+        }
+
+        // 创建文章卡片
+        function createArticleCard(article) {
+            const articleCard = document.createElement('div');
+            articleCard.className = 'article-card';
+            articleCard.dataset.tags = article.tags.join(' ');
+            
+            const tagsHtml = article.tags.map(tag => 
+                `<span class="article-tag tag-${tag}">${tag}</span>`
+            ).join('');
+            
+            articleCard.innerHTML = `
+                <div class="article-header">
+                    <h4 class="article-title">${article.title}</h4>
+                    <div class="article-meta">
+                        <span class="article-date"><i class="far fa-calendar"></i> ${article.date}</span>
+                        <span class="article-read-time"><i class="far fa-clock"></i> ${article.readTime}</span>
+                    </div>
+                </div>
+                <p class="article-description">${article.description}</p>
+                <div class="article-footer">
+                    <div class="article-tags">
+                        ${tagsHtml}
+                    </div>
+                    <div class="article-actions">
+                        <button class="article-btn read-btn" onclick="openArticle('${article.file}', '${article.title}')">
+                            <i class="fas fa-book-open"></i> 阅读
+                        </button>
+                        <button class="article-btn download-btn" onclick="downloadArticle('${article.file}')">
+                            <i class="fas fa-download"></i> 下载
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return articleCard;
+        }
+
+        // 初始化筛选功能
+        function initFilter() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const articlesList = document.getElementById('articlesList');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 更新活动按钮
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.dataset.filter;
+                    
+                    // 筛选文章
+                    const articleCards = document.querySelectorAll('.article-card');
+                    articleCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.tags.includes(filter)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    // 添加动画效果
+                    articlesList.style.opacity = '0.5';
+                    setTimeout(() => {
+                        articlesList.style.opacity = '1';
+                    }, 300);
+                });
+            });
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const statsSection = document.getElementById('statsSection');
+            
+            const totalArticles = articles.length;
+            const webArticles = articles.filter(a => a.tags.includes('web')).length;
+            const luaArticles = articles.filter(a => a.tags.includes('lua')).length;
+            const pythonArticles = articles.filter(a => a.tags.includes('python')).length;
+            
+            statsSection.innerHTML = `
+                <div class="stats-card">
+                    <h4><i class="fas fa-chart-bar"></i> 文章统计</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">${totalArticles}</span>
+                            <span class="stat-label">总文章数</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${webArticles}</span>
+                            <span class="stat-label">Web开发</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${luaArticles}</span>
+                            <span class="stat-label">Lua开发</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${pythonArticles}</span>
+                            <span class="stat-label">Python</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 初始化Markdown查看器
+        function initMarkdownViewer() {
+            const backBtn = document.getElementById('backBtn');
+            const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const codeThemeSelect = document.getElementById('codeThemeSelect');
+            const markdownViewer = document.getElementById('markdownViewer');
+            const markdownSidebar = document.getElementById('markdownSidebar');
+            
+            // 返回按钮
+            backBtn.addEventListener('click', () => {
+                markdownViewer.style.display = 'none';
+            });
+            
+            // 切换侧边栏
+            toggleSidebarBtn.addEventListener('click', () => {
+                markdownSidebar.classList.toggle('hidden');
+            });
+            
+            // 复制按钮
+            copyBtn.addEventListener('click', () => {
+                const content = document.getElementById('markdownContent').innerText;
+                navigator.clipboard.writeText(content).then(() => {
+                    // 显示复制成功提示
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+            
+            // 代码主题切换
+            codeThemeSelect.addEventListener('change', (e) => {
+                const theme = e.target.value;
+                changeCodeTheme(theme);
+                localStorage.setItem('codeTheme', theme);
+            });
+            
+            // 加载保存的代码主题
+            const savedTheme = localStorage.getItem('codeTheme') || 'github-dark';
+            codeThemeSelect.value = savedTheme;
+            changeCodeTheme(savedTheme);
+            
+            // 主题切换按钮
+            themeToggleBtn.addEventListener('click', () => {
+                markdownSidebar.classList.remove('hidden');
+            });
+        }
+
+        // 更改代码高亮主题
+        function changeCodeTheme(theme) {
+            const link = document.querySelector('link[href*="highlight.js"]');
+            if (link) {
+                const newTheme = theme === 'github' ? 'github.min.css' : `${theme}.min.css`;
+                link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${newTheme}`;
+            }
+        }
+
+        // 打开文章
+        async function openArticle(filename, title) {
+            const markdownViewer = document.getElementById('markdownViewer');
+            const markdownTitle = document.getElementById('markdownTitle');
+            const markdownContent = document.getElementById('markdownContent');
+            
+            // 显示加载状态
+            markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
+            markdownViewer.style.display = 'flex';
+            
+            // 设置标题
+            markdownTitle.textContent = title;
+            
+            try {
+                // 加载Markdown文件
+                const response = await fetch(`assets/passage/${filename}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const markdown = await response.text();
+                
+                // 使用renderMd.js渲染Markdown
+                const renderedHtml = renderMarkdown(markdown, {
+                    highlightCode: true
+                });
+                
+                // 更新内容
+                markdownContent.innerHTML = renderedHtml;
+                
+                // 生成目录
+                generateTOC();
+                
+                // 高亮代码块
+                hljs.highlightAll();
+            } catch (error) {
+                console.error('Error loading markdown:', error);
+                markdownContent.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>加载失败</h3>
+                        <p>无法加载文章内容: ${error.message}</p>
+                        <button onclick="downloadArticle('${filename}')" class="action-btn" style="margin-top: 1rem;">
+                            <i class="fas fa-download"></i> 下载原始文件
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // 生成目录
+        function generateTOC() {
+            const content = document.getElementById('markdownContent');
+            const tocList = document.getElementById('tocList');
+            const headings = content.querySelectorAll('h1, h2, h3, h4');
+            
+            tocList.innerHTML = '';
+            
+            if (headings.length === 0) {
+                tocList.innerHTML = '<li class="toc-item"><span class="toc-link">暂无目录</span></li>';
+                return;
+            }
+            
+            headings.forEach((heading, index) => {
+                // 确保标题有ID
+                if (!heading.id) {
+                    heading.id = `heading-${index}`;
+                }
+                
+                const level = parseInt(heading.tagName.substring(1));
+                const listItem = document.createElement('li');
+                listItem.className = `toc-item toc-level-${level}`;
+                
+                const link = document.createElement('a');
+                link.href = `#${heading.id}`;
+                link.className = 'toc-link';
+                link.textContent = heading.textContent;
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    heading.scrollIntoView({ behavior: 'smooth' });
+                });
+                
+                listItem.appendChild(link);
+                tocList.appendChild(listItem);
+            });
+        }
+
+        // 下载文章
+        function downloadArticle(filename) {
+            // 创建下载链接
+            const link = document.createElement('a');
+            link.href = `assets/passage/${filename}`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 初始化主题切换（复用index.html中的函数）
+        function initThemeSwitcher() {
+            const themeSwitcher = document.getElementById('themeSwitcher');
+            const themeIcon = document.getElementById('themeIcon');
+            const html = document.documentElement;
+            
+            // 检查本地存储的主题偏好
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            html.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            
+            themeSwitcher.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+                
+                // 添加切换动画
+                themeSwitcher.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    themeSwitcher.style.transform = '';
+                }, 200);
+            });
+            
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'fas fa-moon';
+                } else {
+                    themeIcon.className = 'fas fa-sun';
+                }
+            }
+        }
+
+        // 初始化背景切换（复用index.html中的函数）
+        function initBackgroundToggle() {
+            const bgToggle = document.getElementById('bgToggle');
+            const bgContainer = document.getElementById('bgContainer');
+            
+            // 检查背景显示状态
+            const bgVisible = localStorage.getItem('bgVisible') !== 'false';
+            updateBackgroundVisibility(bgVisible);
+            
+            bgToggle.addEventListener('click', () => {
+                const isVisible = bgContainer.style.opacity !== '0';
+                updateBackgroundVisibility(!isVisible);
+                localStorage.setItem('bgVisible', !isVisible);
+                
+                // 更新按钮图标
+                const icon = bgToggle.querySelector('i');
+                if (!isVisible) {
+                    icon.className = 'fas fa-eye';
+                    bgToggle.title = '隐藏背景';
+                } else {
+                    icon.className = 'fas fa-eye-slash';
+                    bgToggle.title = '显示背景';
+                }
+            });
+            
+            function updateBackgroundVisibility(visible) {
+                if (visible) {
+                    bgContainer.style.opacity = '1';
+                    bgToggle.title = '隐藏背景';
+                    bgToggle.querySelector('i').className = 'fas fa-eye';
+                } else {
+                    bgContainer.style.opacity = '0';
+                    bgToggle.title = '显示背景';
+                    bgToggle.querySelector('i').className = 'fas fa-eye-slash';
+                }
+            }
+        }
+
+        // 添加键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            // Alt+T 切换主题
+            if (e.altKey && e.key === 't') {
+                document.getElementById('themeSwitcher').click();
+            }
+            // Alt+B 切换背景
+            if (e.altKey && e.key === 'b') {
+                document.getElementById('bgToggle').click();
+            }
+            // Alt+H 返回首页
+            if (e.altKey && e.key === 'h') {
+                window.location.href = 'index.html';
+            }
+            // ESC 关闭Markdown查看器
+            if (e.key === 'Escape') {
+                const markdownViewer = document.getElementById('markdownViewer');
+                if (markdownViewer.style.display === 'flex') {
+                    document.getElementById('backBtn').click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
