@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="现代化CSS工具和效果展示">
+  <title>CSS效果展示</title>
+  <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- 加载动画 -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>
+        <small>探索现代CSS</small>
+        设计系统
+      </h1>
+      <p class="tagline">现代化的CSS工具、效果和最佳实践展示，为您的项目提供灵感</p>
+    </header>
+
+    <main class="main-content">
+      <section class="description">
+        <h2><i class="fas fa-palette"></i> 设计特色</h2>
+        <p>这个设计系统展示了现代CSS的最新特性，包括CSS变量、网格布局、flexbox、动画和过渡效果。所有设计都遵循响应式原则，确保在各种设备上都有良好的显示效果。</p>
+        <p>系统支持明暗主题切换，并考虑到可访问性，确保所有用户都能获得良好的体验。颜色对比度经过精心调整，符合WCAG标准。</p>
+
+        <div class="features">
+          <h3><i class="fas fa-code"></i> 可用CSS命令</h3>
+          <div class="command-grid">
+            <div class="command-item">grid-template</div>
+            <div class="command-item">flexbox</div>
+            <div class="command-item">css-variables</div>
+            <div class="command-item">@keyframes</div>
+            <div class="command-item">clip-path</div>
+            <div class="command-item">backdrop-filter</div>
+            <div class="command-item">aspect-ratio</div>
+            <div class="command-item">conic-gradient</div>
+            <div class="command-item">scroll-behavior</div>
+            <div class="command-item">object-fit</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="cta-section">
+        <a href="#download" class="btn">
+          <i class="fas fa-download"></i> 下载资源包
+        </a>
+        <a href="#docs" class="btn">
+          <i class="fas fa-book"></i> 查看文档
+        </a>
+        <a href="#examples" class="btn">
+          <i class="fas fa-laptop-code"></i> 查看示例
+        </a>
+
+        <div class="quick-links">
+          <a href="#variables" class="quick-link">CSS变量系统</a>
+          <a href="#animations" class="quick-link">动画效果</a>
+          <a href="#responsive" class="quick-link">响应式设计</a>
+          <a href="#accessibility" class="quick-link">可访问性指南</a>
+          <a href="#performance" class="quick-link">性能优化</a>
+          <a href="#browser" class="quick-link">浏览器支持</a>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <p>© 2024 现代CSS设计系统 | 遵循MIT开源协议</p>
+      <p>优化后的颜色对比度，支持明暗主题切换，完全响应式设计</p>
+    </footer>
+  </div>
+
+  <!-- 主题切换按钮 -->
+  <button class="theme-switcher" id="themeSwitcher" aria-label="切换主题">
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </button>
+
+  <script>
+    // 页面加载完成后隐藏加载动画
+    window.addEventListener('load', function () {
+      setTimeout(() => {
+        const loading = document.getElementById('loading');
+        loading.style.opacity = '0';
+        setTimeout(() => {
+          loading.style.display = 'none';
+        }, 500);
+      }, 500);
+    });
+
+    // 主题切换功能
+    document.getElementById('themeSwitcher').addEventListener('click', function () {
+      const html = document.documentElement;
+      const themeIcon = document.getElementById('themeIcon');
+      const currentTheme = html.getAttribute('data-theme');
+
+      if (currentTheme === 'light') {
+        html.setAttribute('data-theme', 'dark');
+        themeIcon.className = 'fas fa-moon';
+        this.setAttribute('aria-label', '切换到浅色主题');
+      } else {
+        html.setAttribute('data-theme', 'light');
+        themeIcon.className = 'fas fa-sun';
+        this.setAttribute('aria-label', '切换到深色主题');
+      }
+
+      // 保存主题偏好到localStorage
+      localStorage.setItem('theme', html.getAttribute('data-theme'));
+    });
+
+    // 加载保存的主题
+    document.addEventListener('DOMContentLoaded', function () {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      const html = document.documentElement;
+      const themeIcon = document.getElementById('themeIcon');
+
+      html.setAttribute('data-theme', savedTheme);
+      themeIcon.className = savedTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+
+      // 设置正确的aria-label
+      const switcher = document.getElementById('themeSwitcher');
+      switcher.setAttribute('aria-label',
+        savedTheme === 'light' ? '切换到深色主题' : '切换到浅色主题');
+
+      // 隐藏加载动画（如果JS加载较慢）
+      const loading = document.getElementById('loading');
+      if (loading.style.display !== 'none') {
+        loading.style.opacity = '0';
+        setTimeout(() => {
+          loading.style.display = 'none';
+        }, 500);
+      }
+    });
+
+    // 命令项点击效果
+    document.querySelectorAll('.command-item').forEach(item => {
+      item.addEventListener('click', function () {
+        const text = this.textContent;
+        this.style.transform = 'scale(0.95)';
+        this.style.backgroundColor = 'var(--highlight-color)';
+
+        setTimeout(() => {
+          this.style.transform = '';
+          this.style.backgroundColor = '';
+        }, 300);
+
+        console.log(`选择了CSS命令: ${text}`);
+      });
+    });
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
