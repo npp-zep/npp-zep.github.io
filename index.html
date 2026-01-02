@@ -3,1086 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>文章导航 —— npp-zep</title>
+    <title>Hello World! —— npp-zep</title>
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
     <link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/206399566?v=4">
-    <style>
-        /* 背景图片样式 - 与index.html保持一致 */
-        .bg-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            transition: opacity 0.5s ease;
-        }
-        
-        .bg-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 25, 47, 0.3);
-            backdrop-filter: blur(3px);
-            z-index: 1;
-        }
-        
-        .bg-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.8;
-            filter: blur(1px);
-            transition: opacity 0.5s ease;
-        }
-        
-        .bg-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--highlight-color);
-            color: var(--primary-color);
-            border: none;
-            cursor: pointer;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .bg-toggle:hover {
-            transform: scale(1.1);
-        }
-        
-        [data-theme="light"] .bg-overlay {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        [data-theme="light"] .bg-image {
-            opacity: 0.9;
-            filter: blur(0.5px);
-        }
-        
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-            gap: 1.5rem;
-        }
-        
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid var(--highlight-color);
-            object-fit: cover;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-        }
-        
-        .avatar:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .markdown-viewer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--primary-color);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-        }
-        
-        .markdown-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: var(--secondary-color);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .back-btn {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 1px solid var(--highlight-color);
-            color: var(--text-color);
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-        }
-        
-        .back-btn:hover {
-            background: var(--highlight-color);
-            color: var(--primary-color);
-        }
-        
-        .markdown-title {
-            margin: 0;
-            color: var(--highlight-color);
-            font-size: 1.3rem;
-            text-align: center;
-            flex: 1;
-        }
-        
-        .markdown-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .action-btn {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-        }
-        
-        .action-btn:hover {
-            border-color: var(--highlight-color);
-            color: var(--highlight-color);
-        }
-        
-        .markdown-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        .markdown-sidebar {
-            width: 280px;
-            background: var(--secondary-color);
-            border-right: 1px solid var(--border-color);
-            padding: 1.5rem;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-        }
-        
-        .markdown-sidebar.hidden {
-            transform: translateX(-100%);
-            width: 0;
-            padding: 0;
-            border-right: none;
-        }
-        
-        .markdown-content {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-            line-height: 1.8;
-            font-size: 1.05rem;
-        }
-        
-        .markdown-content h1,
-        .markdown-content h2,
-        .markdown-content h3,
-        .markdown-content h4,
-        .markdown-content h5,
-        .markdown-content h6 {
-            color: var(--highlight-color);
-            margin-top: 1.8rem;
-            margin-bottom: 0.8rem;
-            font-weight: 500;
-            padding-bottom: 0.3rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .markdown-content h1 { font-size: 2rem; }
-        .markdown-content h2 { font-size: 1.7rem; }
-        .markdown-content h3 { font-size: 1.4rem; }
-        .markdown-content h4 { font-size: 1.2rem; }
-        .markdown-content h5 { font-size: 1.1rem; }
-        .markdown-content h6 { font-size: 1rem; }
-        
-        .markdown-content p {
-            margin: 1rem 0;
-            color: var(--text-color);
-        }
-        
-        .markdown-content ul,
-        .markdown-content ol {
-            margin: 1rem 0;
-            padding-left: 2rem;
-        }
-        
-        .markdown-content li {
-            margin: 0.5rem 0;
-            color: var(--text-secondary);
-        }
-        
-        .markdown-content blockquote {
-            border-left: 4px solid var(--highlight-color);
-            padding: 0.5rem 1rem;
-            margin: 1rem 0;
-            background: var(--card-bg);
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-        
-        .markdown-content code {
-            background: var(--secondary-color);
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9em;
-            color: var(--highlight-color);
-        }
-        
-        .markdown-content pre {
-            background: var(--secondary-color);
-            padding: 1rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 1.5rem 0;
-            border: 1px solid var(--border-color);
-        }
-        
-        .markdown-content pre code {
-            background: none;
-            padding: 0;
-            color: inherit;
-        }
-        
-        .markdown-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-        }
-        
-        .markdown-content th,
-        .markdown-content td {
-            border: 1px solid var(--border-color);
-            padding: 0.8rem;
-            text-align: left;
-        }
-        
-        .markdown-content th {
-            background: var(--card-bg);
-            color: var(--highlight-color);
-            font-weight: 600;
-        }
-        
-        .markdown-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 1rem 0;
-            border: 1px solid var(--border-color);
-        }
-        
-        .markdown-content a {
-            color: var(--highlight-color);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--highlight-color);
-        }
-        
-        .markdown-content a:hover {
-            border-bottom-style: solid;
-        }
-        
-        .markdown-content hr {
-            border: none;
-            border-top: 1px solid var(--border-color);
-            margin: 2rem 0;
-        }
-        
-        .toc-title {
-            color: var(--highlight-color);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-        
-        .toc-list {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .toc-item {
-            margin: 0.5rem 0;
-        }
-        
-        .toc-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: var(--transition);
-            display: block;
-            padding: 0.3rem 0.5rem;
-            border-radius: 4px;
-        }
-        
-        .toc-link:hover {
-            color: var(--highlight-color);
-            background: var(--card-bg);
-        }
-        
-        .toc-level-2 { padding-left: 1rem; }
-        .toc-level-3 { padding-left: 2rem; }
-        .toc-level-4 { padding-left: 3rem; }
-        
-        .theme-options {
-            margin-top: 2rem;
-        }
-        
-        .theme-options h4 {
-            color: var(--highlight-color);
-            margin-bottom: 0.5rem;
-        }
-        
-        .theme-select {
-            width: 100%;
-            padding: 0.5rem;
-            background: var(--primary-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .articles-section {
-            margin-top: 2.5rem;
-        }
-        
-        .articles-section h3 {
-            color: var(--highlight-color);
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .articles-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-        
-        .article-card {
-            background: var(--secondary-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .article-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--highlight-color);
-        }
-        
-        .article-header {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .article-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: var(--text-color);
-            margin: 0;
-        }
-        
-        .article-meta {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        
-        .article-meta i {
-            margin-right: 0.3rem;
-        }
-        
-        .article-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            flex-grow: 1;
-            margin: 0;
-        }
-        
-        .article-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 0.5rem;
-        }
-        
-        .article-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-        }
-        
-        .article-tag {
-            font-size: 0.75rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            background: var(--accent-color);
-            color: var(--text-color);
-        }
-        
-        .tag-web { background: rgba(59, 130, 246, 0.2); }
-        .tag-lua { background: rgba(0, 154, 216, 0.2); }
-        .tag-python { background: rgba(53, 114, 165, 0.2); }
-        .tag-tutorial { background: rgba(16, 185, 129, 0.2); }
-        .tag-note { background: rgba(245, 158, 11, 0.2); }
-        .tag-c { background: rgba(139, 92, 246, 0.2); }
-        
-        .article-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .article-btn {
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-color);
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        
-        .article-btn:hover {
-            background: var(--highlight-color);
-            color: var(--primary-color);
-            border-color: var(--highlight-color);
-        }
-        
-        .filter-section {
-            margin: 1.5rem 0;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background: var(--secondary-color);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.9rem;
-        }
-        
-        .filter-btn:hover {
-            border-color: var(--highlight-color);
-            color: var(--highlight-color);
-        }
-        
-        .filter-btn.active {
-            background: var(--highlight-color);
-            color: var(--primary-color);
-            border-color: var(--highlight-color);
-        }
-        
-        .stats-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            margin-top: 1.5rem;
-            width: 100%;
-        }
-        
-        .stats-card h4 {
-            color: var(--highlight-color);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-        
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--highlight-color);
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 0.2rem;
-        }
-        
-        .info-section h3 {
-            color: var(--highlight-color);
-            margin: 1.5rem 0 0.8rem;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .loading-articles {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-secondary);
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(100, 255, 218, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--highlight-color);
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 1rem;
-        }
-        
-        .error-message {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-            margin: 2rem 0;
-            color: var(--text-color);
-        }
-        
-        .error-message i {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: #ff6b6b;
-        }
-        
-        /* 移动端适配优化 */
-        @media (max-width: 768px) {
-            /* 容器和内边距调整 */
-            .container {
-                padding: 1rem;
-                margin: 0 auto;
-                max-width: 100%;
-            }
-            
-            header {
-                padding: 1rem 0;
-                text-align: center;
-            }
-            
-            header h1 {
-                font-size: 1.5rem;
-            }
-            
-            header h1 small {
-                display: block;
-                font-size: 0.9rem;
-                margin-top: 0.3rem;
-            }
-            
-            .tagline {
-                font-size: 0.9rem;
-                margin-top: 0.5rem;
-            }
-            
-            /* 头像和标题区域 */
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-            }
-            
-            .avatar {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .profile-header h2 {
-                font-size: 1.4rem;
-            }
-            
-            /* 文章列表 */
-            .articles-list {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .article-card {
-                padding: 1.2rem;
-                border-radius: 10px;
-            }
-            
-            .article-title {
-                font-size: 1.1rem;
-            }
-            
-            .article-description {
-                font-size: 0.9rem;
-                line-height: 1.5;
-            }
-            
-            .article-footer {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1rem;
-                margin-top: 1rem;
-            }
-            
-            .article-actions {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .article-btn {
-                flex: 1;
-                justify-content: center;
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
-            }
-            
-            /* 筛选按钮 */
-            .filter-buttons {
-                justify-content: center;
-                gap: 0.4rem;
-            }
-            
-            .filter-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.85rem;
-                white-space: nowrap;
-            }
-            
-            /* 统计卡片 */
-            .stats-card {
-                padding: 1rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.8rem;
-            }
-            
-            .stat-number {
-                font-size: 1.3rem;
-            }
-            
-            /* Markdown阅读器 */
-            .markdown-header {
-                padding: 0.8rem 1rem;
-                position: sticky;
-                top: 0;
-                z-index: 10;
-            }
-            
-            .back-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.9rem;
-            }
-            
-            .markdown-title {
-                font-size: 1rem;
-                margin: 0 0.5rem;
-                text-align: center;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                max-width: 150px;
-            }
-            
-            .markdown-actions {
-                gap: 0.3rem;
-            }
-            
-            .action-btn {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.85rem;
-            }
-            
-            .action-btn span {
-                display: none;
-            }
-            
-            .markdown-content {
-                padding: 1rem;
-                font-size: 1rem;
-                line-height: 1.6;
-            }
-            
-            .markdown-content h1 { font-size: 1.7rem; }
-            .markdown-content h2 { font-size: 1.5rem; }
-            .markdown-content h3 { font-size: 1.3rem; }
-            .markdown-content h4 { font-size: 1.1rem; }
-            .markdown-content h5 { font-size: 1rem; }
-            .markdown-content h6 { font-size: 0.9rem; }
-            
-            .markdown-content pre {
-                padding: 0.8rem;
-                font-size: 0.85rem;
-                margin: 1rem 0;
-            }
-            
-            .markdown-content table {
-                font-size: 0.85rem;
-            }
-            
-            .markdown-content th,
-            .markdown-content td {
-                padding: 0.5rem;
-            }
-            
-            .markdown-sidebar {
-                position: fixed;
-                top: 60px;
-                left: 0;
-                width: 85%;
-                max-width: 280px;
-                height: calc(100% - 60px);
-                z-index: 1001;
-                box-shadow: var(--shadow-lg);
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .markdown-sidebar:not(.hidden) {
-                transform: translateX(0);
-            }
-            
-            /* 侧边栏遮罩 */
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 1000;
-                backdrop-filter: blur(2px);
-            }
-            
-            .markdown-sidebar:not(.hidden) + .sidebar-overlay {
-                display: block;
-            }
-            
-            /* 侧边栏内容调整 */
-            .toc-title {
-                font-size: 1rem;
-            }
-            
-            .toc-link {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.9rem;
-            }
-            
-            .theme-options h4 {
-                font-size: 0.95rem;
-            }
-            
-            /* 按钮和链接 */
-            .btn {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.9rem;
-                margin: 0.3rem 0;
-            }
-            
-            .cta-section {
-                padding: 1rem;
-                margin-top: 1.5rem;
-            }
-            
-            .quick-links {
-                padding: 0.8rem;
-            }
-            
-            .quick-link {
-                padding: 0.4rem 0;
-                font-size: 0.9rem;
-            }
-            
-            /* 底部 */
-            footer {
-                padding: 1rem 0;
-                margin-top: 1.5rem;
-                font-size: 0.8rem;
-                text-align: center;
-            }
-            
-            /* 背景切换按钮 */
-            .bg-toggle {
-                top: 10px;
-                right: 10px;
-                width: 36px;
-                height: 36px;
-                font-size: 0.9rem;
-            }
-            
-            /* 主题切换按钮 */
-            .theme-switcher {
-                bottom: 15px;
-                right: 15px;
-                width: 44px;
-                height: 44px;
-                font-size: 1rem;
-            }
-            
-            /* 加载动画 */
-            .loading-spinner {
-                width: 35px;
-                height: 35px;
-            }
-            
-            /* 信息区域 */
-            .info-section h3 {
-                font-size: 1.2rem;
-                margin: 1.2rem 0 0.6rem;
-            }
-            
-            .info-section p {
-                font-size: 0.95rem;
-                line-height: 1.5;
-            }
-            
-            /* 标签样式 */
-            .article-tag {
-                font-size: 0.7rem;
-                padding: 0.15rem 0.5rem;
-            }
-            
-            .article-meta {
-                font-size: 0.8rem;
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-            
-            /* 错误消息 */
-            .error-message {
-                padding: 1rem;
-                margin: 1rem 0;
-            }
-            
-            .error-message i {
-                font-size: 1.5rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            /* 更小的屏幕适配 */
-            .container {
-                padding: 0.8rem;
-            }
-            
-            header h1 {
-                font-size: 1.3rem;
-            }
-            
-            .profile-header h2 {
-                font-size: 1.2rem;
-            }
-            
-            .avatar {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .articles-list {
-                gap: 0.8rem;
-            }
-            
-            .article-card {
-                padding: 1rem;
-            }
-            
-            .article-title {
-                font-size: 1rem;
-            }
-            
-            .article-description {
-                font-size: 0.85rem;
-            }
-            
-            .article-meta {
-                flex-direction: column;
-                gap: 0.3rem;
-                align-items: flex-start;
-            }
-            
-            .filter-buttons {
-                justify-content: flex-start;
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .filter-btn {
-                font-size: 0.8rem;
-                padding: 0.3rem 0.7rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .markdown-content {
-                padding: 0.8rem;
-                font-size: 0.95rem;
-            }
-            
-            .markdown-content h1 { font-size: 1.5rem; }
-            .markdown-content h2 { font-size: 1.3rem; }
-            .markdown-content h3 { font-size: 1.1rem; }
-            
-            .markdown-content pre {
-                padding: 0.6rem;
-                font-size: 0.8rem;
-            }
-            
-            .btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
-                margin: 0.2rem 0;
-            }
-            
-            .bg-toggle {
-                width: 32px;
-                height: 32px;
-                font-size: 0.8rem;
-            }
-            
-            .theme-switcher {
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            /* 极小的屏幕适配 */
-            .container {
-                padding: 0.6rem;
-            }
-            
-            header h1 {
-                font-size: 1.1rem;
-            }
-            
-            .tagline {
-                font-size: 0.8rem;
-            }
-            
-            .profile-header h2 {
-                font-size: 1rem;
-            }
-            
-            .avatar {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .article-card {
-                padding: 0.8rem;
-            }
-            
-            .article-btn {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.8rem;
-            }
-            
-            .markdown-header {
-                padding: 0.6rem 0.8rem;
-            }
-            
-            .back-btn {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.8rem;
-            }
-            
-            .markdown-title {
-                font-size: 0.9rem;
-                max-width: 120px;
-            }
-            
-            .action-btn {
-                padding: 0.3rem 0.5rem;
-                font-size: 0.8rem;
-            }
-        }
-        
-        /* 横屏优化 */
-        @media (max-height: 600px) and (orientation: landscape) {
-            .container {
-                padding: 0.5rem;
-            }
-            
-            .articles-list {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.8rem;
-            }
-            
-            .article-card {
-                padding: 0.8rem;
-            }
-            
-            .article-title {
-                font-size: 0.95rem;
-            }
-            
-            .article-description {
-                font-size: 0.8rem;
-                line-height: 1.4;
-            }
-            
-            .markdown-content {
-                padding: 0.8rem;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="loading" id="loading">
@@ -1099,141 +23,62 @@
 
     <div class="container">
         <header>
-            <h1>文章导航
-                <small>知识分享 · 学习笔记</small>
+            <h1>个人简介
+                <small>开发者 · 学生</small>
             </h1>
-            <p class="tagline">记录思考，分享见解</p>
+            <p class="tagline">代码编织梦想，技术创造未来</p>
         </header>
 
         <main class="main-content">
             <section class="description">
                 <div class="profile-header">
                     <img src="https://avatars.githubusercontent.com/u/206399566?v=4" alt="头像" class="avatar">
-                    <h2>我的文章</h2>
+                    <h2>关于我</h2>
                 </div>
                 
                 <div class="info-section">
-                    <h3><i class="fas fa-info-circle"></i> 说明</h3>
-                    <p>这里是我在学习过程中整理的笔记和心得分享，内容涵盖编程技术、学习方法和项目经验等。所有文章都以Markdown格式编写，支持代码高亮和目录导航。</p>
+                    <h3><i class="fas fa-user"></i> 我是谁</h3>
+                    <p>一名对于编程和社区有极大兴趣的学生，经常自己做一些好玩的小东西</p>
                     
-                    <h3><i class="fas fa-filter"></i> 筛选文章</h3>
-                    <div class="filter-section">
-                        <div class="filter-buttons">
-                            <button class="filter-btn active" data-filter="all">全部文章</button>
-                            <button class="filter-btn" data-filter="web">Web开发</button>
-                            <button class="filter-btn" data-filter="lua">Lua开发</button>
-                            <button class="filter-btn" data-filter="python">Python</button>
-                            <button class="filter-btn" data-filter="tutorial">教程</button>
-                            <button class="filter-btn" data-filter="note">笔记</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="articles-section">
-                    <h3><i class="fas fa-book-open"></i> 文章列表</h3>
-                    <div class="articles-list" id="articlesList">
-                        <div class="loading-articles">
-                            <div class="loading-spinner"></div>
-                            <p>正在加载文章列表...</p>
-                        </div>
+                    <h3><i class="fas fa-code"></i> 我是干啥事的</h3>
+                    <p>主要专注于web和Lua开发</p>
+                    <ul class="skills-list">
+                        <li>Web应用开发</li>
+                    </ul>
+                    
+                    <h3><i class="fas fa-tools"></i> 我有什么</h3>
+                    <p>入门经验：</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Lua</span>
+                        <span class="tech-tag">C</span>
+                        <span class="tech-tag">Git</span>
                     </div>
                 </div>
             </section>
 
             <aside class="cta-section">
-                <a href="index.html" class="btn">
-                    <i class="fas fa-home"></i> 返回首页
-                </a>
-                
                 <a href="https://github.com/npp-zep" target="_blank" class="btn">
                     <i class="fab fa-github"></i> GitHub 主页
                 </a>
                 
-                <div class="quick-links">
-                    <h4>快速链接</h4>
-                    <a href="#articles" class="quick-link">查看文章</a>
-                    <a href="#about" class="quick-link">关于本站</a>
-                    <a href="https://github.com/npp-zep/npp-zep.github.io" target="_blank" class="quick-link">源代码</a>
-                </div>
-                
-                <div class="stats-section" id="statsSection">
-                </div>
+                <a href="passage.html" class="btn">
+                    <i class="fas fa-book-open"></i> 文章导航
+                </a>
             </aside>
         </main>
 
         <footer>
             <p>遵循 <a href="https://opensource.org/licenses/MIT" target="_blank" class="license-link">MIT 协议</a></p>
-            <p class="footer-note">文章内容采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议</p>
+            <p class="footer-note">全部代码开源，欢迎参考和贡献！<a href="https://github.com/npp-zep/npp-zep.github.io" target="_blank">查看源代码</a></p>
         </footer>
-    </div>
-
-    <div class="markdown-viewer" id="markdownViewer">
-        <div class="markdown-header">
-            <button class="back-btn" id="backBtn">
-                <i class="fas fa-arrow-left"></i> <span class="back-text">返回</span>
-            </button>
-            <h2 class="markdown-title" id="markdownTitle"></h2>
-            <div class="markdown-actions">
-                <button class="action-btn" id="toggleSidebarBtn">
-                    <i class="fas fa-bars"></i> <span>目录</span>
-                </button>
-                <button class="action-btn" id="themeToggleBtn">
-                    <i class="fas fa-palette"></i> <span>主题</span>
-                </button>
-                <button class="action-btn" id="copyBtn">
-                    <i class="far fa-copy"></i> <span>复制</span>
-                </button>
-            </div>
-        </div>
-        
-        <div class="markdown-container">
-            <div class="markdown-sidebar" id="markdownSidebar">
-                <h3 class="toc-title"><i class="fas fa-list"></i> 目录</h3>
-                <ul class="toc-list" id="tocList">
-                </ul>
-                
-                <div class="theme-options">
-                    <h4><i class="fas fa-palette"></i> 代码主题</h4>
-                    <select class="theme-select" id="codeThemeSelect">
-                        <option value="github-dark">GitHub Dark</option>
-                        <option value="github">GitHub Light</option>
-                        <option value="vs2015">VS 2015</option>
-                        <option value="atom-one-dark">Atom One Dark</option>
-                        <option value="monokai">Monokai</option>
-                        <option value="solarized-dark">Solarized Dark</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- 侧边栏遮罩层 -->
-            <div class="sidebar-overlay" id="sidebarOverlay"></div>
-            
-            <div class="markdown-content" id="markdownContent">
-            </div>
-        </div>
     </div>
 
     <button class="theme-switcher" id="themeSwitcher">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/lua.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="script/rendermd.js"></script>
-    
     <script>
-        const ARTICLES_CONFIG_URL = 'assets/passage/articles.json';
-        const ARTICLES_BASE_URL = 'assets/passage/';
-        let allArticles = [];
-
         window.addEventListener('load', function() {
             setTimeout(() => {
                 document.getElementById('loading').style.opacity = '0';
@@ -1242,466 +87,9 @@
                 }, 500);
             }, 800);
             
-            loadArticles();
             initThemeSwitcher();
             initBackgroundToggle();
-            initMarkdownViewer();
         });
-
-        async function loadArticles() {
-            const articlesList = document.getElementById('articlesList');
-            
-            try {
-                articlesList.innerHTML = `
-                    <div class="loading-articles">
-                        <div class="loading-spinner"></div>
-                        <p>正在加载文章列表...</p>
-                    </div>
-                `;
-                
-                console.log('正在加载文章配置文件:', ARTICLES_CONFIG_URL);
-                
-                const response = await fetch(ARTICLES_CONFIG_URL, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Cache-Control': 'no-cache'
-                    },
-                    cache: 'no-cache'
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP错误! 状态: ${response.status} - ${response.statusText}`);
-                }
-                
-                const jsonText = await response.text();
-                const cleanJsonText = jsonText.trim().replace(/^\uFEFF/, '');
-                const articlesData = JSON.parse(cleanJsonText);
-                
-                allArticles = articlesData.articles || [];
-                
-                if (!Array.isArray(allArticles) || allArticles.length === 0) {
-                    throw new Error('文章数据格式错误或为空');
-                }
-                
-                articlesList.innerHTML = '';
-                
-                allArticles.forEach(article => {
-                    const articleElement = createArticleCard(article);
-                    articlesList.appendChild(articleElement);
-                });
-                
-                updateStats();
-                initFilter();
-                
-                console.log('成功加载', allArticles.length, '篇文章');
-                
-            } catch (error) {
-                console.error('加载文章失败:', error);
-                showError('无法加载文章列表', error.message);
-            }
-        }
-
-        function showError(title, message) {
-            const articlesList = document.getElementById('articlesList');
-            
-            articlesList.innerHTML = `
-                <div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>${title}</h3>
-                    <p>${message}</p>
-                    <p style="font-size: 0.85rem; margin-top: 1rem;">请检查文件路径是否正确，并确保 <code>articles.json</code> 文件存在。</p>
-                    <button onclick="loadArticles()" class="article-btn" style="margin-top: 1rem;">
-                        <i class="fas fa-redo"></i> 重试加载
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('statsSection').innerHTML = '';
-        }
-
-        function createArticleCard(article) {
-            const articleCard = document.createElement('div');
-            articleCard.className = 'article-card';
-            articleCard.dataset.tags = article.tags.join(' ');
-            
-            const tagsHtml = article.tags.map(tag => 
-                `<span class="article-tag tag-${tag}">${tag}</span>`
-            ).join('');
-            
-            articleCard.innerHTML = `
-                <div class="article-header">
-                    <h4 class="article-title">${article.title}</h4>
-                    <div class="article-meta">
-                        <span class="article-date"><i class="far fa-calendar"></i> ${article.date}</span>
-                        <span class="article-read-time"><i class="far fa-clock"></i> ${article.readTime}</span>
-                    </div>
-                </div>
-                <p class="article-description">${article.description}</p>
-                <div class="article-footer">
-                    <div class="article-tags">
-                        ${tagsHtml}
-                    </div>
-                    <div class="article-actions">
-                        <button class="article-btn read-btn" onclick="openArticle('${article.file}', '${article.title}')">
-                            <i class="fas fa-book-open"></i> 阅读
-                        </button>
-                        <button class="article-btn download-btn" onclick="downloadArticle('${article.file}')">
-                            <i class="fas fa-download"></i> 下载
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            return articleCard;
-        }
-
-        function initFilter() {
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const articlesList = document.getElementById('articlesList');
-            
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const filter = this.dataset.filter;
-                    const articleCards = document.querySelectorAll('.article-card');
-                    
-                    articleCards.forEach(card => {
-                        if (filter === 'all' || card.dataset.tags.includes(filter)) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                    
-                    articlesList.style.opacity = '0.5';
-                    setTimeout(() => {
-                        articlesList.style.opacity = '1';
-                    }, 300);
-                });
-            });
-        }
-
-        function updateStats() {
-            const statsSection = document.getElementById('statsSection');
-            
-            if (!allArticles || allArticles.length === 0) {
-                statsSection.innerHTML = '';
-                return;
-            }
-            
-            const totalArticles = allArticles.length;
-            const webArticles = allArticles.filter(a => a.tags && a.tags.includes('web')).length;
-            const luaArticles = allArticles.filter(a => a.tags && a.tags.includes('lua')).length;
-            const pythonArticles = allArticles.filter(a => a.tags && a.tags.includes('python')).length;
-            
-            statsSection.innerHTML = `
-                <div class="stats-card">
-                    <h4><i class="fas fa-chart-bar"></i> 文章统计</h4>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-number">${totalArticles}</span>
-                            <span class="stat-label">总文章数</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">${webArticles}</span>
-                            <span class="stat-label">Web开发</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">${luaArticles}</span>
-                            <span class="stat-label">Lua开发</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">${pythonArticles}</span>
-                            <span class="stat-label">Python</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function initMarkdownViewer() {
-            const backBtn = document.getElementById('backBtn');
-            const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const themeToggleBtn = document.getElementById('themeToggleBtn');
-            const codeThemeSelect = document.getElementById('codeThemeSelect');
-            const markdownViewer = document.getElementById('markdownViewer');
-            const markdownSidebar = document.getElementById('markdownSidebar');
-            const sidebarOverlay = document.getElementById('sidebarOverlay');
-            
-            backBtn.addEventListener('click', () => {
-                markdownViewer.style.display = 'none';
-            });
-            
-            toggleSidebarBtn.addEventListener('click', () => {
-                markdownSidebar.classList.toggle('hidden');
-            });
-            
-            // 点击遮罩层关闭侧边栏
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', () => {
-                    markdownSidebar.classList.add('hidden');
-                });
-            }
-            
-            // 移动端：点击文章内容区域也关闭侧边栏
-            if (window.innerWidth <= 768) {
-                const markdownContent = document.getElementById('markdownContent');
-                if (markdownContent) {
-                    markdownContent.addEventListener('click', (e) => {
-                        if (!markdownSidebar.classList.contains('hidden')) {
-                            markdownSidebar.classList.add('hidden');
-                        }
-                    });
-                }
-            }
-            
-            copyBtn.addEventListener('click', () => {
-                const content = document.getElementById('markdownContent').innerText;
-                navigator.clipboard.writeText(content).then(() => {
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>已复制</span>';
-                    setTimeout(() => {
-                        copyBtn.innerHTML = originalText;
-                    }, 2000);
-                });
-            });
-            
-            codeThemeSelect.addEventListener('change', (e) => {
-                const theme = e.target.value;
-                changeCodeTheme(theme);
-                localStorage.setItem('codeTheme', theme);
-            });
-            
-            const savedTheme = localStorage.getItem('codeTheme') || 'github-dark';
-            codeThemeSelect.value = savedTheme;
-            changeCodeTheme(savedTheme);
-            
-            themeToggleBtn.addEventListener('click', () => {
-                markdownSidebar.classList.remove('hidden');
-            });
-            
-            // 移动端：监听窗口大小变化
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) {
-                    markdownSidebar.classList.remove('hidden');
-                }
-            });
-        }
-
-        function changeCodeTheme(theme) {
-            const link = document.querySelector('link[href*="highlight.js"]');
-            if (link) {
-                const newTheme = theme === 'github' ? 'github.min.css' : `${theme}.min.css`;
-                link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${newTheme}`;
-            }
-        }
-
-        async function openArticle(filename, title) {
-            const markdownViewer = document.getElementById('markdownViewer');
-            const markdownTitle = document.getElementById('markdownTitle');
-            const markdownContent = document.getElementById('markdownContent');
-            
-            markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
-            markdownViewer.style.display = 'flex';
-            markdownTitle.textContent = title;
-            
-            // 移动端默认隐藏侧边栏
-            if (window.innerWidth <= 768) {
-                document.getElementById('markdownSidebar').classList.add('hidden');
-            }
-            
-            try {
-                const response = await fetch(`${ARTICLES_BASE_URL}${filename}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP错误! 状态: ${response.status}`);
-                }
-                const markdown = await response.text();
-                
-                // 等待renderMarkdown函数可用
-                if (typeof window.renderMarkdown !== 'function') {
-                    // 如果rendermd.js还没加载，等待一下
-                    await new Promise(resolve => {
-                        const check = setInterval(() => {
-                            if (typeof window.renderMarkdown === 'function') {
-                                clearInterval(check);
-                                resolve();
-                            }
-                        }, 100);
-                        setTimeout(() => {
-                            clearInterval(check);
-                            resolve();
-                        }, 3000);
-                    });
-                }
-                
-                if (typeof window.renderMarkdown === 'function') {
-                    const renderedHtml = window.renderMarkdown(markdown, { highlightCode: true });
-                    markdownContent.innerHTML = renderedHtml;
-                } else {
-                    // 如果renderMarkdown不可用，使用简单的markdown渲染
-                    markdownContent.innerHTML = renderSimpleMarkdown(markdown);
-                }
-                
-                generateTOC();
-                if (window.hljs) {
-                    hljs.highlightAll();
-                }
-                
-                // 移动端：优化阅读体验
-                if (window.innerWidth <= 768) {
-                    optimizeMobileReading();
-                }
-                
-            } catch (error) {
-                console.error('加载Markdown失败:', error);
-                markdownContent.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>加载失败</h3>
-                        <p>无法加载文章内容: ${error.message}</p>
-                        <button onclick="downloadArticle('${filename}')" class="action-btn" style="margin-top: 1rem;">
-                            <i class="fas fa-download"></i> 下载原始文件
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        // 移动端阅读优化
-        function optimizeMobileReading() {
-            const content = document.getElementById('markdownContent');
-            
-            // 为代码块添加移动端优化
-            const codeBlocks = content.querySelectorAll('pre');
-            codeBlocks.forEach(block => {
-                block.style.overflowX = 'auto';
-                block.style.WebkitOverflowScrolling = 'touch';
-                block.style.maxWidth = '100%';
-            });
-            
-            // 为表格添加滚动
-            const tables = content.querySelectorAll('table');
-            tables.forEach(table => {
-                const wrapper = document.createElement('div');
-                wrapper.style.overflowX = 'auto';
-                wrapper.style.WebkitOverflowScrolling = 'touch';
-                wrapper.style.margin = '1rem 0';
-                table.parentNode.insertBefore(wrapper, table);
-                wrapper.appendChild(table);
-            });
-            
-            // 调整图片大小
-            const images = content.querySelectorAll('img');
-            images.forEach(img => {
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
-            });
-        }
-
-        // 简单的markdown渲染函数，作为备选方案
-        function renderSimpleMarkdown(markdown) {
-            // 转换标题
-            let html = markdown
-                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
-                .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
-                .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
-                // 转换加粗
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/__(.*?)__/g, '<strong>$1</strong>')
-                // 转换斜体
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/_(.*?)_/g, '<em>$1</em>')
-                // 转换代码块
-                .replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, lang, code) {
-                    return `<pre><code class="${lang || ''}">${escapeHtml(code)}</code></pre>`;
-                })
-                // 转换行内代码
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-                // 转换链接
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-                // 转换图片
-                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-                // 转换列表
-                .replace(/^\s*\*\s+(.*$)/gm, '<li>$1</li>')
-                .replace(/^\s*-\s+(.*$)/gm, '<li>$1</li>')
-                .replace(/^\s*\+\s+(.*$)/gm, '<li>$1</li>')
-                // 转换引用
-                .replace(/^>\s*(.*$)/gm, '<blockquote>$1</blockquote>')
-                // 转换段落
-                .replace(/\n\n+/g, '</p><p>')
-                .replace(/^([^<\n].*)/gm, '<p>$1</p>');
-            
-            // 处理列表
-            html = html.replace(/<li>.*?<\/li>/g, function(match) {
-                if (!match.includes('</ul>') && !match.includes('</ol>')) {
-                    return '<ul>' + match + '</ul>';
-                }
-                return match;
-            });
-            
-            return html;
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function generateTOC() {
-            const content = document.getElementById('markdownContent');
-            const tocList = document.getElementById('tocList');
-            const headings = content.querySelectorAll('h1, h2, h3, h4');
-            
-            tocList.innerHTML = '';
-            
-            if (headings.length === 0) {
-                tocList.innerHTML = '<li class="toc-item"><span class="toc-link">暂无目录</span></li>';
-                return;
-            }
-            
-            headings.forEach((heading, index) => {
-                if (!heading.id) {
-                    heading.id = `heading-${index}`;
-                }
-                
-                const level = parseInt(heading.tagName.substring(1));
-                const listItem = document.createElement('li');
-                listItem.className = `toc-item toc-level-${level}`;
-                
-                const link = document.createElement('a');
-                link.href = `#${heading.id}`;
-                link.className = 'toc-link';
-                link.textContent = heading.textContent;
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    heading.scrollIntoView({ behavior: 'smooth' });
-                    
-                    // 移动端：点击目录项后关闭侧边栏
-                    if (window.innerWidth <= 768) {
-                        document.getElementById('markdownSidebar').classList.add('hidden');
-                    }
-                });
-                
-                listItem.appendChild(link);
-                tocList.appendChild(listItem);
-            });
-        }
-
-        function downloadArticle(filename) {
-            const link = document.createElement('a');
-            link.href = `${ARTICLES_BASE_URL}${filename}`;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
 
         function initThemeSwitcher() {
             const themeSwitcher = document.getElementById('themeSwitcher');
@@ -1755,6 +143,12 @@
                     icon.className = 'fas fa-eye-slash';
                     bgToggle.title = '显示背景';
                 }
+                
+                // 添加点击反馈
+                bgToggle.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    bgToggle.style.transform = '';
+                }, 200);
             });
             
             function updateBackgroundVisibility(visible) {
@@ -1777,19 +171,435 @@
             if (e.altKey && e.key === 'b') {
                 document.getElementById('bgToggle').click();
             }
-            if (e.altKey && e.key === 'h') {
-                window.location.href = 'index.html';
-            }
-            if (e.key === 'Escape') {
-                const markdownViewer = document.getElementById('markdownViewer');
-                if (markdownViewer.style.display === 'flex') {
-                    document.getElementById('backBtn').click();
-                }
-            }
-            if (e.altKey && e.key === 'r') {
-                loadArticles();
-            }
         });
     </script>
+
+    <style>
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.3);
+            backdrop-filter: blur(3px);
+            z-index: 1;
+        }
+        
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            filter: blur(1px);
+            transition: opacity 0.5s ease;
+        }
+        
+        .bg-toggle {
+            position: fixed; /* 改为fixed定位，确保在最上层 */
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--highlight-color);
+            color: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            z-index: 1002; /* 提高z-index确保在最上层 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .bg-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        [data-theme="light"] .bg-overlay {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        [data-theme="light"] .bg-image {
+            opacity: 0.9;
+            filter: blur(0.5px);
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1.5rem;
+        }
+        
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--highlight-color);
+            object-fit: cover;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+        
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .info-section h3 {
+            color: var(--highlight-color);
+            margin: 1.5rem 0 0.8rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .skills-list {
+            list-style: none;
+            margin: 1rem 0;
+            padding-left: 1rem;
+        }
+        
+        .skills-list li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 1.2rem;
+        }
+        
+        .skills-list li::before {
+            content: '▸';
+            color: var(--highlight-color);
+            position: absolute;
+            left: 0;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .tech-tag {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        
+        .tech-tag:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .license-link {
+            color: var(--highlight-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .license-link:hover {
+            text-decoration: underline;
+        }
+        
+        .footer-note {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .footer-note a {
+            color: var(--highlight-color);
+            text-decoration: none;
+            margin-left: 0.3rem;
+        }
+        
+        .footer-note a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn i, .quick-link i {
+            margin-right: 0.5rem;
+        }
+        
+        /* 主题切换按钮 */
+        .theme-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--highlight-color);
+            color: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .theme-switcher:hover {
+            transform: scale(1.1);
+        }
+        
+        /* 移动端适配优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                max-width: 100%;
+            }
+            
+            header {
+                padding: 1rem 0;
+                text-align: center;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            header h1 small {
+                display: block;
+                font-size: 0.9rem;
+                margin-top: 0.3rem;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .avatar {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .profile-header h2 {
+                font-size: 1.4rem;
+            }
+            
+            .info-section h3 {
+                font-size: 1.2rem;
+                margin: 1.2rem 0 0.6rem;
+            }
+            
+            .info-section p {
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+            
+            .skills-list {
+                padding-left: 0.5rem;
+            }
+            
+            .skills-list li {
+                font-size: 0.9rem;
+                padding-left: 1rem;
+            }
+            
+            .tech-stack {
+                gap: 0.4rem;
+            }
+            
+            .tech-tag {
+                padding: 0.3rem 0.7rem;
+                font-size: 0.8rem;
+            }
+            
+            .cta-section {
+                padding: 1rem;
+                margin-top: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+                margin: 0.3rem 0;
+                width: 100%;
+                text-align: center;
+            }
+            
+            footer {
+                padding: 1rem 0;
+                margin-top: 1.5rem;
+                font-size: 0.8rem;
+                text-align: center;
+            }
+            
+            .bg-toggle {
+                top: 10px;
+                right: 10px;
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+                z-index: 1003; /* 提高z-index确保在最上层 */
+            }
+            
+            .theme-switcher {
+                bottom: 15px;
+                right: 15px;
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+                z-index: 1002;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.8rem;
+            }
+            
+            header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .tagline {
+                font-size: 0.85rem;
+            }
+            
+            .profile-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .avatar {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .info-section h3 {
+                font-size: 1.1rem;
+            }
+            
+            .info-section p {
+                font-size: 0.9rem;
+            }
+            
+            .skills-list li {
+                font-size: 0.85rem;
+            }
+            
+            .tech-tag {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.6rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .bg-toggle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+            
+            .theme-switcher {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .container {
+                padding: 0.6rem;
+            }
+            
+            header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .tagline {
+                font-size: 0.8rem;
+            }
+            
+            .profile-header h2 {
+                font-size: 1rem;
+            }
+            
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .tech-tag {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+            
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
+            .bg-toggle {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+            
+            .theme-switcher {
+                width: 36px;
+                height: 36px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* 横屏优化 */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .profile-header {
+                flex-direction: row;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </body>
 </html>
