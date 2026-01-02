@@ -10,6 +10,96 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
     <link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/206399566?v=4">
     <style>
+        /* 背景图片样式 - 与index.html保持一致 */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.3);
+            backdrop-filter: blur(3px);
+            z-index: 1;
+        }
+        
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            filter: blur(1px);
+            transition: opacity 0.5s ease;
+        }
+        
+        .bg-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--highlight-color);
+            color: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .bg-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* 主题相关背景调整 */
+        [data-theme="light"] .bg-overlay {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        [data-theme="light"] .bg-image {
+            opacity: 0.9;
+            filter: blur(0.5px);
+        }
+        
+        /* 个人资料样式 */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1.5rem;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--highlight-color);
+            object-fit: cover;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+        
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
         /* Markdown查看器样式 */
         .markdown-viewer {
             position: fixed;
@@ -299,6 +389,12 @@
                 font-size: 1.1rem;
                 margin: 0 0.5rem;
             }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
         }
         
         /* 文章卡片样式 */
@@ -500,6 +596,51 @@
             margin-top: 0.2rem;
         }
         
+        /* 信息区域样式 */
+        .info-section h3 {
+            color: var(--highlight-color);
+            margin: 1.5rem 0 0.8rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* 加载状态样式 */
+        .loading-articles {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(100, 255, 218, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--highlight-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+        
+        /* 错误提示样式 */
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--text-color);
+        }
+        
+        .error-message i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+        
         /* 响应式调整 */
         @media (max-width: 768px) {
             .articles-list {
@@ -523,6 +664,13 @@
             
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .bg-toggle {
+                top: 15px;
+                right: 15px;
+                width: 36px;
+                height: 36px;
             }
         }
         
@@ -595,6 +743,10 @@
                     <h3><i class="fas fa-book-open"></i> 文章列表</h3>
                     <div class="articles-list" id="articlesList">
                         <!-- 文章将通过JavaScript动态加载 -->
+                        <div class="loading-articles">
+                            <div class="loading-spinner"></div>
+                            <p>正在加载文章列表...</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -696,63 +848,10 @@
     <script src="script/renderMd.js"></script>
     
     <script>
-        // 文章数据
-        const articles = [
-            {
-                id: 1,
-                title: "Web开发入门指南",
-                description: "从零开始学习Web开发的基础知识，包括HTML、CSS和JavaScript的核心概念。",
-                date: "2024-01-15",
-                tags: ["web", "tutorial"],
-                readTime: "10分钟",
-                file: "web-intro.md"
-            },
-            {
-                id: 2,
-                title: "Lua编程技巧分享",
-                description: "分享一些在Lua开发中实用的编程技巧和最佳实践。",
-                date: "2024-01-10",
-                tags: ["lua", "note"],
-                readTime: "8分钟",
-                file: "lua-tips.md"
-            },
-            {
-                id: 3,
-                title: "Python数据分析基础",
-                description: "使用Python进行数据分析的入门教程，涵盖pandas和numpy的基本使用。",
-                date: "2024-01-05",
-                tags: ["python", "tutorial"],
-                readTime: "15分钟",
-                file: "python-data-analysis.md"
-            },
-            {
-                id: 4,
-                title: "Git版本控制实战",
-                description: "通过实际案例学习Git的基本操作和团队协作流程。",
-                date: "2023-12-28",
-                tags: ["tutorial", "note"],
-                readTime: "12分钟",
-                file: "git-practical.md"
-            },
-            {
-                id: 5,
-                title: "响应式Web设计原则",
-                description: "探讨响应式Web设计的基本原则和实践方法，确保网站在各种设备上都能良好显示。",
-                date: "2023-12-20",
-                tags: ["web", "tutorial"],
-                readTime: "14分钟",
-                file: "responsive-web-design.md"
-            },
-            {
-                id: 6,
-                title: "Lua与C交互编程",
-                description: "深入探讨Lua与C语言之间的交互机制和实现方法。",
-                date: "2023-12-15",
-                tags: ["lua", "c", "note"],
-                readTime: "20分钟",
-                file: "lua-c-interaction.md"
-            }
-        ];
+        // 文章配置文件路径
+        const ARTICLES_CONFIG_URL = 'assets/passage/articles.json';
+        const ARTICLES_BASE_URL = 'assets/passage/';
+        let allArticles = []; // 存储所有文章数据
 
         // 等待页面加载
         window.addEventListener('load', function() {
@@ -764,8 +863,8 @@
                 }, 500);
             }, 800);
             
-            // 初始化文章列表
-            initArticles();
+            // 动态加载文章
+            loadArticles();
             
             // 初始化筛选功能
             initFilter();
@@ -780,21 +879,68 @@
             initBackgroundToggle();
         });
 
-        // 初始化文章列表
-        function initArticles() {
+        // 动态加载文章
+        async function loadArticles() {
             const articlesList = document.getElementById('articlesList');
             
-            // 清空现有内容
-            articlesList.innerHTML = '';
+            try {
+                // 显示加载状态
+                articlesList.innerHTML = `
+                    <div class="loading-articles">
+                        <div class="loading-spinner"></div>
+                        <p>正在加载文章列表...</p>
+                    </div>
+                `;
+                
+                // 从JSON文件加载文章配置
+                const response = await fetch(ARTICLES_CONFIG_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status}`);
+                }
+                
+                const articlesData = await response.json();
+                allArticles = articlesData.articles || [];
+                
+                if (!Array.isArray(allArticles) || allArticles.length === 0) {
+                    throw new Error('文章数据格式错误或为空');
+                }
+                
+                // 清空现有内容
+                articlesList.innerHTML = '';
+                
+                // 添加文章卡片
+                allArticles.forEach(article => {
+                    const articleElement = createArticleCard(article);
+                    articlesList.appendChild(articleElement);
+                });
+                
+                // 更新统计信息
+                updateStats();
+                
+            } catch (error) {
+                console.error('加载文章失败:', error);
+                showError('无法加载文章列表', error.message);
+            }
+        }
+
+        // 显示错误信息
+        function showError(title, message) {
+            const articlesList = document.getElementById('articlesList');
             
-            // 添加文章卡片
-            articles.forEach(article => {
-                const articleElement = createArticleCard(article);
-                articlesList.appendChild(articleElement);
-            });
+            articlesList.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                    <button onclick="loadArticles()" class="article-btn" style="margin-top: 1rem;">
+                        <i class="fas fa-redo"></i> 重试加载
+                    </button>
+                </div>
+            `;
             
-            // 更新统计信息
-            updateStats();
+            // 清空统计信息
+            document.getElementById('statsSection').innerHTML = '';
         }
 
         // 创建文章卡片
@@ -870,10 +1016,15 @@
         function updateStats() {
             const statsSection = document.getElementById('statsSection');
             
-            const totalArticles = articles.length;
-            const webArticles = articles.filter(a => a.tags.includes('web')).length;
-            const luaArticles = articles.filter(a => a.tags.includes('lua')).length;
-            const pythonArticles = articles.filter(a => a.tags.includes('python')).length;
+            if (!allArticles || allArticles.length === 0) {
+                statsSection.innerHTML = '';
+                return;
+            }
+            
+            const totalArticles = allArticles.length;
+            const webArticles = allArticles.filter(a => a.tags && a.tags.includes('web')).length;
+            const luaArticles = allArticles.filter(a => a.tags && a.tags.includes('lua')).length;
+            const pythonArticles = allArticles.filter(a => a.tags && a.tags.includes('python')).length;
             
             statsSection.innerHTML = `
                 <div class="stats-card">
@@ -967,17 +1118,17 @@
             const markdownContent = document.getElementById('markdownContent');
             
             // 显示加载状态
-            markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
+            markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
             markdownViewer.style.display = 'flex';
             
             // 设置标题
             markdownTitle.textContent = title;
             
             try {
-                // 加载Markdown文件
-                const response = await fetch(`assets/passage/${filename}`);
+                // 动态加载Markdown文件
+                const response = await fetch(`${ARTICLES_BASE_URL}${filename}`);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP错误! 状态: ${response.status}`);
                 }
                 const markdown = await response.text();
                 
@@ -995,10 +1146,10 @@
                 // 高亮代码块
                 hljs.highlightAll();
             } catch (error) {
-                console.error('Error loading markdown:', error);
+                console.error('加载Markdown失败:', error);
                 markdownContent.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
                         <h3>加载失败</h3>
                         <p>无法加载文章内容: ${error.message}</p>
                         <button onclick="downloadArticle('${filename}')" class="action-btn" style="margin-top: 1rem;">
@@ -1050,7 +1201,7 @@
         function downloadArticle(filename) {
             // 创建下载链接
             const link = document.createElement('a');
-            link.href = `assets/passage/${filename}`;
+            link.href = `${ARTICLES_BASE_URL}${filename}`;
             link.download = filename;
             document.body.appendChild(link);
             link.click();
@@ -1150,6 +1301,10 @@
                 if (markdownViewer.style.display === 'flex') {
                     document.getElementById('backBtn').click();
                 }
+            }
+            // Alt+R 重新加载文章
+            if (e.altKey && e.key === 'r') {
+                loadArticles();
             }
         });
     </script>
