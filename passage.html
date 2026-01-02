@@ -1079,10 +1079,36 @@
                     throw new Error(`HTTP错误! 状态: ${response.status}`);
                 }
                 const markdown = await response.text();
-                const renderedHtml = renderMarkdown(markdown, { highlightCode: true });
-                markdownContent.innerHTML = renderedHtml;
+                
+                // 等待renderMarkdown函数可用
+                if (typeof window.renderMarkdown !== 'function') {
+                    // 如果rendermd.js还没加载，等待一下
+                    await new Promise(resolve => {
+                        const check = setInterval(() => {
+                            if (typeof window.renderMarkdown === 'function') {
+                                clearInterval(check);
+                                resolve();
+                            }
+                        }, 100);
+                        setTimeout(() => {
+                            clearInterval(check);
+                            resolve();
+                        }, 3000);
+                    });
+                }
+                
+                if (typeof window.renderMarkdown === 'function') {
+                    const renderedHtml = window.renderMarkdown(markdown, { highlightCode: true });
+                    markdownContent.innerHTML = renderedHtml;
+                } else {
+                    // 如果renderMarkdown不可用，使用简单的markdown渲染
+                    markdownContent.innerHTML = renderSimpleMarkdown(markdown);
+                }
+                
                 generateTOC();
-                hljs.highlightAll();
+                if (window.hljs) {
+                    hljs.highlightAll();
+                }
             } catch (error) {
                 console.error('加载Markdown失败:', error);
                 markdownContent.innerHTML = `
@@ -1096,6 +1122,59 @@
                     </div>
                 `;
             }
+        }
+
+        // 简单的markdown渲染函数，作为备选方案
+        function renderSimpleMarkdown(markdown) {
+            // 转换标题
+            let html = markdown
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
+                .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
+                .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
+                // 转换加粗
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.*?)__/g, '<strong>$1</strong>')
+                // 转换斜体
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/_(.*?)_/g, '<em>$1</em>')
+                // 转换代码块
+                .replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, lang, code) {
+                    return `<pre><code class="${lang || ''}">${escapeHtml(code)}</code></pre>`;
+                })
+                // 转换行内代码
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                // 转换链接
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+                // 转换图片
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+                // 转换列表
+                .replace(/^\s*\*\s+(.*$)/gm, '<li>$1</li>')
+                .replace(/^\s*-\s+(.*$)/gm, '<li>$1</li>')
+                .replace(/^\s*\+\s+(.*$)/gm, '<li>$1</li>')
+                // 转换引用
+                .replace(/^>\s*(.*$)/gm, '<blockquote>$1</blockquote>')
+                // 转换段落
+                .replace(/\n\n+/g, '</p><p>')
+                .replace(/^([^<\n].*)/gm, '<p>$1</p>');
+            
+            // 处理列表
+            html = html.replace(/<li>.*?<\/li>/g, function(match) {
+                if (!match.includes('</ul>') && !match.includes('</ol>')) {
+                    return '<ul>' + match + '</ul>';
+                }
+                return match;
+            });
+            
+            return html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function generateTOC() {
