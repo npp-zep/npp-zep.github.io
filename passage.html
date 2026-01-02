@@ -2,7 +2,7 @@
 <html lang="zh-CN" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>文章导航 —— npp-zep</title>
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -363,36 +363,6 @@
             cursor: pointer;
         }
         
-        @media (max-width: 768px) {
-            .markdown-sidebar {
-                position: fixed;
-                top: 60px;
-                left: 0;
-                height: calc(100% - 60px);
-                z-index: 1001;
-                box-shadow: var(--shadow-lg);
-            }
-            
-            .markdown-header {
-                padding: 1rem;
-            }
-            
-            .markdown-content {
-                padding: 1rem;
-            }
-            
-            .markdown-title {
-                font-size: 1.1rem;
-                margin: 0 0.5rem;
-            }
-            
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
-            }
-        }
-        
         .articles-section {
             margin-top: 2.5rem;
         }
@@ -631,50 +601,485 @@
             color: #ff6b6b;
         }
         
+        /* 移动端适配优化 */
         @media (max-width: 768px) {
+            /* 容器和内边距调整 */
+            .container {
+                padding: 1rem;
+                margin: 0 auto;
+                max-width: 100%;
+            }
+            
+            header {
+                padding: 1rem 0;
+                text-align: center;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            header h1 small {
+                display: block;
+                font-size: 0.9rem;
+                margin-top: 0.3rem;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+            }
+            
+            /* 头像和标题区域 */
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .avatar {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .profile-header h2 {
+                font-size: 1.4rem;
+            }
+            
+            /* 文章列表 */
             .articles-list {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .article-card {
+                padding: 1.2rem;
+                border-radius: 10px;
+            }
+            
+            .article-title {
+                font-size: 1.1rem;
+            }
+            
+            .article-description {
+                font-size: 0.9rem;
+                line-height: 1.5;
             }
             
             .article-footer {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
                 gap: 1rem;
+                margin-top: 1rem;
             }
             
             .article-actions {
                 width: 100%;
-                justify-content: flex-end;
+                justify-content: center;
             }
             
+            .article-btn {
+                flex: 1;
+                justify-content: center;
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            /* 筛选按钮 */
             .filter-buttons {
                 justify-content: center;
+                gap: 0.4rem;
+            }
+            
+            .filter-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+                white-space: nowrap;
+            }
+            
+            /* 统计卡片 */
+            .stats-card {
+                padding: 1rem;
             }
             
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
             }
             
+            .stat-number {
+                font-size: 1.3rem;
+            }
+            
+            /* Markdown阅读器 */
+            .markdown-header {
+                padding: 0.8rem 1rem;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+            
+            .back-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .markdown-title {
+                font-size: 1rem;
+                margin: 0 0.5rem;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: 150px;
+            }
+            
+            .markdown-actions {
+                gap: 0.3rem;
+            }
+            
+            .action-btn {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.85rem;
+            }
+            
+            .action-btn span {
+                display: none;
+            }
+            
+            .markdown-content {
+                padding: 1rem;
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+            
+            .markdown-content h1 { font-size: 1.7rem; }
+            .markdown-content h2 { font-size: 1.5rem; }
+            .markdown-content h3 { font-size: 1.3rem; }
+            .markdown-content h4 { font-size: 1.1rem; }
+            .markdown-content h5 { font-size: 1rem; }
+            .markdown-content h6 { font-size: 0.9rem; }
+            
+            .markdown-content pre {
+                padding: 0.8rem;
+                font-size: 0.85rem;
+                margin: 1rem 0;
+            }
+            
+            .markdown-content table {
+                font-size: 0.85rem;
+            }
+            
+            .markdown-content th,
+            .markdown-content td {
+                padding: 0.5rem;
+            }
+            
+            .markdown-sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 85%;
+                max-width: 280px;
+                height: calc(100% - 60px);
+                z-index: 1001;
+                box-shadow: var(--shadow-lg);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .markdown-sidebar:not(.hidden) {
+                transform: translateX(0);
+            }
+            
+            /* 侧边栏遮罩 */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                backdrop-filter: blur(2px);
+            }
+            
+            .markdown-sidebar:not(.hidden) + .sidebar-overlay {
+                display: block;
+            }
+            
+            /* 侧边栏内容调整 */
+            .toc-title {
+                font-size: 1rem;
+            }
+            
+            .toc-link {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.9rem;
+            }
+            
+            .theme-options h4 {
+                font-size: 0.95rem;
+            }
+            
+            /* 按钮和链接 */
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+                margin: 0.3rem 0;
+            }
+            
+            .cta-section {
+                padding: 1rem;
+                margin-top: 1.5rem;
+            }
+            
+            .quick-links {
+                padding: 0.8rem;
+            }
+            
+            .quick-link {
+                padding: 0.4rem 0;
+                font-size: 0.9rem;
+            }
+            
+            /* 底部 */
+            footer {
+                padding: 1rem 0;
+                margin-top: 1.5rem;
+                font-size: 0.8rem;
+                text-align: center;
+            }
+            
+            /* 背景切换按钮 */
             .bg-toggle {
-                top: 15px;
-                right: 15px;
+                top: 10px;
+                right: 10px;
                 width: 36px;
                 height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            /* 主题切换按钮 */
+            .theme-switcher {
+                bottom: 15px;
+                right: 15px;
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+            
+            /* 加载动画 */
+            .loading-spinner {
+                width: 35px;
+                height: 35px;
+            }
+            
+            /* 信息区域 */
+            .info-section h3 {
+                font-size: 1.2rem;
+                margin: 1.2rem 0 0.6rem;
+            }
+            
+            .info-section p {
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+            
+            /* 标签样式 */
+            .article-tag {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.5rem;
+            }
+            
+            .article-meta {
+                font-size: 0.8rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            /* 错误消息 */
+            .error-message {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
+            
+            .error-message i {
+                font-size: 1.5rem;
             }
         }
         
         @media (max-width: 480px) {
+            /* 更小的屏幕适配 */
+            .container {
+                padding: 0.8rem;
+            }
+            
+            header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .profile-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .articles-list {
+                gap: 0.8rem;
+            }
+            
+            .article-card {
+                padding: 1rem;
+            }
+            
+            .article-title {
+                font-size: 1rem;
+            }
+            
+            .article-description {
+                font-size: 0.85rem;
+            }
+            
             .article-meta {
                 flex-direction: column;
                 gap: 0.3rem;
+                align-items: flex-start;
+            }
+            
+            .filter-buttons {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .filter-btn {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.7rem;
             }
             
             .stats-grid {
                 grid-template-columns: 1fr;
             }
             
-            .filter-buttons {
-                justify-content: flex-start;
+            .markdown-content {
+                padding: 0.8rem;
+                font-size: 0.95rem;
+            }
+            
+            .markdown-content h1 { font-size: 1.5rem; }
+            .markdown-content h2 { font-size: 1.3rem; }
+            .markdown-content h3 { font-size: 1.1rem; }
+            
+            .markdown-content pre {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+                margin: 0.2rem 0;
+            }
+            
+            .bg-toggle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+            
+            .theme-switcher {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            /* 极小的屏幕适配 */
+            .container {
+                padding: 0.6rem;
+            }
+            
+            header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .tagline {
+                font-size: 0.8rem;
+            }
+            
+            .profile-header h2 {
+                font-size: 1rem;
+            }
+            
+            .avatar {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .article-card {
+                padding: 0.8rem;
+            }
+            
+            .article-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .markdown-header {
+                padding: 0.6rem 0.8rem;
+            }
+            
+            .back-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .markdown-title {
+                font-size: 0.9rem;
+                max-width: 120px;
+            }
+            
+            .action-btn {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* 横屏优化 */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .articles-list {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+            
+            .article-card {
+                padding: 0.8rem;
+            }
+            
+            .article-title {
+                font-size: 0.95rem;
+            }
+            
+            .article-description {
+                font-size: 0.8rem;
+                line-height: 1.4;
+            }
+            
+            .markdown-content {
+                padding: 0.8rem;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -765,18 +1170,18 @@
     <div class="markdown-viewer" id="markdownViewer">
         <div class="markdown-header">
             <button class="back-btn" id="backBtn">
-                <i class="fas fa-arrow-left"></i> 返回文章列表
+                <i class="fas fa-arrow-left"></i> <span class="back-text">返回</span>
             </button>
             <h2 class="markdown-title" id="markdownTitle"></h2>
             <div class="markdown-actions">
                 <button class="action-btn" id="toggleSidebarBtn">
-                    <i class="fas fa-bars"></i> 目录
+                    <i class="fas fa-bars"></i> <span>目录</span>
                 </button>
                 <button class="action-btn" id="themeToggleBtn">
-                    <i class="fas fa-palette"></i> 主题
+                    <i class="fas fa-palette"></i> <span>主题</span>
                 </button>
                 <button class="action-btn" id="copyBtn">
-                    <i class="far fa-copy"></i> 复制
+                    <i class="far fa-copy"></i> <span>复制</span>
                 </button>
             </div>
         </div>
@@ -799,6 +1204,9 @@
                     </select>
                 </div>
             </div>
+            
+            <!-- 侧边栏遮罩层 -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
             
             <div class="markdown-content" id="markdownContent">
             </div>
@@ -1021,6 +1429,7 @@
             const codeThemeSelect = document.getElementById('codeThemeSelect');
             const markdownViewer = document.getElementById('markdownViewer');
             const markdownSidebar = document.getElementById('markdownSidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
             
             backBtn.addEventListener('click', () => {
                 markdownViewer.style.display = 'none';
@@ -1030,11 +1439,30 @@
                 markdownSidebar.classList.toggle('hidden');
             });
             
+            // 点击遮罩层关闭侧边栏
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    markdownSidebar.classList.add('hidden');
+                });
+            }
+            
+            // 移动端：点击文章内容区域也关闭侧边栏
+            if (window.innerWidth <= 768) {
+                const markdownContent = document.getElementById('markdownContent');
+                if (markdownContent) {
+                    markdownContent.addEventListener('click', (e) => {
+                        if (!markdownSidebar.classList.contains('hidden')) {
+                            markdownSidebar.classList.add('hidden');
+                        }
+                    });
+                }
+            }
+            
             copyBtn.addEventListener('click', () => {
                 const content = document.getElementById('markdownContent').innerText;
                 navigator.clipboard.writeText(content).then(() => {
                     const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>已复制</span>';
                     setTimeout(() => {
                         copyBtn.innerHTML = originalText;
                     }, 2000);
@@ -1054,6 +1482,13 @@
             themeToggleBtn.addEventListener('click', () => {
                 markdownSidebar.classList.remove('hidden');
             });
+            
+            // 移动端：监听窗口大小变化
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    markdownSidebar.classList.remove('hidden');
+                }
+            });
         }
 
         function changeCodeTheme(theme) {
@@ -1072,6 +1507,11 @@
             markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
             markdownViewer.style.display = 'flex';
             markdownTitle.textContent = title;
+            
+            // 移动端默认隐藏侧边栏
+            if (window.innerWidth <= 768) {
+                document.getElementById('markdownSidebar').classList.add('hidden');
+            }
             
             try {
                 const response = await fetch(`${ARTICLES_BASE_URL}${filename}`);
@@ -1109,6 +1549,12 @@
                 if (window.hljs) {
                     hljs.highlightAll();
                 }
+                
+                // 移动端：优化阅读体验
+                if (window.innerWidth <= 768) {
+                    optimizeMobileReading();
+                }
+                
             } catch (error) {
                 console.error('加载Markdown失败:', error);
                 markdownContent.innerHTML = `
@@ -1122,6 +1568,37 @@
                     </div>
                 `;
             }
+        }
+
+        // 移动端阅读优化
+        function optimizeMobileReading() {
+            const content = document.getElementById('markdownContent');
+            
+            // 为代码块添加移动端优化
+            const codeBlocks = content.querySelectorAll('pre');
+            codeBlocks.forEach(block => {
+                block.style.overflowX = 'auto';
+                block.style.WebkitOverflowScrolling = 'touch';
+                block.style.maxWidth = '100%';
+            });
+            
+            // 为表格添加滚动
+            const tables = content.querySelectorAll('table');
+            tables.forEach(table => {
+                const wrapper = document.createElement('div');
+                wrapper.style.overflowX = 'auto';
+                wrapper.style.WebkitOverflowScrolling = 'touch';
+                wrapper.style.margin = '1rem 0';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            });
+            
+            // 调整图片大小
+            const images = content.querySelectorAll('img');
+            images.forEach(img => {
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+            });
         }
 
         // 简单的markdown渲染函数，作为备选方案
@@ -1205,6 +1682,11 @@
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     heading.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // 移动端：点击目录项后关闭侧边栏
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('markdownSidebar').classList.add('hidden');
+                    }
                 });
                 
                 listItem.appendChild(link);
