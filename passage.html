@@ -260,12 +260,15 @@
             overflow-x: auto;
             margin: 1.5rem 0;
             border: 1px solid var(--border-color);
+            position: relative;
         }
         
         .markdown-content pre code {
             background: none;
             padding: 0;
             color: inherit;
+            display: block;
+            padding-right: 3rem;
         }
         
         .markdown-content table {
@@ -309,6 +312,92 @@
             border: none;
             border-top: 1px solid var(--border-color);
             margin: 2rem 0;
+        }
+        
+        /* 代码块复制按钮样式 */
+        .code-block-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+        
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+        }
+        
+        .code-language {
+            color: var(--highlight-color);
+            font-size: 0.85rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: 500;
+        }
+        
+        .copy-code-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: var(--transition);
+        }
+        
+        .copy-code-btn:hover {
+            background: var(--highlight-color);
+            color: var(--primary-color);
+            border-color: var(--highlight-color);
+        }
+        
+        .copy-code-btn.success {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+        }
+        
+        .copy-code-btn.error {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: rgba(255, 0, 0, 0.3);
+            color: #ff0000;
+        }
+        
+        /* 内联代码块复制按钮 */
+        .code-inline-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .inline-copy-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            font-size: 0.7rem;
+            color: var(--text-color);
+        }
+        
+        .code-inline-wrapper:hover .inline-copy-btn {
+            opacity: 1;
         }
         
         .toc-title {
@@ -776,6 +865,24 @@
                 padding: 0.5rem;
             }
             
+            /* 代码块复制按钮移动端适配 */
+            .code-block-header {
+                padding: 0.4rem 0.8rem;
+            }
+            
+            .copy-code-btn {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .copy-code-btn span {
+                display: none;
+            }
+            
+            .inline-copy-btn {
+                display: none; /* 移动端隐藏内联代码复制按钮 */
+            }
+            
             .markdown-sidebar {
                 position: fixed;
                 top: 60px;
@@ -1082,6 +1189,11 @@
                 font-size: 0.9rem;
             }
         }
+        
+        /* 动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -1246,6 +1358,7 @@
             initThemeSwitcher();
             initBackgroundToggle();
             initMarkdownViewer();
+            initCopyButtons();
         });
 
         async function loadArticles() {
@@ -1491,6 +1604,151 @@
             });
         }
 
+        // 初始化代码复制按钮
+        function initCopyButtons() {
+            // 监听文档变化，为动态添加的代码块添加复制按钮
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        addCopyButtonsToCodeBlocks();
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
+
+        // 为所有代码块添加复制按钮
+        function addCopyButtonsToCodeBlocks() {
+            // 处理代码块
+            const codeBlocks = document.querySelectorAll('pre');
+            codeBlocks.forEach((pre, index) => {
+                if (!pre.closest('.code-block-wrapper') && !pre.hasAttribute('data-copy-initialized')) {
+                    const code = pre.querySelector('code');
+                    if (code) {
+                        const language = getCodeLanguage(code.className);
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'code-block-wrapper';
+                        
+                        const header = document.createElement('div');
+                        header.className = 'code-block-header';
+                        
+                        const languageSpan = document.createElement('span');
+                        languageSpan.className = 'code-language';
+                        languageSpan.textContent = language || '代码';
+                        
+                        const copyButton = document.createElement('button');
+                        copyButton.className = 'copy-code-btn';
+                        copyButton.innerHTML = '<i class="far fa-copy"></i><span>复制</span>';
+                        copyButton.setAttribute('data-code-index', index);
+                        
+                        copyButton.addEventListener('click', () => {
+                            copyCodeToClipboard(code.textContent, copyButton);
+                        });
+                        
+                        header.appendChild(languageSpan);
+                        header.appendChild(copyButton);
+                        
+                        wrapper.appendChild(header);
+                        
+                        pre.parentNode.insertBefore(wrapper, pre);
+                        wrapper.appendChild(pre);
+                        
+                        pre.setAttribute('data-copy-initialized', 'true');
+                    }
+                }
+            });
+            
+            // 处理内联代码
+            const inlineCodes = document.querySelectorAll('code:not(pre code)');
+            inlineCodes.forEach((code, index) => {
+                if (!code.closest('.code-inline-wrapper') && code.textContent.length > 5) {
+                    const wrapper = document.createElement('span');
+                    wrapper.className = 'code-inline-wrapper';
+                    
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'inline-copy-btn';
+                    copyButton.innerHTML = '<i class="far fa-copy"></i>';
+                    copyButton.setAttribute('data-inline-index', index);
+                    
+                    copyButton.addEventListener('click', () => {
+                        copyCodeToClipboard(code.textContent, copyButton);
+                    });
+                    
+                    code.parentNode.insertBefore(wrapper, code);
+                    wrapper.appendChild(code);
+                    wrapper.appendChild(copyButton);
+                }
+            });
+        }
+
+        // 获取代码语言
+        function getCodeLanguage(className) {
+            const match = className.match(/language-(\w+)/);
+            if (match) {
+                const lang = match[1];
+                const languageMap = {
+                    'js': 'JavaScript',
+                    'javascript': 'JavaScript',
+                    'py': 'Python',
+                    'python': 'Python',
+                    'lua': 'Lua',
+                    'html': 'HTML',
+                    'css': 'CSS',
+                    'json': 'JSON',
+                    'xml': 'XML',
+                    'bash': 'Bash',
+                    'sh': 'Shell',
+                    'md': 'Markdown',
+                    'cpp': 'C++',
+                    'c': 'C',
+                    'java': 'Java',
+                    'php': 'PHP',
+                    'ruby': 'Ruby',
+                    'go': 'Go',
+                    'rust': 'Rust',
+                    'ts': 'TypeScript',
+                    'typescript': 'TypeScript',
+                    'sql': 'SQL',
+                    'yaml': 'YAML',
+                    'yml': 'YAML'
+                };
+                return languageMap[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
+            }
+            return '代码';
+        }
+
+        // 复制代码到剪贴板
+        function copyCodeToClipboard(code, button) {
+            navigator.clipboard.writeText(code).then(() => {
+                const originalHTML = button.innerHTML;
+                const originalClass = button.className;
+                
+                button.innerHTML = '<i class="fas fa-check"></i><span>已复制</span>';
+                button.className = originalClass + ' success';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.className = originalClass;
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                const originalHTML = button.innerHTML;
+                const originalClass = button.className;
+                
+                button.innerHTML = '<i class="fas fa-times"></i><span>失败</span>';
+                button.className = originalClass + ' error';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.className = originalClass;
+                }, 2000);
+            });
+        }
+
         function changeCodeTheme(theme) {
             const link = document.querySelector('link[href*="highlight.js"]');
             if (link) {
@@ -1549,6 +1807,9 @@
                 if (window.hljs) {
                     hljs.highlightAll();
                 }
+                
+                // 添加复制按钮
+                addCopyButtonsToCodeBlocks();
                 
                 // 移动端：优化阅读体验
                 if (window.innerWidth <= 768) {
