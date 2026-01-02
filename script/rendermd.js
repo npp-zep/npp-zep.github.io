@@ -5,10 +5,10 @@
 
 // 配置marked.js
 marked.setOptions({
-    gfm: true, // 启用GitHub风格的Markdown
-    breaks: true, // 将换行符转换为<br>
+    gfm: true,
+    breaks: true,
     pedantic: false,
-    sanitize: false, // 不清理HTML
+    sanitize: false,
     smartLists: true,
     smartypants: true,
     highlight: function(code, lang) {
@@ -20,7 +20,6 @@ marked.setOptions({
             }
         }
         
-        // 如果语言未指定或不被支持，尝试自动检测
         try {
             return hljs.highlightAuto(code).value;
         } catch (err) {
@@ -57,10 +56,7 @@ renderer.code = function(code, language, escaped) {
     const validLanguage = language && hljs.getLanguage(language) ? language : '';
     const highlighted = validLanguage ? hljs.highlight(code, { language: validLanguage }).value : code;
     
-    // 添加语言标签
     const langLabel = validLanguage ? `<div class="code-language">${validLanguage}</div>` : '';
-    
-    // 添加复制按钮
     const copyButton = `
         <button class="copy-code-btn" onclick="copyCodeToClipboard(this)">
             <i class="far fa-copy"></i>
@@ -114,7 +110,6 @@ function renderMarkdown(markdown, options = {}) {
         sanitize = false
     } = options;
     
-    // 临时设置渲染器选项
     const originalOptions = { ...marked.defaults };
     
     if (!highlightCode) {
@@ -122,17 +117,11 @@ function renderMarkdown(markdown, options = {}) {
     }
     
     try {
-        // 渲染Markdown
         const html = marked.parse(markdown, { renderer });
-        
-        // 恢复原始选项
         marked.setOptions(originalOptions);
-        
         return html;
     } catch (error) {
         console.error('Error rendering markdown:', error);
-        
-        // 恢复原始选项
         marked.setOptions(originalOptions);
         
         return `
@@ -151,7 +140,6 @@ window.copyCodeToClipboard = function(button) {
     const codeText = codeElement.textContent;
     
     navigator.clipboard.writeText(codeText).then(() => {
-        // 显示成功反馈
         const originalIcon = button.innerHTML;
         button.innerHTML = '<i class="fas fa-check"></i>';
         button.style.color = '#00ff00';
@@ -297,7 +285,6 @@ style.textContent = `
     }
 `;
 
-// 将样式添加到页面
 document.head.appendChild(style);
 
 console.log('Markdown渲染器已加载');

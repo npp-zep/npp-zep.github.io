@@ -6,7 +6,6 @@
     <title>文章导航 —— npp-zep</title>
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 代码高亮样式 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
     <link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/206399566?v=4">
     <style>
@@ -67,7 +66,6 @@
             transform: scale(1.1);
         }
         
-        /* 主题相关背景调整 */
         [data-theme="light"] .bg-overlay {
             background: rgba(255, 255, 255, 0.15);
         }
@@ -77,7 +75,6 @@
             filter: blur(0.5px);
         }
         
-        /* 个人资料样式 */
         .profile-header {
             display: flex;
             align-items: center;
@@ -100,7 +97,6 @@
             box-shadow: var(--shadow-lg);
         }
         
-        /* Markdown查看器样式 */
         .markdown-viewer {
             position: fixed;
             top: 0;
@@ -397,7 +393,6 @@
             }
         }
         
-        /* 文章卡片样式 */
         .articles-section {
             margin-top: 2.5rem;
         }
@@ -519,7 +514,6 @@
             border-color: var(--highlight-color);
         }
         
-        /* 筛选按钮样式 */
         .filter-section {
             margin: 1.5rem 0;
         }
@@ -552,7 +546,6 @@
             border-color: var(--highlight-color);
         }
         
-        /* 统计卡片样式 */
         .stats-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -596,7 +589,6 @@
             margin-top: 0.2rem;
         }
         
-        /* 信息区域样式 */
         .info-section h3 {
             color: var(--highlight-color);
             margin: 1.5rem 0 0.8rem;
@@ -606,7 +598,6 @@
             gap: 0.5rem;
         }
         
-        /* 加载状态样式 */
         .loading-articles {
             text-align: center;
             padding: 3rem;
@@ -624,7 +615,6 @@
             margin-bottom: 1rem;
         }
         
-        /* 错误提示样式 */
         .error-message {
             background: rgba(255, 0, 0, 0.1);
             border: 1px solid rgba(255, 0, 0, 0.3);
@@ -641,7 +631,6 @@
             color: #ff6b6b;
         }
         
-        /* 响应式调整 */
         @media (max-width: 768px) {
             .articles-list {
                 grid-template-columns: 1fr;
@@ -691,12 +680,10 @@
     </style>
 </head>
 <body>
-    <!-- 加载动画 -->
     <div class="loading" id="loading">
         <div class="spinner"></div>
     </div>
 
-    <!-- 背景图片容器 -->
     <div class="bg-container" id="bgContainer">
         <div class="bg-overlay"></div>
         <img src="assets/pic/bg.png" alt="背景" class="bg-image" id="bgImage">
@@ -705,7 +692,6 @@
         </button>
     </div>
 
-    <!-- 主容器 -->
     <div class="container">
         <header>
             <h1>文章导航
@@ -738,11 +724,9 @@
                     </div>
                 </div>
 
-                <!-- 文章列表 -->
                 <div class="articles-section">
                     <h3><i class="fas fa-book-open"></i> 文章列表</h3>
                     <div class="articles-list" id="articlesList">
-                        <!-- 文章将通过JavaScript动态加载 -->
                         <div class="loading-articles">
                             <div class="loading-spinner"></div>
                             <p>正在加载文章列表...</p>
@@ -768,7 +752,6 @@
                 </div>
                 
                 <div class="stats-section" id="statsSection">
-                    <!-- 统计信息将通过JavaScript动态加载 -->
                 </div>
             </aside>
         </main>
@@ -779,7 +762,6 @@
         </footer>
     </div>
 
-    <!-- Markdown查看器 -->
     <div class="markdown-viewer" id="markdownViewer">
         <div class="markdown-header">
             <button class="back-btn" id="backBtn">
@@ -803,7 +785,6 @@
             <div class="markdown-sidebar" id="markdownSidebar">
                 <h3 class="toc-title"><i class="fas fa-list"></i> 目录</h3>
                 <ul class="toc-list" id="tocList">
-                    <!-- 目录将通过JavaScript动态生成 -->
                 </ul>
                 
                 <div class="theme-options">
@@ -820,17 +801,14 @@
             </div>
             
             <div class="markdown-content" id="markdownContent">
-                <!-- Markdown内容将在这里渲染 -->
             </div>
         </div>
     </div>
 
-    <!-- 主题切换按钮 -->
     <button class="theme-switcher" id="themeSwitcher">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
 
-    <!-- 引入highlight.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
@@ -840,22 +818,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
-    
-    <!-- 引入marked.js库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
-    <!-- 引入renderMd.js -->
-    <script src="script/renderMd.js"></script>
+    <script src="script/rendermd.js"></script>
     
     <script>
-        // 文章配置文件路径
         const ARTICLES_CONFIG_URL = 'assets/passage/articles.json';
         const ARTICLES_BASE_URL = 'assets/passage/';
-        let allArticles = []; // 存储所有文章数据
+        let allArticles = [];
 
-        // 等待页面加载
         window.addEventListener('load', function() {
-            // 隐藏加载动画
             setTimeout(() => {
                 document.getElementById('loading').style.opacity = '0';
                 setTimeout(() => {
@@ -863,28 +834,16 @@
                 }, 500);
             }, 800);
             
-            // 动态加载文章
             loadArticles();
-            
-            // 初始化筛选功能
-            initFilter();
-            
-            // 初始化Markdown查看器
-            initMarkdownViewer();
-            
-            // 初始化主题切换
             initThemeSwitcher();
-            
-            // 初始化背景切换
             initBackgroundToggle();
+            initMarkdownViewer();
         });
 
-        // 动态加载文章
         async function loadArticles() {
             const articlesList = document.getElementById('articlesList');
             
             try {
-                // 显示加载状态
                 articlesList.innerHTML = `
                     <div class="loading-articles">
                         <div class="loading-spinner"></div>
@@ -892,31 +851,41 @@
                     </div>
                 `;
                 
-                // 从JSON文件加载文章配置
-                const response = await fetch(ARTICLES_CONFIG_URL);
+                console.log('正在加载文章配置文件:', ARTICLES_CONFIG_URL);
+                
+                const response = await fetch(ARTICLES_CONFIG_URL, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    },
+                    cache: 'no-cache'
+                });
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP错误! 状态: ${response.status}`);
+                    throw new Error(`HTTP错误! 状态: ${response.status} - ${response.statusText}`);
                 }
                 
-                const articlesData = await response.json();
+                const jsonText = await response.text();
+                const cleanJsonText = jsonText.trim().replace(/^\uFEFF/, '');
+                const articlesData = JSON.parse(cleanJsonText);
+                
                 allArticles = articlesData.articles || [];
                 
                 if (!Array.isArray(allArticles) || allArticles.length === 0) {
                     throw new Error('文章数据格式错误或为空');
                 }
                 
-                // 清空现有内容
                 articlesList.innerHTML = '';
                 
-                // 添加文章卡片
                 allArticles.forEach(article => {
                     const articleElement = createArticleCard(article);
                     articlesList.appendChild(articleElement);
                 });
                 
-                // 更新统计信息
                 updateStats();
+                initFilter();
+                
+                console.log('成功加载', allArticles.length, '篇文章');
                 
             } catch (error) {
                 console.error('加载文章失败:', error);
@@ -924,7 +893,6 @@
             }
         }
 
-        // 显示错误信息
         function showError(title, message) {
             const articlesList = document.getElementById('articlesList');
             
@@ -933,17 +901,16 @@
                     <i class="fas fa-exclamation-triangle"></i>
                     <h3>${title}</h3>
                     <p>${message}</p>
+                    <p style="font-size: 0.85rem; margin-top: 1rem;">请检查文件路径是否正确，并确保 <code>articles.json</code> 文件存在。</p>
                     <button onclick="loadArticles()" class="article-btn" style="margin-top: 1rem;">
                         <i class="fas fa-redo"></i> 重试加载
                     </button>
                 </div>
             `;
             
-            // 清空统计信息
             document.getElementById('statsSection').innerHTML = '';
         }
 
-        // 创建文章卡片
         function createArticleCard(article) {
             const articleCard = document.createElement('div');
             articleCard.className = 'article-card';
@@ -980,21 +947,18 @@
             return articleCard;
         }
 
-        // 初始化筛选功能
         function initFilter() {
             const filterButtons = document.querySelectorAll('.filter-btn');
             const articlesList = document.getElementById('articlesList');
             
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // 更新活动按钮
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     
                     const filter = this.dataset.filter;
-                    
-                    // 筛选文章
                     const articleCards = document.querySelectorAll('.article-card');
+                    
                     articleCards.forEach(card => {
                         if (filter === 'all' || card.dataset.tags.includes(filter)) {
                             card.style.display = 'block';
@@ -1003,7 +967,6 @@
                         }
                     });
                     
-                    // 添加动画效果
                     articlesList.style.opacity = '0.5';
                     setTimeout(() => {
                         articlesList.style.opacity = '1';
@@ -1012,7 +975,6 @@
             });
         }
 
-        // 更新统计信息
         function updateStats() {
             const statsSection = document.getElementById('statsSection');
             
@@ -1051,7 +1013,6 @@
             `;
         }
 
-        // 初始化Markdown查看器
         function initMarkdownViewer() {
             const backBtn = document.getElementById('backBtn');
             const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
@@ -1061,21 +1022,17 @@
             const markdownViewer = document.getElementById('markdownViewer');
             const markdownSidebar = document.getElementById('markdownSidebar');
             
-            // 返回按钮
             backBtn.addEventListener('click', () => {
                 markdownViewer.style.display = 'none';
             });
             
-            // 切换侧边栏
             toggleSidebarBtn.addEventListener('click', () => {
                 markdownSidebar.classList.toggle('hidden');
             });
             
-            // 复制按钮
             copyBtn.addEventListener('click', () => {
                 const content = document.getElementById('markdownContent').innerText;
                 navigator.clipboard.writeText(content).then(() => {
-                    // 显示复制成功提示
                     const originalText = copyBtn.innerHTML;
                     copyBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
                     setTimeout(() => {
@@ -1084,25 +1041,21 @@
                 });
             });
             
-            // 代码主题切换
             codeThemeSelect.addEventListener('change', (e) => {
                 const theme = e.target.value;
                 changeCodeTheme(theme);
                 localStorage.setItem('codeTheme', theme);
             });
             
-            // 加载保存的代码主题
             const savedTheme = localStorage.getItem('codeTheme') || 'github-dark';
             codeThemeSelect.value = savedTheme;
             changeCodeTheme(savedTheme);
             
-            // 主题切换按钮
             themeToggleBtn.addEventListener('click', () => {
                 markdownSidebar.classList.remove('hidden');
             });
         }
 
-        // 更改代码高亮主题
         function changeCodeTheme(theme) {
             const link = document.querySelector('link[href*="highlight.js"]');
             if (link) {
@@ -1111,39 +1064,24 @@
             }
         }
 
-        // 打开文章
         async function openArticle(filename, title) {
             const markdownViewer = document.getElementById('markdownViewer');
             const markdownTitle = document.getElementById('markdownTitle');
             const markdownContent = document.getElementById('markdownContent');
             
-            // 显示加载状态
             markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
             markdownViewer.style.display = 'flex';
-            
-            // 设置标题
             markdownTitle.textContent = title;
             
             try {
-                // 动态加载Markdown文件
                 const response = await fetch(`${ARTICLES_BASE_URL}${filename}`);
                 if (!response.ok) {
                     throw new Error(`HTTP错误! 状态: ${response.status}`);
                 }
                 const markdown = await response.text();
-                
-                // 使用renderMd.js渲染Markdown
-                const renderedHtml = renderMarkdown(markdown, {
-                    highlightCode: true
-                });
-                
-                // 更新内容
+                const renderedHtml = renderMarkdown(markdown, { highlightCode: true });
                 markdownContent.innerHTML = renderedHtml;
-                
-                // 生成目录
                 generateTOC();
-                
-                // 高亮代码块
                 hljs.highlightAll();
             } catch (error) {
                 console.error('加载Markdown失败:', error);
@@ -1160,7 +1098,6 @@
             }
         }
 
-        // 生成目录
         function generateTOC() {
             const content = document.getElementById('markdownContent');
             const tocList = document.getElementById('tocList');
@@ -1174,7 +1111,6 @@
             }
             
             headings.forEach((heading, index) => {
-                // 确保标题有ID
                 if (!heading.id) {
                     heading.id = `heading-${index}`;
                 }
@@ -1197,9 +1133,7 @@
             });
         }
 
-        // 下载文章
         function downloadArticle(filename) {
-            // 创建下载链接
             const link = document.createElement('a');
             link.href = `${ARTICLES_BASE_URL}${filename}`;
             link.download = filename;
@@ -1208,13 +1142,11 @@
             document.body.removeChild(link);
         }
 
-        // 初始化主题切换（复用index.html中的函数）
         function initThemeSwitcher() {
             const themeSwitcher = document.getElementById('themeSwitcher');
             const themeIcon = document.getElementById('themeIcon');
             const html = document.documentElement;
             
-            // 检查本地存储的主题偏好
             const savedTheme = localStorage.getItem('theme') || 'dark';
             html.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
@@ -1227,7 +1159,6 @@
                 localStorage.setItem('theme', newTheme);
                 updateThemeIcon(newTheme);
                 
-                // 添加切换动画
                 themeSwitcher.style.transform = 'scale(0.9)';
                 setTimeout(() => {
                     themeSwitcher.style.transform = '';
@@ -1243,12 +1174,10 @@
             }
         }
 
-        // 初始化背景切换（复用index.html中的函数）
         function initBackgroundToggle() {
             const bgToggle = document.getElementById('bgToggle');
             const bgContainer = document.getElementById('bgContainer');
             
-            // 检查背景显示状态
             const bgVisible = localStorage.getItem('bgVisible') !== 'false';
             updateBackgroundVisibility(bgVisible);
             
@@ -1257,7 +1186,6 @@
                 updateBackgroundVisibility(!isVisible);
                 localStorage.setItem('bgVisible', !isVisible);
                 
-                // 更新按钮图标
                 const icon = bgToggle.querySelector('i');
                 if (!isVisible) {
                     icon.className = 'fas fa-eye';
@@ -1281,28 +1209,22 @@
             }
         }
 
-        // 添加键盘快捷键
         document.addEventListener('keydown', (e) => {
-            // Alt+T 切换主题
             if (e.altKey && e.key === 't') {
                 document.getElementById('themeSwitcher').click();
             }
-            // Alt+B 切换背景
             if (e.altKey && e.key === 'b') {
                 document.getElementById('bgToggle').click();
             }
-            // Alt+H 返回首页
             if (e.altKey && e.key === 'h') {
                 window.location.href = 'index.html';
             }
-            // ESC 关闭Markdown查看器
             if (e.key === 'Escape') {
                 const markdownViewer = document.getElementById('markdownViewer');
                 if (markdownViewer.style.display === 'flex') {
                     document.getElementById('backBtn').click();
                 }
             }
-            // Alt+R 重新加载文章
             if (e.altKey && e.key === 'r') {
                 loadArticles();
             }
