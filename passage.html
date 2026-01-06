@@ -547,6 +547,10 @@
         .tag-tutorial { background: rgba(16, 185, 129, 0.2); }
         .tag-note { background: rgba(245, 158, 11, 0.2); }
         .tag-c { background: rgba(139, 92, 246, 0.2); }
+        .tag-project { background: rgba(255, 107, 107, 0.2); }
+        .tag-document { background: rgba(108, 92, 231, 0.2); }
+        .tag-api { background: rgba(34, 197, 94, 0.2); }
+        .tag-guide { background: rgba(245, 158, 11, 0.2); }
         
         .article-actions {
             display: flex;
@@ -690,6 +694,45 @@
             color: #ff6b6b;
         }
         
+        /* 文档类型统计样式 */
+        .stats-doc-types {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .doc-type-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+        
+        .doc-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .doc-type-badge .badge-count {
+            background: var(--highlight-color);
+            color: var(--primary-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
         /* 移动端适配优化 */
         @media (max-width: 768px) {
             /* 容器和内边距调整 */
@@ -799,6 +842,16 @@
             
             .stat-number {
                 font-size: 1.3rem;
+            }
+            
+            /* 文档类型徽章 */
+            .doc-type-badges {
+                gap: 0.4rem;
+            }
+            
+            .doc-type-badge {
+                padding: 0.2rem 0.6rem;
+                font-size: 0.75rem;
             }
             
             /* Markdown阅读器 */
@@ -1075,6 +1128,15 @@
                 grid-template-columns: 1fr;
             }
             
+            .doc-type-badges {
+                justify-content: center;
+            }
+            
+            .doc-type-badge {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            
             .markdown-content {
                 padding: 0.8rem;
                 font-size: 0.95rem;
@@ -1237,6 +1299,10 @@
                             <button class="filter-btn" data-filter="python">Python</button>
                             <button class="filter-btn" data-filter="tutorial">教程</button>
                             <button class="filter-btn" data-filter="note">笔记</button>
+                            <button class="filter-btn" data-filter="project">项目</button>
+                            <button class="filter-btn" data-filter="document">文档</button>
+                            <button class="filter-btn" data-filter="api">API文档</button>
+                            <button class="filter-btn" data-filter="guide">指南</button>
                         </div>
                     </div>
                 </div>
@@ -1339,446 +1405,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>
-        // Markdown渲染器函数 - 直接内联，避免文件加载问题
-        function initMarkdownRenderer() {
-            if (typeof marked === 'undefined') {
-                console.error('marked.js未加载，请检查CDN链接');
-                return;
-            }
-
-            // 配置marked.js
-            marked.setOptions({
-                gfm: true,
-                breaks: true,
-                pedantic: false,
-                sanitize: false,
-                smartLists: true,
-                smartypants: true,
-                highlight: function(code, lang) {
-                    if (typeof hljs === 'undefined') {
-                        return code;
-                    }
-                    
-                    if (lang && hljs.getLanguage(lang)) {
-                        try {
-                            return hljs.highlight(code, { language: lang }).value;
-                        } catch (err) {
-                            console.error('代码高亮错误:', err);
-                        }
-                    }
-                    
-                    try {
-                        return hljs.highlightAuto(code).value;
-                    } catch (err) {
-                        console.error('自动高亮错误:', err);
-                        return code;
-                    }
-                }
-            });
-
-            // 自定义渲染器
-            const renderer = new marked.Renderer();
-
-            // 自定义标题渲染，添加锚点
-            renderer.heading = function(text, level) {
-                const escapedText = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
-                return `
-                    <h${level} id="${escapedText}">
-                        ${text}
-                        <a href="#${escapedText}" class="anchor" aria-hidden="true">#</a>
-                    </h${level}>
-                `;
-            };
-
-            // 自定义链接渲染，添加target="_blank"到外部链接
-            renderer.link = function(href, title, text) {
-                if (href.startsWith('http://') || href.startsWith('https://')) {
-                    return `<a href="${href}" target="_blank" rel="noopener noreferrer"${title ? ` title="${title}"` : ''}>${text}</a>`;
-                }
-                return `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
-            };
-
-            // 自定义代码块渲染 - 添加复制按钮
-            renderer.code = function(code, language, escaped) {
-                const validLanguage = language && hljs && hljs.getLanguage(language) ? language : '';
-                
-                let highlighted = code;
-                if (validLanguage && hljs) {
-                    highlighted = hljs.highlight(code, { language: validLanguage }).value;
-                }
-                
-                // 获取语言名称
-                const languageName = getLanguageName(validLanguage);
-                
-                // 生成唯一的ID
-                const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
-                
-                return `
-                    <div class="code-block-wrapper" id="${codeId}">
-                        <div class="code-block-header">
-                            <span class="code-language">${languageName}</span>
-                            <button class="copy-code-btn" onclick="copyCodeBlock('${escapeHtml(codeId)}', this)">
-                                <i class="far fa-copy"></i><span>复制</span>
-                            </button>
-                        </div>
-                        <pre><code class="hljs ${validLanguage}">${highlighted}</code></pre>
-                    </div>
-                `;
-            };
-
-            // 自定义内联代码渲染 - 添加复制按钮
-            renderer.codespan = function(code) {
-                if (code.length > 10) {
-                    const inlineId = 'inline-' + Math.random().toString(36).substr(2, 9);
-                    const escapedCode = escapeHtml(code);
-                    return `
-                        <span class="code-inline-wrapper" id="${inlineId}" data-code="${escapedCode}">
-                            <code>${code}</code>
-                            <button class="inline-copy-btn" onclick="copyInlineCode('${inlineId}', this)">
-                                <i class="far fa-copy"></i>
-                            </button>
-                        </span>
-                    `;
-                }
-                return `<code>${code}</code>`;
-            };
-
-            // 自定义表格渲染
-            renderer.table = function(header, body) {
-                return `
-                    <div class="table-container">
-                        <table>
-                            <thead>${header}</thead>
-                            <tbody>${body}</tbody>
-                        </table>
-                    </div>
-                `;
-            };
-
-            // 自定义图片渲染
-            renderer.image = function(href, title, text) {
-                return `
-                    <div class="image-container">
-                        <img src="${href}" alt="${text}"${title ? ` title="${title}"` : ''}>
-                        ${text ? `<div class="image-caption">${text}</div>` : ''}
-                    </div>
-                `;
-            };
-
-            // 自定义块引用渲染
-            renderer.blockquote = function(quote) {
-                return `
-                    <blockquote>
-                        <div class="quote-content">${quote}</div>
-                    </blockquote>
-                `;
-            };
-
-            // 获取语言名称
-            function getLanguageName(lang) {
-                if (!lang) return '代码';
-                
-                const languageMap = {
-                    'js': 'JavaScript',
-                    'javascript': 'JavaScript',
-                    'py': 'Python',
-                    'python': 'Python',
-                    'lua': 'Lua',
-                    'html': 'HTML',
-                    'css': 'CSS',
-                    'json': 'JSON',
-                    'xml': 'XML',
-                    'bash': 'Bash',
-                    'sh': 'Shell',
-                    'md': 'Markdown',
-                    'cpp': 'C++',
-                    'c': 'C',
-                    'java': 'Java',
-                    'php': 'PHP',
-                    'ruby': 'Ruby',
-                    'go': 'Go',
-                    'rust': 'Rust',
-                    'ts': 'TypeScript',
-                    'typescript': 'TypeScript',
-                    'sql': 'SQL',
-                    'yaml': 'YAML',
-                    'yml': 'YAML',
-                    'txt': 'Text',
-                    'plaintext': 'Text'
-                };
-                
-                return languageMap[lang.toLowerCase()] || lang.charAt(0).toUpperCase() + lang.slice(1);
-            }
-
-            // HTML转义函数
-            function escapeHtml(text) {
-                const map = {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#039;'
-                };
-                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-            }
-
-            // 主渲染函数
-            window.renderMarkdown = function(markdown, options = {}) {
-                const {
-                    highlightCode = true,
-                    sanitize = false
-                } = options;
-                
-                // 如果marked不可用，使用简单渲染
-                if (typeof marked === 'undefined') {
-                    return renderSimpleMarkdown(markdown);
-                }
-                
-                const originalOptions = { ...marked.defaults };
-                
-                if (!highlightCode) {
-                    marked.setOptions({ highlight: null });
-                }
-                
-                try {
-                    const html = marked.parse(markdown, { renderer });
-                    marked.setOptions(originalOptions);
-                    return html;
-                } catch (error) {
-                    console.error('渲染Markdown错误:', error);
-                    marked.setOptions(originalOptions);
-                    
-                    // 出错时使用简单渲染
-                    return renderSimpleMarkdown(markdown);
-                }
-            };
-
-            // 简单的markdown渲染函数，作为备选方案
-            window.renderSimpleMarkdown = function(markdown) {
-                if (!markdown) return '';
-                
-                // 转换标题
-                let html = markdown
-                    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                    .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
-                    .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
-                    .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
-                    // 转换加粗
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/__(.*?)__/g, '<strong>$1</strong>')
-                    // 转换斜体
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/_(.*?)_/g, '<em>$1</em>')
-                    // 转换代码块
-                    .replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, lang, code) {
-                        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
-                        const languageName = getLanguageName(lang);
-                        const escapedCode = escapeHtml(code);
-                        return `
-                            <div class="code-block-wrapper" id="${codeId}">
-                                <div class="code-block-header">
-                                    <span class="code-language">${languageName}</span>
-                                    <button class="copy-code-btn" onclick="copyCodeBlock('${codeId}', this)">
-                                        <i class="far fa-copy"></i><span>复制</span>
-                                    </button>
-                                </div>
-                                <pre><code class="${lang || ''}">${escapedCode}</code></pre>
-                            </div>
-                        `;
-                    })
-                    // 转换行内代码
-                    .replace(/`([^`]+)`/g, function(match, code) {
-                        if (code.length > 10) {
-                            const inlineId = 'inline-' + Math.random().toString(36).substr(2, 9);
-                            const escapedCode = escapeHtml(code);
-                            return `
-                                <span class="code-inline-wrapper" id="${inlineId}" data-code="${escapedCode}">
-                                    <code>${code}</code>
-                                    <button class="inline-copy-btn" onclick="copyInlineCode('${inlineId}', this)">
-                                        <i class="far fa-copy"></i>
-                                    </button>
-                                </span>
-                            `;
-                        }
-                        return `<code>${code}</code>`;
-                    })
-                    // 转换链接
-                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-                    // 转换图片
-                    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-                    // 转换列表
-                    .replace(/^\s*\*\s+(.*$)/gm, '<li>$1</li>')
-                    .replace(/^\s*-\s+(.*$)/gm, '<li>$1</li>')
-                    .replace(/^\s*\+\s+(.*$)/gm, '<li>$1</li>')
-                    // 转换引用
-                    .replace(/^>\s*(.*$)/gm, '<blockquote>$1</blockquote>')
-                    // 转换段落
-                    .replace(/\n\n+/g, '</p><p>')
-                    .replace(/^([^<\n].*)/gm, '<p>$1</p>');
-                
-                // 处理列表
-                html = html.replace(/<li>.*?<\/li>/g, function(match) {
-                    if (!match.includes('</ul>') && !match.includes('</ol>')) {
-                        return '<ul>' + match + '</ul>';
-                    }
-                    return match;
-                });
-                
-                return html;
-            };
-
-            // 复制代码块到剪贴板
-            window.copyCodeBlock = function(codeBlockId, button) {
-                const codeBlock = document.getElementById(codeBlockId);
-                if (!codeBlock) {
-                    console.error('找不到代码块:', codeBlockId);
-                    
-                    // 尝试从按钮的父元素获取代码
-                    const parentBlock = button.closest('.code-block-wrapper');
-                    if (parentBlock) {
-                        const codeElement = parentBlock.querySelector('code');
-                        if (codeElement) {
-                            copyTextToClipboard(codeElement.textContent, button);
-                        }
-                    }
-                    return;
-                }
-                
-                const codeElement = codeBlock.querySelector('code');
-                if (!codeElement) {
-                    console.error('找不到代码元素');
-                    return;
-                }
-                
-                copyTextToClipboard(codeElement.textContent, button);
-            };
-
-            // 复制内联代码到剪贴板
-            window.copyInlineCode = function(inlineId, button) {
-                const inlineWrapper = document.getElementById(inlineId);
-                let codeText = '';
-                
-                if (inlineWrapper) {
-                    const codeElement = inlineWrapper.querySelector('code');
-                    if (codeElement) {
-                        codeText = codeElement.textContent;
-                    } else if (inlineWrapper.dataset.code) {
-                        codeText = inlineWrapper.dataset.code;
-                    }
-                } else {
-                    // 尝试从按钮的父元素获取代码
-                    const parentWrapper = button.closest('.code-inline-wrapper');
-                    if (parentWrapper) {
-                        const codeElement = parentWrapper.querySelector('code');
-                        if (codeElement) {
-                            codeText = codeElement.textContent;
-                        } else if (parentWrapper.dataset.code) {
-                            codeText = parentWrapper.dataset.code;
-                        }
-                    }
-                }
-                
-                if (codeText) {
-                    copyTextToClipboard(codeText, button, true);
-                } else {
-                    console.error('找不到内联代码');
-                    showCopyError(button, true);
-                }
-            };
-
-            // 通用复制文本到剪贴板函数
-            function copyTextToClipboard(text, button, isInline = false) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showCopySuccess(button, isInline);
-                }).catch(err => {
-                    console.error('复制失败:', err);
-                    
-                    // 如果Clipboard API失败，尝试使用备用方法
-                    if (fallbackCopyToClipboard(text)) {
-                        showCopySuccess(button, isInline);
-                    } else {
-                        showCopyError(button, isInline);
-                    }
-                });
-            }
-
-            // 备用复制方法
-            function fallbackCopyToClipboard(text) {
-                try {
-                    const textArea = document.createElement('textarea');
-                    textArea.value = text;
-                    textArea.style.position = 'fixed';
-                    textArea.style.left = '-999999px';
-                    textArea.style.top = '-999999px';
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-                    
-                    const successful = document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    return successful;
-                } catch (err) {
-                    console.error('备用复制方法失败:', err);
-                    return false;
-                }
-            }
-
-            // 显示复制成功状态
-            function showCopySuccess(button, isInline) {
-                if (isInline) {
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-check"></i>';
-                    button.style.color = '#00ff00';
-                    
-                    setTimeout(() => {
-                        button.innerHTML = originalHTML;
-                        button.style.color = '';
-                    }, 2000);
-                } else {
-                    const originalHTML = button.innerHTML;
-                    const originalClass = button.className;
-                    
-                    button.innerHTML = '<i class="fas fa-check"></i><span>已复制</span>';
-                    button.className = originalClass + ' success';
-                    
-                    setTimeout(() => {
-                        button.innerHTML = originalHTML;
-                        button.className = originalClass;
-                    }, 2000);
-                }
-            }
-
-            // 显示复制错误状态
-            function showCopyError(button, isInline) {
-                if (isInline) {
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-times"></i>';
-                    button.style.color = '#ff0000';
-                    
-                    setTimeout(() => {
-                        button.innerHTML = originalHTML;
-                        button.style.color = '';
-                    }, 2000);
-                } else {
-                    const originalHTML = button.innerHTML;
-                    const originalClass = button.className;
-                    
-                    button.innerHTML = '<i class="fas fa-times"></i><span>失败</span>';
-                    button.className = originalClass + ' error';
-                    
-                    setTimeout(() => {
-                        button.innerHTML = originalHTML;
-                        button.className = originalClass;
-                    }, 2000);
-                }
-            }
-
-            console.log('Markdown渲染器已初始化');
-        }
-    </script>
+    <script src="script/rendermd.js"></script>
     
     <script>
         const ARTICLES_CONFIG_URL = 'assets/passage/articles.json';
@@ -1793,8 +1420,7 @@
                 }, 500);
             }, 800);
             
-            // 初始化Markdown渲染器
-            initMarkdownRenderer();
+            // 注意：移除了 initMarkdownRenderer() 调用，现在使用 rendermd.js 中的渲染器
             
             loadArticles();
             initThemeSwitcher();
@@ -1889,11 +1515,12 @@
                 cleaned.description = String(article.description || '暂无描述');
                 cleaned.file = String(article.file || '');
                 
-                // 处理tags
+                // 处理tags - 确保是数组
                 if (Array.isArray(article.tags)) {
                     cleaned.tags = article.tags.map(tag => String(tag));
                 } else if (typeof article.tags === 'string') {
-                    cleaned.tags = [article.tags];
+                    // 处理逗号分隔的标签字符串
+                    cleaned.tags = article.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
                 } else {
                     cleaned.tags = [];
                 }
@@ -1902,6 +1529,12 @@
                 if (cleaned.description === '[object Object]') {
                     console.warn('检测到 [object Object] 描述，替换为默认描述');
                     cleaned.description = '暂无描述';
+                }
+                
+                // 清理描述中的特殊字符
+                if (cleaned.description && cleaned.description.includes('[project]')) {
+                    console.warn('检测到特殊描述模式，进行清理:', cleaned.description);
+                    cleaned.description = cleaned.description.replace(/\[project\]\s*:\s*project/g, '项目说明');
                 }
                 
                 return cleaned;
@@ -1932,12 +1565,13 @@
             
             // 确保tags是字符串数组
             const tagsArray = Array.isArray(article.tags) ? article.tags : 
-                            (typeof article.tags === 'string' ? [article.tags] : []);
+                            (typeof article.tags === 'string' ? 
+                             article.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []);
             
             articleCard.dataset.tags = tagsArray.join(' ');
             
             const tagsHtml = tagsArray.map(tag => 
-                `<span class="article-tag tag-${tag}">${tag}</span>`
+                `<span class="article-tag tag-${tag.toLowerCase()}">${tag}</span>`
             ).join('');
             
             // 转义可能包含引号的文件名和标题，避免onclick错误
@@ -2012,9 +1646,77 @@
             }
             
             const totalArticles = allArticles.length;
-            const webArticles = allArticles.filter(a => a.tags && a.tags.includes('web')).length;
-            const luaArticles = allArticles.filter(a => a.tags && a.tags.includes('lua')).length;
-            const pythonArticles = allArticles.filter(a => a.tags && a.tags.includes('python')).length;
+            
+            // 计算各类别文章数量
+            const webArticles = allArticles.filter(a => a.tags && a.tags.some(tag => 
+                tag.toLowerCase().includes('web') || tag.toLowerCase() === 'web'
+            )).length;
+            
+            const luaArticles = allArticles.filter(a => a.tags && a.tags.some(tag => 
+                tag.toLowerCase().includes('lua') || tag.toLowerCase() === 'lua'
+            )).length;
+            
+            const pythonArticles = allArticles.filter(a => a.tags && a.tags.some(tag => 
+                tag.toLowerCase().includes('python') || tag.toLowerCase() === 'python'
+            )).length;
+            
+            const tutorialArticles = allArticles.filter(a => a.tags && a.tags.some(tag => 
+                tag.toLowerCase().includes('tutorial') || tag.toLowerCase() === 'tutorial'
+            )).length;
+            
+            const noteArticles = allArticles.filter(a => a.tags && a.tags.some(tag => 
+                tag.toLowerCase().includes('note') || tag.toLowerCase() === 'note'
+            )).length;
+            
+            // 计算总字数（估算）
+            const totalWords = allArticles.reduce((total, article) => {
+                const descriptionWords = (article.description || '').split(/\s+/).length;
+                return total + descriptionWords;
+            }, 0);
+            
+            // 统计文档类型
+            const docTypeStats = {};
+            allArticles.forEach(article => {
+                if (article.tags && Array.isArray(article.tags)) {
+                    article.tags.forEach(tag => {
+                        const lowerTag = tag.toLowerCase();
+                        // 主要文档类型
+                        const docTypes = ['project', 'document', 'api', 'guide', 'tutorial', 'note'];
+                        const matchedType = docTypes.find(type => lowerTag.includes(type) || lowerTag === type);
+                        
+                        if (matchedType) {
+                            docTypeStats[matchedType] = (docTypeStats[matchedType] || 0) + 1;
+                        }
+                    });
+                }
+            });
+            
+            // 生成文档类型徽章HTML
+            let docTypeBadgesHtml = '';
+            if (Object.keys(docTypeStats).length > 0) {
+                const docTypeNames = {
+                    'project': '项目文档',
+                    'document': '文档',
+                    'api': 'API文档',
+                    'guide': '指南',
+                    'tutorial': '教程',
+                    'note': '笔记'
+                };
+                
+                docTypeBadgesHtml = `
+                    <div class="stats-doc-types">
+                        <h4><i class="fas fa-file-alt"></i> 文档类型分布</h4>
+                        <div class="doc-type-badges">
+                            ${Object.entries(docTypeStats).map(([type, count]) => `
+                                <span class="doc-type-badge">
+                                    <span class="badge-count">${count}</span>
+                                    ${docTypeNames[type] || type}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
             
             statsSection.innerHTML = `
                 <div class="stats-card">
@@ -2036,7 +1738,24 @@
                             <span class="stat-number">${pythonArticles}</span>
                             <span class="stat-label">Python</span>
                         </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${tutorialArticles}</span>
+                            <span class="stat-label">教程</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${noteArticles}</span>
+                            <span class="stat-label">笔记</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${totalWords}</span>
+                            <span class="stat-label">总字数</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${Math.ceil(totalArticles / 30)}</span>
+                            <span class="stat-label">约${Math.ceil(totalArticles / 30)}个月</span>
+                        </div>
                     </div>
+                    ${docTypeBadgesHtml}
                 </div>
             `;
         }
@@ -2221,7 +1940,8 @@
                     'typescript': 'TypeScript',
                     'sql': 'SQL',
                     'yaml': 'YAML',
-                    'yml': 'YAML'
+                    'yml': 'YAML',
+                    'project': '项目文件'
                 };
                 return languageMap[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
             }
@@ -2299,13 +2019,23 @@
                 
                 console.log('加载Markdown成功，长度:', markdown.length);
                 
-                // 使用渲染函数
+                // 使用渲染函数 - 确保使用 rendermd.js 中的渲染器
                 let renderedHtml;
-                if (typeof window.renderMarkdown === 'function') {
+                if (typeof renderMarkdown === 'function') {
+                    // 使用全局的 renderMarkdown（来自 rendermd.js）
+                    renderedHtml = renderMarkdown(markdown, { highlightCode: true });
+                } else if (typeof window.renderMarkdown === 'function') {
+                    // 使用 window 上的 renderMarkdown
                     renderedHtml = window.renderMarkdown(markdown, { highlightCode: true });
                 } else {
-                    console.warn('renderMarkdown函数未定义，使用简单渲染');
-                    renderedHtml = renderSimpleMarkdown(markdown);
+                    // 使用简单渲染
+                    if (typeof renderSimpleMarkdown === 'function') {
+                        renderedHtml = renderSimpleMarkdown(markdown);
+                    } else if (typeof window.renderSimpleMarkdown === 'function') {
+                        renderedHtml = window.renderSimpleMarkdown(markdown);
+                    } else {
+                        renderedHtml = `<pre>${escapeHtml(markdown)}</pre>`;
+                    }
                 }
                 
                 markdownContent.innerHTML = renderedHtml;
@@ -2337,6 +2067,18 @@
                     </div>
                 `;
             }
+        }
+
+        // HTML转义函数
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
         // 移动端阅读优化
