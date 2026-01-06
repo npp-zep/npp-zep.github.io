@@ -1,23 +1,26 @@
-前端搞个文章系统：配置驱动，不用改HTML
+完整的 FileSys.md 文件
+
+```markdown
+# 前端搞个文章系统：配置驱动，不用改HTML
 
 有时候就想偷个懒，但又想搞点功能。比如最近在弄这个文章导航页，我想：要是每写一篇新文章都得改HTML，那也太不程序员了吧？咱们写代码不就是为了少干活么！
 
-核心思路：数据驱动
+## 核心思路：数据驱动
 
-前端加载文件系统，其实本质上就是个“数据驱动UI”的问题。我想实现的是：
+前端加载文件系统，其实本质上就是个"数据驱动UI"的问题。我想实现的是：
 
-1. 有个配置文件（比如articles.json），里面写好所有文章信息
+1. 有个配置文件（比如`articles.json`），里面写好所有文章信息
 2. 前端JavaScript读取这个配置
 3. 动态生成页面内容
 4. 点哪篇文章就加载哪个Markdown文件
 
 这样以后要加新文章，只需要：
 
-· 在assets/passage/文件夹里放个.md文件
-· 在articles.json里加条记录
-· 完事！不用碰HTML
+- 在`assets/passage/`文件夹里放个`.md`文件
+- 在`articles.json`里加条记录
+- 完事！不用碰HTML
 
-配置文件设计
+## 配置文件设计
 
 我用的配置文件长这样：
 
@@ -25,15 +28,26 @@
 {
   "articles": [
     {
+      "id": 1,
       "title": "Vue3响应式原理",
       "date": "2024-03-15",
       "readTime": "8分钟",
       "description": "从源码角度分析Vue3响应式系统的实现",
       "file": "vue3-reactive.md",
       "tags": ["web", "tutorial"]
+    },
+    {
+      "id": 2,
+      "title": "Python异步编程入门",
+      "date": "2024-03-14",
+      "readTime": "12分钟",
+      "description": "从asyncio到async/await的完整指南",
+      "file": "python-async.md",
+      "tags": ["python", "tutorial"]
     }
-    // ... 更多文章
-  ]
+  ],
+  "lastUpdated": "2024-03-15",
+  "totalArticles": 2
 }
 ```
 
@@ -53,7 +67,9 @@
 ```javascript
 async function loadArticles() {
   try {
-    const response = await fetch('assets/passage/articles.json');
+    const response = await fetch('assets/passage/articles.json', {
+      cache: 'no-cache'
+    });
     const data = await response.json();
     allArticles = data.articles || [];
     
@@ -66,7 +82,7 @@ async function loadArticles() {
       articlesList.appendChild(card);
     });
   } catch (error) {
-    // 出错时给用户看个友好提示
+    console.error('加载文章失败:', error);
     showError('加载失败', '可能是配置文件路径不对');
   }
 }
@@ -86,13 +102,33 @@ function createArticleCard(article) {
   // 用dataset存标签，方便后面筛选
   card.dataset.tags = article.tags.join(' ');
   
-  // 直接拼接HTML字符串，简单粗暴但有效
+  // 转义特殊字符防止XSS
+  const safeTitle = escapeHtml(article.title);
+  const safeDescription = escapeHtml(article.description);
+  const safeFile = escapeHtml(article.file);
+  
+  // 生成标签HTML
+  const tagsHtml = article.tags.map(tag => 
+    `<span class="tag tag-${tag}">${tag}</span>`
+  ).join('');
+  
   card.innerHTML = `
-    <h4>${article.title}</h4>
-    <p>${article.description}</p>
-    <button onclick="openArticle('${article.file}')">
-      阅读
-    </button>
+    <div class="article-header">
+      <h4 class="article-title">${safeTitle}</h4>
+      <div class="article-meta">
+        <span class="article-date">📅 ${article.date}</span>
+        <span class="article-read-time">⏱️ ${article.readTime}</span>
+      </div>
+    </div>
+    <p class="article-description">${safeDescription}</p>
+    <div class="article-footer">
+      <div class="article-tags">
+        ${tagsHtml}
+      </div>
+      <button class="article-btn read-btn" onclick="openArticle('${safeFile}')">
+        📖 阅读
+      </button>
+    </div>
   `;
   
   return card;
@@ -105,11 +141,24 @@ function createArticleCard(article) {
 
 ```javascript
 async function openArticle(filename) {
-  const response = await fetch(`assets/passage/${filename}`);
-  const markdown = await response.text();
-  
-  // 渲染Markdown到页面
-  renderMarkdown(markdown);
+  try {
+    // 显示加载状态
+    showLoading();
+    
+    const response = await fetch(`assets/passage/${filename}`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const markdown = await response.text();
+    
+    // 渲染Markdown到页面
+    renderMarkdown(markdown);
+    
+  } catch (error) {
+    console.error('加载文章失败:', error);
+    showError('加载失败', `无法加载文章: ${error.message}`);
+  }
 }
 ```
 
@@ -125,6 +174,11 @@ function initFilter() {
   
   filterButtons.forEach(button => {
     button.addEventListener('click', function() {
+      // 移除其他按钮的active状态
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      // 添加当前按钮的active状态
+      this.classList.add('active');
+      
       const filter = this.dataset.filter;
       const cards = document.querySelectorAll('.article-card');
       
@@ -149,11 +203,28 @@ function initFilter() {
 function updateStats() {
   const total = allArticles.length;
   const webCount = allArticles.filter(a => a.tags.includes('web')).length;
-  // ... 其他分类统计
+  const pythonCount = allArticles.filter(a => a.tags.includes('python')).length;
+  const tutorialCount = allArticles.filter(a => a.tags.includes('tutorial')).length;
   
   return `
-    <div>总文章数: ${total}</div>
-    <div>Web开发: ${webCount}</div>
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-number">${total}</span>
+        <span class="stat-label">总文章数</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${webCount}</span>
+        <span class="stat-label">Web开发</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${pythonCount}</span>
+        <span class="stat-label">Python</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${tutorialCount}</span>
+        <span class="stat-label">教程</span>
+      </div>
+    </div>
   `;
 }
 ```
@@ -205,4 +276,6 @@ function updateStats() {
 
 当然，如果内容特别多、更新特别频繁，可能还是需要后端配合。但对于个人项目、小型文档站来说，这种纯前端方案完全够用，还省了服务器钱。
 
-写代码嘛，有时候不用追求“最完美”的方案，能解决实际问题、让自己少干重复活，就是好方案。你说是不是？
+写代码嘛，有时候不用追求"最完美"的方案，能解决实际问题、让自己少干重复活，就是好方案。你说是不是？
+
+```
