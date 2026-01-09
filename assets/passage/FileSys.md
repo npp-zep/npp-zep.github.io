@@ -14,8 +14,8 @@
 
 这样以后要加新文章，只需要：
 
-- 在`assets/passage/`文件夹里放个`.md`文件
-- 在`articles.json`里加条记录
+- 在assets/passage/文件夹里放个.md文件
+- 在articles.json里加条记录
 - 完事！不用碰HTML
 
 ## 配置文件设计
