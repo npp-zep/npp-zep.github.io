@@ -1,8 +1,151 @@
 /**
- * Markdown渲染器 - 修复版
+ * Markdown渲染器 
  * 使用marked.js进行Markdown解析，highlight.js进行代码高亮
- * 包含一键复制代码功能
+ * 包含一键复制代码
  */
+
+// 生成安全的唯一ID
+function generateUniqueId(prefix = 'id') {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// HTML转义函数
+function escapeHtml(text) {
+    if (typeof text !== 'string') {
+        text = String(text);
+    }
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// 获取语言名称
+function getLanguageName(lang) {
+    if (!lang) return '代码';
+    
+    const languageMap = {
+        'js': 'JavaScript',
+        'javascript': 'JavaScript',
+        'py': 'Python',
+        'python': 'Python',
+        'lua': 'Lua',
+        'html': 'HTML',
+        'css': 'CSS',
+        'json': 'JSON',
+        'xml': 'XML',
+        'bash': 'Bash',
+        'sh': 'Shell',
+        'md': 'Markdown',
+        'cpp': 'C++',
+        'c': 'C',
+        'java': 'Java',
+        'php': 'PHP',
+        'ruby': 'Ruby',
+        'go': 'Go',
+        'rust': 'Rust',
+        'ts': 'TypeScript',
+        'typescript': 'TypeScript',
+        'sql': 'SQL',
+        'yaml': 'YAML',
+        'yml': 'YAML',
+        'txt': 'Text',
+        'plaintext': 'Text'
+    };
+    
+    return languageMap[lang.toLowerCase()] || lang.charAt(0).toUpperCase() + lang.slice(1);
+}
+
+// 复制文本到剪贴板
+function copyTextToClipboard(text, button, isInline = false) {
+    navigator.clipboard.writeText(text).then(() => {
+        showCopySuccess(button, isInline);
+    }).catch(err => {
+        console.error('复制失败:', err);
+        
+        // 如果Clipboard API失败，尝试使用备用方法
+        if (fallbackCopyToClipboard(text)) {
+            showCopySuccess(button, isInline);
+        } else {
+            showCopyError(button, isInline);
+        }
+    });
+}
+
+// 备用复制方法
+function fallbackCopyToClipboard(text) {
+    try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        return successful;
+    } catch (err) {
+        console.error('备用复制方法失败:', err);
+        return false;
+    }
+}
+
+// 显示复制成功状态
+function showCopySuccess(button, isInline) {
+    if (isInline) {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i>';
+        button.style.color = '#00ff00';
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.color = '';
+        }, 2000);
+    } else {
+        const originalHTML = button.innerHTML;
+        const originalClass = button.className;
+        
+        button.innerHTML = '<i class="fas fa-check"></i><span>已复制</span>';
+        button.className = originalClass + ' success';
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.className = originalClass;
+        }, 2000);
+    }
+}
+
+// 显示复制错误状态
+function showCopyError(button, isInline) {
+    if (isInline) {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-times"></i>';
+        button.style.color = '#ff0000';
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.color = '';
+        }, 2000);
+    } else {
+        const originalHTML = button.innerHTML;
+        const originalClass = button.className;
+        
+        button.innerHTML = '<i class="fas fa-times"></i><span>失败</span>';
+        button.className = originalClass + ' error';
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.className = originalClass;
+        }, 2000);
+    }
+}
 
 // 确保marked可用
 if (typeof marked === 'undefined') {
@@ -84,14 +227,13 @@ if (typeof marked !== 'undefined') {
         const languageName = getLanguageName(validLanguage);
         
         // 生成唯一的ID
-        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
-        const escapedCodeId = escapeHtml(codeId);
+        const codeId = generateUniqueId('code');
         
         return `
-            <div class="code-block-wrapper" id="${codeId}">
+            <div class="code-block-wrapper" data-code-id="${codeId}">
                 <div class="code-block-header">
                     <span class="code-language">${languageName}</span>
-                    <button class="copy-code-btn" onclick="copyCodeBlock('${escapedCodeId}', this)">
+                    <button class="copy-code-btn" data-copy-target="${codeId}">
                         <i class="far fa-copy"></i><span>复制</span>
                     </button>
                 </div>
@@ -104,12 +246,12 @@ if (typeof marked !== 'undefined') {
     renderer.codespan = function(code) {
         const codeString = String(code || '');
         if (codeString.length > 10) {
-            const inlineId = 'inline-' + Math.random().toString(36).substr(2, 9);
+            const inlineId = generateUniqueId('inline');
             const escapedCode = escapeHtml(codeString);
             return `
-                <span class="code-inline-wrapper" id="${inlineId}" data-code="${escapedCode}">
+                <span class="code-inline-wrapper" data-inline-id="${inlineId}" data-code="${escapedCode}">
                     <code>${codeString}</code>
-                    <button class="inline-copy-btn" onclick="copyInlineCode('${inlineId}', this)">
+                    <button class="inline-copy-btn" data-copy-inline="${inlineId}">
                         <i class="far fa-copy"></i>
                     </button>
                 </span>
@@ -148,57 +290,6 @@ if (typeof marked !== 'undefined') {
             </blockquote>
         `;
     };
-
-    // 获取语言名称
-    function getLanguageName(lang) {
-        if (!lang) return '代码';
-        
-        const languageMap = {
-            'js': 'JavaScript',
-            'javascript': 'JavaScript',
-            'py': 'Python',
-            'python': 'Python',
-            'lua': 'Lua',
-            'html': 'HTML',
-            'css': 'CSS',
-            'json': 'JSON',
-            'xml': 'XML',
-            'bash': 'Bash',
-            'sh': 'Shell',
-            'md': 'Markdown',
-            'cpp': 'C++',
-            'c': 'C',
-            'java': 'Java',
-            'php': 'PHP',
-            'ruby': 'Ruby',
-            'go': 'Go',
-            'rust': 'Rust',
-            'ts': 'TypeScript',
-            'typescript': 'TypeScript',
-            'sql': 'SQL',
-            'yaml': 'YAML',
-            'yml': 'YAML',
-            'txt': 'Text',
-            'plaintext': 'Text'
-        };
-        
-        return languageMap[lang.toLowerCase()] || lang.charAt(0).toUpperCase() + lang.slice(1);
-    }
-
-    // HTML转义函数
-    function escapeHtml(text) {
-        if (typeof text !== 'string') {
-            text = String(text);
-        }
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-    }
 
     // 主渲染函数
     function renderMarkdown(markdown, options = {}) {
@@ -251,14 +342,14 @@ if (typeof marked !== 'undefined') {
             .replace(/_(.*?)_/g, '<em>$1</em>')
             // 转换代码块
             .replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, lang, code) {
-                const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+                const codeId = generateUniqueId('code');
                 const languageName = getLanguageName(lang);
                 const escapedCode = escapeHtml(code);
                 return `
-                    <div class="code-block-wrapper" id="${codeId}">
+                    <div class="code-block-wrapper" data-code-id="${codeId}">
                         <div class="code-block-header">
                             <span class="code-language">${languageName}</span>
-                            <button class="copy-code-btn" onclick="copyCodeBlock('${codeId}', this)">
+                            <button class="copy-code-btn" data-copy-target="${codeId}">
                                 <i class="far fa-copy"></i><span>复制</span>
                             </button>
                         </div>
@@ -269,23 +360,34 @@ if (typeof marked !== 'undefined') {
             // 转换行内代码
             .replace(/`([^`]+)`/g, function(match, code) {
                 if (code.length > 10) {
-                    const inlineId = 'inline-' + Math.random().toString(36).substr(2, 9);
+                    const inlineId = generateUniqueId('inline');
                     const escapedCode = escapeHtml(code);
                     return `
-                        <span class="code-inline-wrapper" id="${inlineId}" data-code="${escapedCode}">
+                        <span class="code-inline-wrapper" data-inline-id="${inlineId}" data-code="${escapedCode}">
                             <code>${code}</code>
-                            <button class="inline-copy-btn" onclick="copyInlineCode('${inlineId}', this)">
+                            <button class="inline-copy-btn" data-copy-inline="${inlineId}">
                                 <i class="far fa-copy"></i>
                             </button>
                         </span>
                     `;
                 }
-                return `<code>${code}</code>`;
+                return `<code>${escapeHtml(code)}</code>`;
             })
             // 转换链接
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, text, href) {
+                const escapedText = escapeHtml(text);
+                const escapedHref = escapeHtml(href);
+                if (href.startsWith('http://') || href.startsWith('https://')) {
+                    return `<a href="${escapedHref}" target="_blank" rel="noopener noreferrer">${escapedText}</a>`;
+                }
+                return `<a href="${escapedHref}">${escapedText}</a>`;
+            })
             // 转换图片
-            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, src) {
+                const escapedAlt = escapeHtml(alt);
+                const escapedSrc = escapeHtml(src);
+                return `<img src="${escapedSrc}" alt="${escapedAlt}" style="max-width: 100%; height: auto;">`;
+            })
             // 转换列表
             .replace(/^\s*\*\s+(.*$)/gm, '<li>$1</li>')
             .replace(/^\s*-\s+(.*$)/gm, '<li>$1</li>')
@@ -307,7 +409,7 @@ if (typeof marked !== 'undefined') {
         return html;
     }
 
-    // 复制代码块到剪贴板 - 修复版本
+    // 全局复制函数
     window.copyCodeBlock = function(codeBlockId, button) {
         const codeBlock = document.getElementById(codeBlockId);
         if (!codeBlock) {
@@ -333,7 +435,7 @@ if (typeof marked !== 'undefined') {
         copyTextToClipboard(codeElement.textContent, button);
     };
 
-    // 复制内联代码到剪贴板 - 修复版本
+    // 复制内联代码到剪贴板
     window.copyInlineCode = function(inlineId, button) {
         const inlineWrapper = document.getElementById(inlineId);
         let codeText = '';
@@ -366,96 +468,11 @@ if (typeof marked !== 'undefined') {
         }
     };
 
-    // 通用复制文本到剪贴板函数
-    function copyTextToClipboard(text, button, isInline = false) {
-        navigator.clipboard.writeText(text).then(() => {
-            showCopySuccess(button, isInline);
-        }).catch(err => {
-            console.error('复制失败:', err);
-            
-            // 如果Clipboard API失败，尝试使用备用方法
-            if (fallbackCopyToClipboard(text)) {
-                showCopySuccess(button, isInline);
-            } else {
-                showCopyError(button, isInline);
-            }
-        });
-    }
-
-    // 备用复制方法
-    function fallbackCopyToClipboard(text) {
-        try {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            const successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            return successful;
-        } catch (err) {
-            console.error('备用复制方法失败:', err);
-            return false;
-        }
-    }
-
-    // 显示复制成功状态
-    function showCopySuccess(button, isInline) {
-        if (isInline) {
-            const originalHTML = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check"></i>';
-            button.style.color = '#00ff00';
-            
-            setTimeout(() => {
-                button.innerHTML = originalHTML;
-                button.style.color = '';
-            }, 2000);
-        } else {
-            const originalHTML = button.innerHTML;
-            const originalClass = button.className;
-            
-            button.innerHTML = '<i class="fas fa-check"></i><span>已复制</span>';
-            button.className = originalClass + ' success';
-            
-            setTimeout(() => {
-                button.innerHTML = originalHTML;
-                button.className = originalClass;
-            }, 2000);
-        }
-    }
-
-    // 显示复制错误状态
-    function showCopyError(button, isInline) {
-        if (isInline) {
-            const originalHTML = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-times"></i>';
-            button.style.color = '#ff0000';
-            
-            setTimeout(() => {
-                button.innerHTML = originalHTML;
-                button.style.color = '';
-            }, 2000);
-        } else {
-            const originalHTML = button.innerHTML;
-            const originalClass = button.className;
-            
-            button.innerHTML = '<i class="fas fa-times"></i><span>失败</span>';
-            button.className = originalClass + ' error';
-            
-            setTimeout(() => {
-                button.innerHTML = originalHTML;
-                button.className = originalClass;
-            }, 2000);
-        }
-    }
-
     // 导出函数供全局使用
     window.renderMarkdown = renderMarkdown;
     window.renderSimpleMarkdown = renderSimpleMarkdown;
+    window.generateUniqueId = generateUniqueId;
+    window.copyTextToClipboard = copyTextToClipboard;
 
     console.log('Markdown渲染器已加载（修复版）');
 } else {
