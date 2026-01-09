@@ -1,6 +1,4 @@
-完整的 FileSys.md 文件
 
-```markdown
 # 前端搞个文章系统：配置驱动，不用改HTML
 
 有时候就想偷个懒，但又想搞点功能。比如最近在弄这个文章导航页，我想：要是每写一篇新文章都得改HTML，那也太不程序员了吧？咱们写代码不就是为了少干活么！
@@ -90,7 +88,7 @@ async function loadArticles() {
 
 这里有个小技巧：fetch的cache选项设为'no-cache'，这样开发时修改配置后刷新页面能立即生效。
 
-2. 动态生成UI
+1. 动态生成UI
 
 创建文章卡片的函数大概长这样：
 
@@ -116,8 +114,8 @@ function createArticleCard(article) {
     <div class="article-header">
       <h4 class="article-title">${safeTitle}</h4>
       <div class="article-meta">
-        <span class="article-date">📅 ${article.date}</span>
-        <span class="article-read-time">⏱️ ${article.readTime}</span>
+        <span class="article-date">${article.date}</span>
+        <span class="article-read-time">${article.readTime}</span>
       </div>
     </div>
     <p class="article-description">${safeDescription}</p>
@@ -126,7 +124,7 @@ function createArticleCard(article) {
         ${tagsHtml}
       </div>
       <button class="article-btn read-btn" onclick="openArticle('${safeFile}')">
-        📖 阅读
+        阅读
       </button>
     </div>
   `;
@@ -135,7 +133,7 @@ function createArticleCard(article) {
 }
 ```
 
-3. 按需加载内容
+1. 按需加载内容
 
 用户点击文章时才去加载对应的Markdown：
 
@@ -239,15 +237,15 @@ function updateStats() {
 · npx serve .
 · Python的python -m http.server
 
-2. 路径问题
+1. 路径问题
 
 配置文件路径要写对，我用了相对路径assets/passage/articles.json。如果页面URL有变化（比如在子目录里），路径也得相应调整。
 
-3. 加载顺序
+1. 加载顺序
 
 页面一打开就先加载文章列表，但有时候用户可能根本不会往下翻。可以考虑懒加载——等用户滚动到文章区域再加载。
 
-4. 错误处理
+1. 错误处理
 
 网络请求总会出问题的：文件不存在、JSON格式错误、服务器响应慢……每个fetch后面都得跟.catch，还得给用户看得懂的提示。
 
@@ -278,4 +276,4 @@ function updateStats() {
 
 写代码嘛，有时候不用追求"最完美"的方案，能解决实际问题、让自己少干重复活，就是好方案。你说是不是？
 
-```
+
