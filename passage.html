@@ -98,6 +98,103 @@
         </footer>
     </div>
 
+    <!-- 工具栏界面 -->
+    <div class="toolbar-sidebar" id="toolbarSidebar">
+        <div class="toolbar-header">
+            <h3><i class="fas fa-palette"></i> 工具栏</h3>
+            <button class="close-toolbar" id="closeToolbar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="toolbar-content">
+            <div class="toolbar-section">
+                <h4><i class="fas fa-sliders-h"></i> UI 颜色设置</h4>
+                <div class="color-picker-section">
+                    <div class="color-item">
+                        <label for="primaryColor">主色调</label>
+                        <input type="color" id="primaryColor" value="#0a192f" data-theme-key="primary-color">
+                    </div>
+                    <div class="color-item">
+                        <label for="highlightColor">高亮色</label>
+                        <input type="color" id="highlightColor" value="#64ffda" data-theme-key="highlight-color">
+                    </div>
+                    <div class="color-item">
+                        <label for="accentColor">强调色</label>
+                        <input type="color" id="accentColor" value="#ff6b6b" data-theme-key="accent-color">
+                    </div>
+                    <div class="color-item">
+                        <label for="textColor">文字色</label>
+                        <input type="color" id="textColor" value="#e6f1ff" data-theme-key="text-color">
+                    </div>
+                    <button class="color-reset-btn" id="resetColors">
+                        <i class="fas fa-redo"></i> 重置颜色
+                    </button>
+                    <button class="color-save-btn" id="saveColors">
+                        <i class="fas fa-save"></i> 保存设置
+                    </button>
+                </div>
+            </div>
+            
+            <div class="toolbar-section">
+                <h4><i class="fas fa-code"></i> 代码高亮支持</h4>
+                <div class="language-support" id="languageSupport">
+                    <div class="loading-languages">
+                        <div class="loading-spinner"></div>
+                        <p>检测支持的语言...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="toolbar-section">
+                <h4><i class="fas fa-tools"></i> 工具设置</h4>
+                <div class="tool-settings">
+                    <div class="tool-item">
+                        <label>
+                            <input type="checkbox" id="autoHighlight" checked>
+                            自动代码高亮
+                        </label>
+                    </div>
+                    <div class="tool-item">
+                        <label>
+                            <input type="checkbox" id="smoothScroll" checked>
+                            平滑滚动
+                        </label>
+                    </div>
+                    <div class="tool-item">
+                        <label>
+                            <input type="checkbox" id="copyConfirm" checked>
+                            复制确认提示
+                        </label>
+                    </div>
+                    <div class="tool-item">
+                        <label for="loadTimeout">加载超时(秒)</label>
+                        <input type="range" id="loadTimeout" min="5" max="60" value="30">
+                        <span id="timeoutValue">30s</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="toolbar-section">
+                <h4><i class="fas fa-info-circle"></i> 系统信息</h4>
+                <div class="system-info">
+                    <p>文章总数: <span id="totalArticlesInfo">0</span></p>
+                    <p>总字数: <span id="totalWordsInfo">0</span></p>
+                    <p>当前主题: <span id="currentTheme">dark</span></p>
+                    <p>支持语言: <span id="languageCount">0</span>种</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 工具栏遮罩 -->
+    <div class="toolbar-overlay" id="toolbarOverlay"></div>
+    
+    <!-- 工具栏按钮 -->
+    <button class="toolbar-toggle" id="toolbarToggle" title="工具栏">
+        <i class="fas fa-sliders-h"></i>
+    </button>
+
     <div class="markdown-viewer" id="markdownViewer">
         <div class="markdown-header">
             <button class="back-btn" id="backBtn">
@@ -113,6 +210,9 @@
                 </button>
                 <button class="action-btn" id="copyBtn">
                     <i class="far fa-copy"></i> <span>复制</span>
+                </button>
+                <button class="action-btn" id="wordCountBtn" title="字数统计">
+                    <i class="fas fa-file-word"></i> <span>字数</span>
                 </button>
             </div>
         </div>
@@ -135,48 +235,13 @@
                     </select>
                 </div>
                 
-                <!-- 新增：文章信息面板 -->
-                <div class="article-info-panel" id="articleInfoPanel">
-                    <h4><i class="fas fa-info-circle"></i> 文章信息</h4>
-                    <div class="article-info-content">
-                        <div class="info-item">
-                            <span class="info-label">加载状态：</span>
-                            <span class="info-value" id="articleLoadStatus">就绪</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">文章字数：</span>
-                            <span class="info-value" id="articleWordCount">--</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">加载时间：</span>
-                            <span class="info-value" id="articleLoadTime">--</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">阅读时长：</span>
-                            <span class="info-value" id="articleReadTime">--</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">文件大小：</span>
-                            <span class="info-value" id="articleFileSize">--</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 超时控制区域 -->
-                    <div class="timeout-controls" id="timeoutControls">
-                        <h5><i class="fas fa-clock"></i> 加载超时设置</h5>
-                        <div class="timeout-slider-container">
-                            <label for="timeoutSlider">超时时间：<span id="timeoutValue">30</span>秒</label>
-                            <input type="range" id="timeoutSlider" min="10" max="120" value="30" step="5">
-                        </div>
-                        <div class="timeout-buttons">
-                            <button class="timeout-btn" id="retryBtn">
-                                <i class="fas fa-redo"></i> 重新加载
-                            </button>
-                            <button class="timeout-btn" id="extendTimeoutBtn">
-                                <i class="fas fa-plus-circle"></i> 延长超时
-                            </button>
-                        </div>
-                        <div class="timeout-status" id="timeoutStatus"></div>
+                <div class="article-stats">
+                    <h4><i class="fas fa-chart-bar"></i> 文章统计</h4>
+                    <div class="stats-info">
+                        <p>字数: <span id="articleWordCount">0</span></p>
+                        <p>阅读时间: <span id="articleReadTime">0</span>分钟</p>
+                        <p>段落: <span id="articleParagraphs">0</span></p>
+                        <p>代码块: <span id="articleCodeBlocks">0</span></p>
                     </div>
                 </div>
             </div>
@@ -203,6 +268,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+    <!-- 更多语言支持 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ruby.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/dockerfile.min.js"></script>
     
     <!-- 引入marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -214,10 +291,11 @@
     <script>
         const ARTICLES_CONFIG_URL = 'assets/passage/articles.json';
         const ARTICLES_BASE_URL = 'assets/passage/';
+        const LOAD_TIMEOUT_DEFAULT = 30000; // 30秒超时
         let allArticles = [];
-        let currentTimeout = 30000; // 默认30秒超时
-        let currentLoadTimer = null;
-        let currentArticleStats = null;
+        let currentLoadTimeout = LOAD_TIMEOUT_DEFAULT;
+        let supportedLanguages = new Set();
+        let isToolbarOpen = false;
 
         window.addEventListener('load', function() {
             setTimeout(() => {
@@ -227,12 +305,337 @@
                 }, 500);
             }, 800);
             
+            initToolbar();
             loadArticles();
             initThemeSwitcher();
             initBackgroundToggle();
             initMarkdownViewer();
-            initTimeoutControls();
+            detectSupportedLanguages();
         });
+
+        // 初始化工具栏
+        function initToolbar() {
+            const toolbarToggle = document.getElementById('toolbarToggle');
+            const closeToolbar = document.getElementById('closeToolbar');
+            const toolbarOverlay = document.getElementById('toolbarOverlay');
+            const colorInputs = document.querySelectorAll('.color-picker-section input[type="color"]');
+            const resetColorsBtn = document.getElementById('resetColors');
+            const saveColorsBtn = document.getElementById('saveColors');
+            const loadTimeoutSlider = document.getElementById('loadTimeout');
+            const timeoutValue = document.getElementById('timeoutValue');
+
+            // 工具栏显示/隐藏
+            toolbarToggle.addEventListener('click', toggleToolbar);
+            closeToolbar.addEventListener('click', closeToolbarHandler);
+            toolbarOverlay.addEventListener('click', closeToolbarHandler);
+
+            // 颜色设置
+            loadColorSettings();
+            
+            colorInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    updateColorPreview(e.target);
+                });
+                
+                input.addEventListener('change', (e) => {
+                    updateColorPreview(e.target);
+                });
+            });
+
+            resetColorsBtn.addEventListener('click', resetColors);
+            saveColorsBtn.addEventListener('click', saveColorSettings);
+
+            // 超时设置
+            loadTimeoutSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                timeoutValue.textContent = value + 's';
+                currentLoadTimeout = value * 1000;
+                localStorage.setItem('loadTimeout', currentLoadTimeout);
+            });
+
+            // 加载保存的超时设置
+            const savedTimeout = localStorage.getItem('loadTimeout');
+            if (savedTimeout) {
+                currentLoadTimeout = parseInt(savedTimeout);
+                loadTimeoutSlider.value = currentLoadTimeout / 1000;
+                timeoutValue.textContent = (currentLoadTimeout / 1000) + 's';
+            }
+
+            // 工具设置
+            const autoHighlight = document.getElementById('autoHighlight');
+            const smoothScroll = document.getElementById('smoothScroll');
+            const copyConfirm = document.getElementById('copyConfirm');
+
+            // 加载保存的设置
+            loadToolSettings();
+
+            // 保存设置
+            [autoHighlight, smoothScroll, copyConfirm].forEach(checkbox => {
+                checkbox.addEventListener('change', saveToolSettings);
+            });
+
+            // 键盘快捷键
+            document.addEventListener('keydown', (e) => {
+                if (e.altKey && e.key === 'p') {
+                    toggleToolbar();
+                }
+            });
+        }
+
+        function toggleToolbar() {
+            const toolbar = document.getElementById('toolbarSidebar');
+            const overlay = document.getElementById('toolbarOverlay');
+            
+            isToolbarOpen = !isToolbarOpen;
+            
+            if (isToolbarOpen) {
+                toolbar.classList.add('active');
+                overlay.classList.add('active');
+                updateSystemInfo();
+            } else {
+                toolbar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+
+        function closeToolbarHandler() {
+            const toolbar = document.getElementById('toolbarSidebar');
+            const overlay = document.getElementById('toolbarOverlay');
+            
+            toolbar.classList.remove('active');
+            overlay.classList.remove('active');
+            isToolbarOpen = false;
+        }
+
+        function loadColorSettings() {
+            const colorSettings = JSON.parse(localStorage.getItem('colorSettings') || '{}');
+            
+            if (Object.keys(colorSettings).length > 0) {
+                Object.entries(colorSettings).forEach(([key, value]) => {
+                    const input = document.querySelector(`input[data-theme-key="${key}"]`);
+                    if (input) {
+                        input.value = value;
+                        updateColorPreview(input);
+                    }
+                });
+            }
+        }
+
+        function updateColorPreview(input) {
+            const key = input.dataset.themeKey;
+            const value = input.value;
+            
+            // 更新CSS变量
+            document.documentElement.style.setProperty(`--${key}`, value);
+        }
+
+        function resetColors() {
+            const defaultColors = {
+                'primary-color': '#0a192f',
+                'highlight-color': '#64ffda',
+                'accent-color': '#ff6b6b',
+                'text-color': '#e6f1ff'
+            };
+            
+            Object.entries(defaultColors).forEach(([key, value]) => {
+                const input = document.querySelector(`input[data-theme-key="${key}"]`);
+                if (input) {
+                    input.value = value;
+                    updateColorPreview(input);
+                }
+            });
+            
+            // 保存默认设置
+            localStorage.setItem('colorSettings', JSON.stringify(defaultColors));
+            
+            showNotification('颜色已重置为默认值', 'success');
+        }
+
+        function saveColorSettings() {
+            const colorSettings = {};
+            const colorInputs = document.querySelectorAll('.color-picker-section input[type="color"]');
+            
+            colorInputs.forEach(input => {
+                const key = input.dataset.themeKey;
+                const value = input.value;
+                colorSettings[key] = value;
+            });
+            
+            localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
+            showNotification('颜色设置已保存', 'success');
+        }
+
+        function loadToolSettings() {
+            const toolSettings = JSON.parse(localStorage.getItem('toolSettings') || '{}');
+            
+            const autoHighlight = document.getElementById('autoHighlight');
+            const smoothScroll = document.getElementById('smoothScroll');
+            const copyConfirm = document.getElementById('copyConfirm');
+            
+            if (toolSettings.autoHighlight !== undefined) {
+                autoHighlight.checked = toolSettings.autoHighlight;
+            }
+            
+            if (toolSettings.smoothScroll !== undefined) {
+                smoothScroll.checked = toolSettings.smoothScroll;
+            }
+            
+            if (toolSettings.copyConfirm !== undefined) {
+                copyConfirm.checked = toolSettings.copyConfirm;
+            }
+        }
+
+        function saveToolSettings() {
+            const toolSettings = {
+                autoHighlight: document.getElementById('autoHighlight').checked,
+                smoothScroll: document.getElementById('smoothScroll').checked,
+                copyConfirm: document.getElementById('copyConfirm').checked
+            };
+            
+            localStorage.setItem('toolSettings', JSON.stringify(toolSettings));
+        }
+
+        function detectSupportedLanguages() {
+            const languageSupport = document.getElementById('languageSupport');
+            
+            if (typeof hljs === 'undefined') {
+                languageSupport.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>highlight.js未加载</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                // 获取highlight.js支持的语言列表
+                const languages = hljs.listLanguages();
+                supportedLanguages = new Set(languages);
+                
+                // 分组显示语言
+                const languageGroups = {
+                    'Web开发': ['javascript', 'html', 'css', 'typescript', 'json', 'xml'],
+                    '后端语言': ['python', 'java', 'php', 'ruby', 'go', 'rust', 'c', 'cpp', 'csharp'],
+                    '脚本语言': ['bash', 'shell', 'powershell', 'lua'],
+                    '数据相关': ['sql', 'yaml', 'toml', 'ini'],
+                    '配置语言': ['dockerfile', 'makefile', 'nginx'],
+                    '文档语言': ['markdown', 'latex', 'plaintext']
+                };
+                
+                let html = '';
+                Object.entries(languageGroups).forEach(([groupName, langList]) => {
+                    const availableLangs = langList.filter(lang => supportedLanguages.has(lang));
+                    
+                    if (availableLangs.length > 0) {
+                        html += `
+                            <div class="language-group">
+                                <h5>${groupName}</h5>
+                                <div class="language-tags">
+                                    ${availableLangs.map(lang => `
+                                        <span class="language-tag" title="${lang}">
+                                            ${getLanguageName(lang)}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                // 统计总数
+                const totalCount = languages.length;
+                const displayCount = Math.min(totalCount, 50); // 只显示前50个
+                
+                html += `
+                    <div class="language-stats">
+                        <p>共支持 <strong>${totalCount}</strong> 种语言 (显示${displayCount}种常用语言)</p>
+                    </div>
+                `;
+                
+                languageSupport.innerHTML = html;
+                
+                // 更新系统信息
+                updateLanguageCount();
+                
+            } catch (error) {
+                console.error('检测支持的语言失败:', error);
+                languageSupport.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>检测语言支持失败: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function updateLanguageCount() {
+            const languageCount = document.getElementById('languageCount');
+            if (languageCount) {
+                languageCount.textContent = supportedLanguages.size;
+            }
+        }
+
+        function updateSystemInfo() {
+            const totalArticlesInfo = document.getElementById('totalArticlesInfo');
+            const totalWordsInfo = document.getElementById('totalWordsInfo');
+            const currentTheme = document.getElementById('currentTheme');
+            const languageCount = document.getElementById('languageCount');
+            
+            if (totalArticlesInfo) {
+                totalArticlesInfo.textContent = allArticles.length;
+            }
+            
+            if (totalWordsInfo) {
+                const totalWords = allArticles.reduce((sum, article) => {
+                    return sum + (parseInt(article.wordCount) || 0);
+                }, 0);
+                totalWordsInfo.textContent = formatWordCount(totalWords);
+            }
+            
+            if (currentTheme) {
+                currentTheme.textContent = document.documentElement.getAttribute('data-theme');
+            }
+            
+            if (languageCount) {
+                languageCount.textContent = supportedLanguages.size;
+            }
+        }
+
+        function formatWordCount(count) {
+            if (count >= 10000) {
+                return (count / 10000).toFixed(1) + '万';
+            } else if (count >= 1000) {
+                return (count / 1000).toFixed(1) + '千';
+            }
+            return count;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 动画效果
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // 3秒后消失
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
 
         async function loadArticles() {
             const articlesList = document.getElementById('articlesList');
@@ -247,71 +650,98 @@
                 
                 console.log('正在加载文章配置文件:', ARTICLES_CONFIG_URL);
                 
-                // 设置加载超时
+                // 设置超时控制器
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), currentTimeout);
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    throw new Error(`加载超时 (${currentLoadTimeout/1000}秒)`);
+                }, currentLoadTimeout);
                 
-                try {
-                    const response = await fetch(ARTICLES_CONFIG_URL, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Cache-Control': 'no-cache'
-                        },
-                        cache: 'no-cache',
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误! 状态: ${response.status} - ${response.statusText}`);
-                    }
-                    
-                    const jsonText = await response.text();
-                    console.log('原始JSON数据:', jsonText.substring(0, 500) + '...');
-                    
-                    const cleanJsonText = jsonText.trim().replace(/^\uFEFF/, '');
-                    const articlesData = JSON.parse(cleanJsonText);
-                    
-                    allArticles = articlesData.articles || [];
-                    
-                    if (!Array.isArray(allArticles) || allArticles.length === 0) {
-                        throw new Error('文章数据格式错误或为空');
-                    }
-                    
-                    // 清理和验证文章数据
-                    allArticles = cleanArticlesData(allArticles);
-                    
-                    articlesList.innerHTML = '';
-                    
-                    allArticles.forEach((article, index) => {
-                        console.log(`处理文章 ${index + 1}:`, {
-                            title: article.title,
-                            description: article.description,
-                            descriptionType: typeof article.description
-                        });
-                        
-                        const articleElement = createArticleCard(article);
-                        articlesList.appendChild(articleElement);
-                    });
-                    
-                    updateStats();
-                    initFilter();
-                    
-                    console.log('成功加载', allArticles.length, '篇文章');
-                    
-                } catch (fetchError) {
-                    clearTimeout(timeoutId);
-                    if (fetchError.name === 'AbortError') {
-                        throw new Error(`加载超时（${currentTimeout/1000}秒）。请检查网络连接或增加超时时间。`);
-                    }
-                    throw fetchError;
+                const response = await fetch(ARTICLES_CONFIG_URL, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    },
+                    cache: 'no-cache',
+                    signal: controller.signal
+                }).finally(() => clearTimeout(timeoutId));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status} - ${response.statusText}`);
                 }
+                
+                const jsonText = await response.text();
+                console.log('原始JSON数据:', jsonText.substring(0, 500) + '...');
+                
+                const cleanJsonText = jsonText.trim().replace(/^\uFEFF/, '');
+                const articlesData = JSON.parse(cleanJsonText);
+                
+                allArticles = articlesData.articles || [];
+                
+                if (!Array.isArray(allArticles) || allArticles.length === 0) {
+                    throw new Error('文章数据格式错误或为空');
+                }
+                
+                // 清理和验证文章数据
+                allArticles = cleanArticlesData(allArticles);
+                
+                articlesList.innerHTML = '';
+                
+                allArticles.forEach((article, index) => {
+                    console.log(`处理文章 ${index + 1}:`, {
+                        title: article.title,
+                        description: article.description,
+                        wordCount: article.wordCount,
+                        descriptionType: typeof article.description
+                    });
+                    
+                    const articleElement = createArticleCard(article);
+                    articlesList.appendChild(articleElement);
+                });
+                
+                updateStats();
+                updateSystemInfo();
+                initFilter();
+                
+                console.log('成功加载', allArticles.length, '篇文章');
                 
             } catch (error) {
                 console.error('加载文章失败:', error);
                 showError('无法加载文章列表', error.message);
+                
+                // 显示重试按钮
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>加载失败</h3>
+                    <p>${error.message}</p>
+                    <p style="font-size: 0.85rem; margin-top: 1rem;">当前超时设置: ${currentLoadTimeout/1000}秒</p>
+                    <div style="margin-top: 1rem;">
+                        <button onclick="loadArticles()" class="article-btn">
+                            <i class="fas fa-redo"></i> 重试加载
+                        </button>
+                        <button onclick="increaseTimeout()" class="article-btn">
+                            <i class="fas fa-clock"></i> 增加超时时间
+                        </button>
+                    </div>
+                `;
+                
+                articlesList.innerHTML = '';
+                articlesList.appendChild(errorDiv);
             }
+        }
+
+        function increaseTimeout() {
+            currentLoadTimeout += 10000; // 增加10秒
+            const loadTimeoutSlider = document.getElementById('loadTimeout');
+            const timeoutValue = document.getElementById('timeoutValue');
+            
+            loadTimeoutSlider.value = currentLoadTimeout / 1000;
+            timeoutValue.textContent = (currentLoadTimeout / 1000) + 's';
+            
+            showNotification(`超时时间已增加至${currentLoadTimeout/1000}秒`, 'info');
+            loadArticles();
         }
 
         // 清理和验证文章数据
@@ -325,19 +755,7 @@
                 cleaned.readTime = String(article.readTime || '未知');
                 cleaned.description = String(article.description || '暂无描述');
                 cleaned.file = String(article.file || '');
-                
-                // 添加字数统计 - 从配置文件读取或自动计算
-                if (article.wordCount !== undefined) {
-                    cleaned.wordCount = parseInt(article.wordCount) || 0;
-                } else if (article.words !== undefined) {
-                    cleaned.wordCount = parseInt(article.words) || 0;
-                } else {
-                    // 如果没有配置字数，使用描述的长度作为估算
-                    cleaned.wordCount = Math.max(
-                        cleaned.description.length * 3,
-                        800
-                    );
-                }
+                cleaned.wordCount = parseInt(article.wordCount) || 0;
                 
                 // 处理tags - 确保是数组
                 if (Array.isArray(article.tags)) {
@@ -402,13 +820,11 @@
             const safeFile = article.file || '';
             const safeTitle = article.title || '无标题';
             const safeDescription = article.description || '暂无描述';
+            const wordCount = article.wordCount || 0;
+            const wordCountText = wordCount > 0 ? ` · ${formatWordCount(wordCount)}字` : '';
             
             // 双重检查，防止 [object Object]
             const finalDescription = typeof safeDescription === 'object' ? '暂无描述' : safeDescription;
-            
-            // 格式化字数显示
-            const wordCount = article.wordCount || 0;
-            const wordCountFormatted = formatWordCount(wordCount);
             
             articleCard.innerHTML = `
                 <div class="article-header">
@@ -416,7 +832,7 @@
                     <div class="article-meta">
                         <span class="article-date"><i class="far fa-calendar"></i> ${article.date || '未知日期'}</span>
                         <span class="article-read-time"><i class="far fa-clock"></i> ${article.readTime || '未知'}</span>
-                        <span class="article-word-count"><i class="fas fa-file-word"></i> ${wordCountFormatted}</span>
+                        ${wordCount > 0 ? `<span class="article-word-count"><i class="fas fa-file-word"></i> ${formatWordCount(wordCount)}字</span>` : ''}
                     </div>
                 </div>
                 <p class="article-description">${finalDescription}</p>
@@ -431,6 +847,9 @@
                         <button class="article-btn download-btn">
                             <i class="fas fa-download"></i> 下载
                         </button>
+                        ${wordCount > 0 ? `<button class="article-btn wordcount-btn" title="字数统计">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>` : ''}
                     </div>
                 </div>
             `;
@@ -438,16 +857,34 @@
             // 使用事件委托添加点击事件
             const readBtn = articleCard.querySelector('.read-btn');
             const downloadBtn = articleCard.querySelector('.download-btn');
+            const wordcountBtn = articleCard.querySelector('.wordcount-btn');
             
             readBtn.addEventListener('click', () => {
-                openArticle(safeFile, safeTitle, article);
+                openArticle(safeFile, safeTitle);
             });
             
             downloadBtn.addEventListener('click', () => {
                 downloadArticle(safeFile);
             });
             
+            if (wordcountBtn) {
+                wordcountBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showWordCountInfo(article);
+                });
+            }
+            
             return articleCard;
+        }
+
+        function showWordCountInfo(article) {
+            const wordCount = article.wordCount || 0;
+            const readTime = article.readTime || '未知';
+            
+            showNotification(
+                `"${article.title}"\n字数: ${wordCount}字\n阅读时间: ${readTime}分钟`,
+                'info'
+            );
         }
 
         function initFilter() {
@@ -487,22 +924,7 @@
             }
             
             const totalArticles = allArticles.length;
-            
-            // 计算总字数（从配置中读取）
-            let totalWords = 0;
-            let validWordCountArticles = 0;
-            
-            allArticles.forEach(article => {
-                if (article.wordCount && article.wordCount > 0) {
-                    totalWords += article.wordCount;
-                    validWordCountArticles++;
-                }
-            });
-            
-            // 如果没有配置字数，使用估算
-            if (totalWords === 0) {
-                totalWords = allArticles.length * 800; // 默认每篇800字
-            }
+            const totalWords = allArticles.reduce((sum, article) => sum + (parseInt(article.wordCount) || 0), 0);
             
             // 计算各类别文章数量
             const webArticles = allArticles.filter(a => a.tags && a.tags.some(tag => 
@@ -533,12 +955,11 @@
                 tag.toLowerCase().includes('document') || tag.toLowerCase() === 'document'
             )).length;
             
-            // 创建更合理的统计
-            const totalDays = Math.max(totalArticles * 3, 30); // 假设每篇文章平均间隔3天
-            const months = Math.floor(totalDays / 30);
+            // 计算平均字数
+            const avgWords = totalArticles > 0 ? Math.round(totalWords / totalArticles) : 0;
             
-            // 格式化字数显示
-            const wordsDisplay = formatWordCount(totalWords);
+            // 计算平均阅读时间（假设每分钟阅读300字）
+            const avgReadTime = avgWords > 0 ? Math.round(avgWords / 300) : 0;
             
             // 统计文档类型
             const docTypeStats = {};
@@ -591,13 +1012,6 @@
                 `;
             }
             
-            // 字数统计详情
-            const avgWordsPerArticle = Math.round(totalWords / Math.max(totalArticles, 1));
-            const maxWordsArticle = allArticles.reduce((max, article) => 
-                Math.max(max, article.wordCount || 0), 0);
-            const minWordsArticle = allArticles.reduce((min, article) => 
-                Math.min(min, article.wordCount > 0 ? article.wordCount : Infinity), Infinity);
-            
             statsSection.innerHTML = `
                 <div class="stats-card">
                     <h4><i class="fas fa-chart-bar"></i> 文章统计</h4>
@@ -607,12 +1021,16 @@
                             <span class="stat-label">总文章数</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">${wordsDisplay}</span>
+                            <span class="stat-number">${formatWordCount(totalWords)}</span>
                             <span class="stat-label">总字数</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">${formatNumber(avgWordsPerArticle)}</span>
+                            <span class="stat-number">${avgWords}</span>
                             <span class="stat-label">平均字数</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">${avgReadTime}</span>
+                            <span class="stat-label">平均阅读(分)</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number">${webArticles}</span>
@@ -638,42 +1056,10 @@
                             <span class="stat-number">${projectArticles}</span>
                             <span class="stat-label">项目</span>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number">${documentArticles}</span>
-                            <span class="stat-label">文档</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">${months}</span>
-                            <span class="stat-label">持续${months}个月</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">${formatNumber(maxWordsArticle)}</span>
-                            <span class="stat-label">最长文章</span>
-                        </div>
-                    </div>
-                    <div class="word-count-details">
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.8rem;">
-                            <i class="fas fa-info-circle"></i> 
-                            统计了 ${validWordCountArticles}/${totalArticles} 篇文章的实际字数
-                        </p>
                     </div>
                     ${docTypeBadgesHtml}
                 </div>
             `;
-        }
-
-        function formatWordCount(wordCount) {
-            if (wordCount >= 10000) {
-                return `${(wordCount / 10000).toFixed(1)}万`;
-            } else if (wordCount >= 1000) {
-                return `${(wordCount / 1000).toFixed(1)}千`;
-            } else {
-                return formatNumber(wordCount);
-            }
-        }
-
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         function initMarkdownViewer() {
@@ -681,6 +1067,7 @@
             const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
             const copyBtn = document.getElementById('copyBtn');
             const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const wordCountBtn = document.getElementById('wordCountBtn');
             const codeThemeSelect = document.getElementById('codeThemeSelect');
             const markdownViewer = document.getElementById('markdownViewer');
             const markdownSidebar = document.getElementById('markdownSidebar');
@@ -688,12 +1075,28 @@
             
             backBtn.addEventListener('click', () => {
                 markdownViewer.style.display = 'none';
-                clearTimeout(currentLoadTimer);
-                resetArticleInfo();
             });
             
             toggleSidebarBtn.addEventListener('click', () => {
                 markdownSidebar.classList.toggle('hidden');
+            });
+            
+            wordCountBtn.addEventListener('click', () => {
+                const content = document.getElementById('markdownContent');
+                if (content) {
+                    const wordCount = countWords(content.textContent);
+                    const readTime = Math.ceil(wordCount / 300); // 假设每分钟300字
+                    const paragraphs = content.querySelectorAll('p').length;
+                    const codeBlocks = content.querySelectorAll('pre').length;
+                    
+                    document.getElementById('articleWordCount').textContent = wordCount;
+                    document.getElementById('articleReadTime').textContent = readTime;
+                    document.getElementById('articleParagraphs').textContent = paragraphs;
+                    document.getElementById('articleCodeBlocks').textContent = codeBlocks;
+                    
+                    markdownSidebar.classList.remove('hidden');
+                    showNotification(`当前文章: ${wordCount}字, 预计阅读${readTime}分钟`, 'info');
+                }
             });
             
             // 点击遮罩层关闭侧边栏
@@ -716,18 +1119,16 @@
             }
             
             copyBtn.addEventListener('click', () => {
-                const content = document.getElementById('markdownContent').innerText;
-                if (!content || content.trim() === '') {
-                    showCopyStatus('内容为空，无法复制', false);
-                    return;
+                const content = document.getElementById('markdownContent');
+                if (content) {
+                    const text = content.innerText || content.textContent;
+                    copyTextToClipboard(text, copyBtn);
+                    
+                    const copyConfirm = document.getElementById('copyConfirm');
+                    if (copyConfirm && copyConfirm.checked) {
+                        showNotification('文章内容已复制到剪贴板', 'success');
+                    }
                 }
-                
-                navigator.clipboard.writeText(content).then(() => {
-                    showCopyStatus('已复制到剪贴板', true);
-                }).catch(err => {
-                    console.error('复制失败:', err);
-                    showCopyStatus('复制失败，请重试', false);
-                });
             });
             
             codeThemeSelect.addEventListener('change', (e) => {
@@ -752,154 +1153,13 @@
             });
         }
 
-        function initTimeoutControls() {
-            const timeoutSlider = document.getElementById('timeoutSlider');
-            const timeoutValue = document.getElementById('timeoutValue');
-            const retryBtn = document.getElementById('retryBtn');
-            const extendTimeoutBtn = document.getElementById('extendTimeoutBtn');
-            const timeoutStatus = document.getElementById('timeoutStatus');
-            
-            // 从本地存储加载超时设置
-            const savedTimeout = localStorage.getItem('loadTimeout');
-            if (savedTimeout) {
-                currentTimeout = parseInt(savedTimeout);
-                timeoutSlider.value = currentTimeout / 1000;
-                timeoutValue.textContent = currentTimeout / 1000;
-            }
-            
-            timeoutSlider.addEventListener('input', function() {
-                const seconds = parseInt(this.value);
-                timeoutValue.textContent = seconds;
-                currentTimeout = seconds * 1000;
-                localStorage.setItem('loadTimeout', currentTimeout);
-                
-                // 显示提示
-                showTimeoutStatus(`超时时间已设置为 ${seconds} 秒`, 'info');
-            });
-            
-            retryBtn.addEventListener('click', function() {
-                const markdownContent = document.getElementById('markdownContent');
-                const currentTitle = document.getElementById('markdownTitle').textContent;
-                
-                if (markdownContent && currentTitle && currentArticleStats) {
-                    const currentFile = currentArticleStats.fileName;
-                    showTimeoutStatus('正在重新加载文章...', 'loading');
-                    openArticle(currentFile, currentTitle, currentArticleStats.originalArticle);
-                } else {
-                    showTimeoutStatus('没有可重载的文章', 'error');
-                }
-            });
-            
-            extendTimeoutBtn.addEventListener('click', function() {
-                // 延长当前超时时间
-                currentTimeout += 30000; // 延长30秒
-                const seconds = currentTimeout / 1000;
-                timeoutSlider.value = seconds;
-                timeoutValue.textContent = seconds;
-                localStorage.setItem('loadTimeout', currentTimeout);
-                
-                showTimeoutStatus(`超时时间已延长至 ${seconds} 秒`, 'success');
-                
-                // 如果当前正在加载，重置计时器
-                if (currentLoadTimer) {
-                    clearTimeout(currentLoadTimer);
-                    startLoadTimer();
-                }
-            });
-        }
-
-        function showTimeoutStatus(message, type = 'info') {
-            const timeoutStatus = document.getElementById('timeoutStatus');
-            const icons = {
-                'info': 'info-circle',
-                'success': 'check-circle',
-                'error': 'exclamation-circle',
-                'warning': 'exclamation-triangle',
-                'loading': 'spinner fa-spin'
-            };
-            
-            timeoutStatus.innerHTML = `
-                <i class="fas fa-${icons[type]}"></i>
-                <span>${message}</span>
-            `;
-            timeoutStatus.className = `timeout-status timeout-${type}`;
-            
-            // 3秒后自动清除（除了加载状态）
-            if (type !== 'loading') {
-                setTimeout(() => {
-                    timeoutStatus.innerHTML = '';
-                    timeoutStatus.className = 'timeout-status';
-                }, 3000);
-            }
-        }
-
-        function startLoadTimer() {
-            const startTime = Date.now();
-            const articleLoadStatus = document.getElementById('articleLoadStatus');
-            
-            articleLoadStatus.textContent = '加载中...';
-            articleLoadStatus.className = 'info-value loading';
-            
-            currentLoadTimer = setTimeout(() => {
-                const elapsed = (Date.now() - startTime) / 1000;
-                showTimeoutStatus(`加载已超过 ${Math.round(elapsed)} 秒，考虑延长超时时间`, 'warning');
-            }, currentTimeout * 0.8); // 在80%超时时间时提醒
-        }
-
-        function stopLoadTimer() {
-            if (currentLoadTimer) {
-                clearTimeout(currentLoadTimer);
-                currentLoadTimer = null;
-            }
-            
-            const articleLoadStatus = document.getElementById('articleLoadStatus');
-            articleLoadStatus.className = 'info-value ready';
-        }
-
-        function resetArticleInfo() {
-            document.getElementById('articleWordCount').textContent = '--';
-            document.getElementById('articleLoadTime').textContent = '--';
-            document.getElementById('articleReadTime').textContent = '--';
-            document.getElementById('articleFileSize').textContent = '--';
-            document.getElementById('articleLoadStatus').textContent = '就绪';
-            document.getElementById('articleLoadStatus').className = 'info-value ready';
-            
-            currentArticleStats = null;
-        }
-
-        function updateArticleInfo(stats) {
-            const articleWordCount = document.getElementById('articleWordCount');
-            const articleLoadTime = document.getElementById('articleLoadTime');
-            const articleReadTime = document.getElementById('articleReadTime');
-            const articleFileSize = document.getElementById('articleFileSize');
-            const articleLoadStatus = document.getElementById('articleLoadStatus');
-            
-            articleWordCount.textContent = formatWordCount(stats.wordCount);
-            articleLoadTime.textContent = `${stats.loadTime}ms`;
-            articleReadTime.textContent = stats.readTime;
-            articleFileSize.textContent = stats.fileSize;
-            
-            // 设置加载状态
-            articleLoadStatus.textContent = stats.loadSuccess ? '加载成功' : '加载失败';
-            articleLoadStatus.className = `info-value ${stats.loadSuccess ? 'success' : 'error'}`;
-        }
-
-        function showCopyStatus(message, success) {
-            const copyBtn = document.getElementById('copyBtn');
-            const originalHTML = copyBtn.innerHTML;
-            
-            if (success) {
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>已复制</span>';
-                copyBtn.className = 'action-btn success';
-            } else {
-                copyBtn.innerHTML = '<i class="fas fa-times"></i> <span>失败</span>';
-                copyBtn.className = 'action-btn error';
-            }
-            
-            setTimeout(() => {
-                copyBtn.innerHTML = originalHTML;
-                copyBtn.className = 'action-btn';
-            }, 2000);
+        function countWords(text) {
+            if (!text) return 0;
+            // 中文字数统计
+            const chineseWords = text.match(/[\u4e00-\u9fa5]/g) || [];
+            // 英文单词统计（按空格分割）
+            const englishWords = text.match(/\b\w+\b/g) || [];
+            return chineseWords.length + englishWords.length;
         }
 
         function changeCodeTheme(theme) {
@@ -910,7 +1170,7 @@
             }
         }
 
-        async function openArticle(filename, title, articleInfo = null) {
+        async function openArticle(filename, title) {
             const markdownViewer = document.getElementById('markdownViewer');
             const markdownTitle = document.getElementById('markdownTitle');
             const markdownContent = document.getElementById('markdownContent');
@@ -927,18 +1187,6 @@
                 return;
             }
             
-            const loadStartTime = Date.now();
-            startLoadTimer();
-            
-            // 更新文章信息面板
-            currentArticleStats = {
-                fileName: filename,
-                originalArticle: articleInfo,
-                wordCount: articleInfo?.wordCount || 0,
-                loadStartTime: loadStartTime,
-                loadSuccess: false
-            };
-            
             markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
             markdownViewer.style.display = 'flex';
             markdownTitle.textContent = title || '文章阅读';
@@ -949,146 +1197,154 @@
             }
             
             try {
-                // 设置加载超时
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), currentTimeout);
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    throw new Error(`加载超时 (${currentLoadTimeout/1000}秒)`);
+                }, currentLoadTimeout);
                 
-                let response;
-                try {
-                    response = await fetch(`${ARTICLES_BASE_URL}${filename}`, {
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误! 状态: ${response.status}`);
-                    }
-                    
-                    const markdown = await response.text();
-                    const loadTime = Date.now() - loadStartTime;
-                    
-                    console.log('加载Markdown成功，长度:', markdown.length);
-                    
-                    // 更新文章统计信息
-                    const fileSize = formatFileSize(markdown.length);
-                    const wordCount = countWords(markdown);
-                    const readTime = calculateReadTime(wordCount);
-                    
-                    currentArticleStats = {
-                        ...currentArticleStats,
-                        wordCount: wordCount,
-                        loadTime: loadTime,
-                        readTime: readTime,
-                        fileSize: fileSize,
-                        loadSuccess: true
-                    };
-                    
-                    updateArticleInfo(currentArticleStats);
-                    
-                    // 使用rendermd.js中的renderMarkdown函数
-                    let renderedHtml = '';
-                    if (window.renderMarkdown) {
-                        renderedHtml = window.renderMarkdown(markdown);
-                    } else {
-                        // 如果rendermd.js不可用，使用内置的简单渲染器
-                        renderedHtml = renderSimpleMarkdown(markdown);
-                    }
-                    
-                    markdownContent.innerHTML = renderedHtml;
-                    
-                    // 为代码块添加事件监听器
-                    initializeCodeCopyButtons();
-                    
-                    generateTOC();
-                    if (window.hljs) {
+                const response = await fetch(`${ARTICLES_BASE_URL}${filename}`, {
+                    signal: controller.signal
+                }).finally(() => clearTimeout(timeoutId));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status}`);
+                }
+                const markdown = await response.text();
+                
+                console.log('加载Markdown成功，长度:', markdown.length);
+                
+                // 使用rendermd.js中的renderMarkdown函数
+                let renderedHtml = '';
+                if (window.renderMarkdown) {
+                    renderedHtml = window.renderMarkdown(markdown);
+                } else {
+                    // 如果rendermd.js不可用，使用内置的简单渲染器
+                    renderedHtml = renderSimpleMarkdown(markdown);
+                }
+                
+                markdownContent.innerHTML = renderedHtml;
+                
+                // 为代码块添加事件监听器
+                initializeCodeCopyButtons();
+                
+                generateTOC();
+                
+                // 更新字数统计
+                const wordCount = countWords(markdownContent.textContent);
+                const readTime = Math.ceil(wordCount / 300);
+                const paragraphs = markdownContent.querySelectorAll('p').length;
+                const codeBlocks = markdownContent.querySelectorAll('pre').length;
+                
+                document.getElementById('articleWordCount').textContent = wordCount;
+                document.getElementById('articleReadTime').textContent = readTime;
+                document.getElementById('articleParagraphs').textContent = paragraphs;
+                document.getElementById('articleCodeBlocks').textContent = codeBlocks;
+                
+                if (window.hljs) {
+                    const autoHighlight = document.getElementById('autoHighlight');
+                    if (autoHighlight && autoHighlight.checked) {
                         hljs.highlightAll();
                     }
-                    
-                    // 移动端：优化阅读体验
-                    if (window.innerWidth <= 768) {
-                        optimizeMobileReading();
-                    }
-                    
-                    stopLoadTimer();
-                    showTimeoutStatus('文章加载成功', 'success');
-                    
-                } catch (fetchError) {
-                    clearTimeout(timeoutId);
-                    if (fetchError.name === 'AbortError') {
-                        throw new Error(`加载超时（${currentTimeout/1000}秒）。请延长超时时间或检查网络连接。`);
-                    }
-                    throw fetchError;
+                }
+                
+                // 移动端：优化阅读体验
+                if (window.innerWidth <= 768) {
+                    optimizeMobileReading();
+                }
+                
+                // 平滑滚动设置
+                const smoothScroll = document.getElementById('smoothScroll');
+                if (smoothScroll && smoothScroll.checked) {
+                    applySmoothScroll();
                 }
                 
             } catch (error) {
                 console.error('加载Markdown失败:', error);
-                stopLoadTimer();
-                
-                currentArticleStats = {
-                    ...currentArticleStats,
-                    loadSuccess: false,
-                    loadTime: Date.now() - loadStartTime
-                };
-                
-                updateArticleInfo(currentArticleStats);
-                showTimeoutStatus('加载失败: ' + error.message, 'error');
-                
                 markdownContent.innerHTML = `
                     <div class="error-message">
                         <i class="fas fa-exclamation-triangle"></i>
                         <h3>加载失败</h3>
                         <p>无法加载文章内容: ${error.message}</p>
                         <p>文件路径: ${ARTICLES_BASE_URL}${filename}</p>
-                        <p>已用时: ${currentArticleStats.loadTime}ms</p>
-                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
-                            <button onclick="openArticle('${filename}', '${title}', ${articleInfo ? JSON.stringify(articleInfo).replace(/"/g, '&quot;') : 'null'})" class="action-btn">
-                                <i class="fas fa-redo"></i> 重试
-                            </button>
-                            <button onclick="downloadArticle('${filename}')" class="action-btn">
-                                <i class="fas fa-download"></i> 下载原始文件
-                            </button>
-                        </div>
+                        <p>当前超时设置: ${currentLoadTimeout/1000}秒</p>
+                        <button onclick="downloadArticle('${filename}')" class="action-btn" style="margin-top: 1rem;">
+                            <i class="fas fa-download"></i> 下载原始文件
+                        </button>
+                        <button onclick="increaseTimeout()" class="action-btn" style="margin-top: 0.5rem;">
+                            <i class="fas fa-clock"></i> 增加超时时间
+                        </button>
                     </div>
                 `;
             }
         }
 
-        function countWords(text) {
-            if (!text) return 0;
-            // 移除代码块和HTML标签
-            const cleanText = text.replace(/```[\s\S]*?```/g, '')
-                                 .replace(/`[^`]+`/g, '')
-                                 .replace(/<[^>]*>/g, '')
-                                 .replace(/\s+/g, ' ')
-                                 .trim();
-            
-            // 中文字符按字计数，英文单词按空格分隔计数
-            const chineseChars = cleanText.match(/[\u4e00-\u9fa5]/g) || [];
-            const englishWords = cleanText.replace(/[\u4e00-\u9fa5]/g, ' ')
-                                         .split(/\s+/)
-                                         .filter(word => word.length > 0);
-            
-            return chineseChars.length + englishWords.length;
+        function applySmoothScroll() {
+            const links = document.querySelectorAll('.toc-link');
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
         }
 
-        function calculateReadTime(wordCount) {
-            const wordsPerMinute = 300; // 平均阅读速度
-            const minutes = Math.ceil(wordCount / wordsPerMinute);
+        // 初始化代码复制按钮
+        function initializeCodeCopyButtons() {
+            // 为代码块添加事件监听器
+            const codeBlocks = document.querySelectorAll('.code-block-wrapper');
+            codeBlocks.forEach(wrapper => {
+                const copyBtn = wrapper.querySelector('.copy-code-btn');
+                if (copyBtn) {
+                    // 移除现有的onclick事件
+                    copyBtn.onclick = null;
+                    
+                    // 添加新的事件监听器
+                    copyBtn.addEventListener('click', function() {
+                        const codeElement = wrapper.querySelector('code');
+                        if (codeElement) {
+                            copyTextToClipboard(codeElement.textContent, this);
+                        }
+                    });
+                }
+            });
             
-            if (minutes < 1) return '<1分钟';
-            if (minutes < 60) return `${minutes}分钟`;
-            
-            const hours = Math.floor(minutes / 60);
-            const remainingMinutes = minutes % 60;
-            
-            if (remainingMinutes === 0) return `${hours}小时`;
-            return `${hours}小时${remainingMinutes}分钟`;
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            // 为内联代码添加事件监听器
+            const inlineCodeWrappers = document.querySelectorAll('.code-inline-wrapper');
+            inlineCodeWrappers.forEach(wrapper => {
+                const copyBtn = wrapper.querySelector('.inline-copy-btn');
+                if (copyBtn) {
+                    // 移除现有的onclick事件
+                    copyBtn.onclick = null;
+                    
+                    // 添加新的事件监听器
+                    copyBtn.addEventListener('click', function() {
+                        const codeElement = wrapper.querySelector('code');
+                        let codeText = '';
+                        
+                        if (codeElement) {
+                            codeText = codeElement.textContent;
+                        } else if (wrapper.dataset.code) {
+                            codeText = wrapper.dataset.code;
+                        }
+                        
+                        if (codeText) {
+                            copyTextToClipboard(codeText, this, true);
+                        } else {
+                            showCopyError(this, true);
+                        }
+                    });
+                }
+            });
         }
 
         // HTML转义函数
@@ -1242,54 +1498,64 @@
             return languageMap[lang.toLowerCase()] || lang.charAt(0).toUpperCase() + lang.slice(1);
         }
 
-        // 初始化代码复制按钮
-        function initializeCodeCopyButtons() {
-            // 为代码块添加事件监听器
-            const codeBlocks = document.querySelectorAll('.code-block-wrapper');
-            codeBlocks.forEach(wrapper => {
-                const copyBtn = wrapper.querySelector('.copy-code-btn');
-                if (copyBtn) {
-                    // 移除现有的onclick事件
-                    copyBtn.onclick = null;
-                    
-                    // 添加新的事件监听器
-                    copyBtn.addEventListener('click', function() {
-                        const codeElement = wrapper.querySelector('code');
-                        if (codeElement) {
-                            copyTextToClipboard(codeElement.textContent, this);
-                        }
-                    });
+        // 复制代码块到剪贴板
+        window.copyCodeBlock = function(codeBlockId, button) {
+            const codeBlock = document.getElementById(codeBlockId);
+            if (!codeBlock) {
+                console.error('找不到代码块:', codeBlockId);
+                
+                // 尝试从按钮的父元素获取代码
+                const parentBlock = button.closest('.code-block-wrapper');
+                if (parentBlock) {
+                    const codeElement = parentBlock.querySelector('code');
+                    if (codeElement) {
+                        copyTextToClipboard(codeElement.textContent, button);
+                    }
                 }
-            });
+                return;
+            }
             
-            // 为内联代码添加事件监听器
-            const inlineCodeWrappers = document.querySelectorAll('.code-inline-wrapper');
-            inlineCodeWrappers.forEach(wrapper => {
-                const copyBtn = wrapper.querySelector('.inline-copy-btn');
-                if (copyBtn) {
-                    // 移除现有的onclick事件
-                    copyBtn.onclick = null;
-                    
-                    // 添加新的事件监听器
-                    copyBtn.addEventListener('click', function() {
-                        const codeElement = wrapper.querySelector('code');
-                        let codeText = '';
-                        
-                        if (codeElement) {
-                            codeText = codeElement.textContent;
-                        } else if (wrapper.dataset.code) {
-                            codeText = wrapper.dataset.code;
-                        }
-                        
-                        if (codeText) {
-                            copyTextToClipboard(codeText, this, true);
-                        } else {
-                            showCopyError(this, true);
-                        }
-                    });
+            const codeElement = codeBlock.querySelector('code');
+            if (!codeElement) {
+                console.error('找不到代码元素');
+                return;
+            }
+            
+            copyTextToClipboard(codeElement.textContent, button);
+        };
+
+        // 复制内联代码到剪贴板
+        window.copyInlineCode = function(inlineId, button) {
+            const inlineWrapper = document.getElementById(inlineId);
+            let codeText = '';
+            
+            if (inlineWrapper) {
+                const codeElement = inlineWrapper.querySelector('code');
+                if (codeElement) {
+                    codeText = codeElement.textContent;
+                } else if (inlineWrapper.dataset.code) {
+                    codeText = inlineWrapper.dataset.code;
                 }
-            });
-        }
+            } else {
+                // 尝试从按钮的父元素获取代码
+                const parentWrapper = button.closest('.code-inline-wrapper');
+                if (parentWrapper) {
+                    const codeElement = parentWrapper.querySelector('code');
+                    if (codeElement) {
+                        codeText = codeElement.textContent;
+                    } else if (parentWrapper.dataset.code) {
+                        codeText = parentWrapper.dataset.code;
+                    }
+                }
+            }
+            
+            if (codeText) {
+                copyTextToClipboard(codeText, button, true);
+            } else {
+                console.error('找不到内联代码');
+                showCopyError(button, true);
+            }
+        };
 
         // 通用复制文本到剪贴板函数
         function copyTextToClipboard(text, button, isInline = false) {
@@ -1330,26 +1596,29 @@
 
         // 显示复制成功状态
         function showCopySuccess(button, isInline) {
-            if (isInline) {
-                const originalHTML = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>';
-                button.style.color = '#00ff00';
-                
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.style.color = '';
-                }, 2000);
-            } else {
-                const originalHTML = button.innerHTML;
-                const originalClass = button.className;
-                
-                button.innerHTML = '<i class="fas fa-check"></i><span>已复制</span>';
-                button.className = originalClass + ' success';
-                
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.className = originalClass;
-                }, 2000);
+            const copyConfirm = document.getElementById('copyConfirm');
+            if (copyConfirm && copyConfirm.checked) {
+                if (isInline) {
+                    const originalHTML = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-check"></i>';
+                    button.style.color = '#00ff00';
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                        button.style.color = '';
+                    }, 2000);
+                } else {
+                    const originalHTML = button.innerHTML;
+                    const originalClass = button.className;
+                    
+                    button.innerHTML = '<i class="fas fa-check"></i><span>已复制</span>';
+                    button.className = originalClass + ' success';
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                        button.className = originalClass;
+                    }, 2000);
+                }
             }
         }
 
@@ -1436,7 +1705,16 @@
                 link.textContent = heading.textContent;
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    heading.scrollIntoView({ behavior: 'smooth' });
+                    
+                    const smoothScroll = document.getElementById('smoothScroll');
+                    if (smoothScroll && smoothScroll.checked) {
+                        heading.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    } else {
+                        heading.scrollIntoView({ behavior: 'auto' });
+                    }
                     
                     // 移动端：点击目录项后关闭侧边栏
                     if (window.innerWidth <= 768) {
@@ -1479,6 +1757,7 @@
                 html.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
                 updateThemeIcon(newTheme);
+                updateSystemInfo();
                 
                 themeSwitcher.style.transform = 'scale(0.9)';
                 setTimeout(() => {
@@ -1544,10 +1823,22 @@
                 const markdownViewer = document.getElementById('markdownViewer');
                 if (markdownViewer.style.display === 'flex') {
                     document.getElementById('backBtn').click();
+                } else if (isToolbarOpen) {
+                    closeToolbarHandler();
                 }
             }
             if (e.altKey && e.key === 'r') {
                 loadArticles();
+            }
+            if (e.altKey && e.key === 'p') {
+                toggleToolbar();
+            }
+            if (e.altKey && e.key === 'c') {
+                const copyConfirm = document.getElementById('copyConfirm');
+                if (copyConfirm) {
+                    copyConfirm.checked = !copyConfirm.checked;
+                    saveToolSettings();
+                }
             }
         });
     </script>
