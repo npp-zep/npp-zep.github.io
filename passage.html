@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>文章导航 —— npp-zep</title>
     <!-- 引入样式文件 -->
     <link rel="stylesheet" href="style/style.css">
@@ -10,8 +11,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
     <link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/206399566?v=4">
+    
+    <!-- 浏览器兼容性提示样式 -->
+    <style>
+        .browser-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ffcc00;
+            color: #000;
+            padding: 10px;
+            text-align: center;
+            z-index: 9999;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .browser-warning a {
+            color: #0066cc;
+            text-decoration: underline;
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
+    <!-- 浏览器兼容性提示 -->
+    <div class="browser-warning" id="browserWarning">
+        检测到您的浏览器版本较低，建议使用 <a href="https://www.google.com/chrome/" target="_blank">Chrome</a>、<a href="https://www.mozilla.org/firefox/" target="_blank">Firefox</a> 或 <a href="https://www.microsoft.com/edge" target="_blank">Edge</a> 以获得最佳体验
+        <button onclick="document.getElementById('browserWarning').style.display='none'" style="margin-left: 15px; background: #fff; border: 1px solid #ccc; padding: 2px 8px; cursor: pointer;">×</button>
+    </div>
+
     <div class="loading" id="loading">
         <div class="spinner"></div>
     </div>
@@ -135,7 +165,6 @@
                     </select>
                 </div>
                 
-                <!-- 简化版文章信息面板 -->
                 <div class="article-info-panel" id="articleInfoPanel">
                     <h4><i class="fas fa-info-circle"></i> 文章信息</h4>
                     <div class="article-info-content">
@@ -171,6 +200,15 @@
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
 
+    <!-- 兼容性处理：旧版浏览器支持 -->
+    <!--[if lt IE 9]>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.16/es5-shim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.35.6/es6-shim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.min.js"></script>
+    <![endif]-->
+
     <!-- 引入highlight.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
@@ -190,23 +228,80 @@
     
     <!-- 主脚本 -->
     <script>
+        // 浏览器兼容性检测
+        function checkBrowserCompatibility() {
+            var warning = document.getElementById('browserWarning');
+            var isOldIE = /*@cc_on!@*/false || !!document.documentMode; // IE 6-11
+            var isEdge = /Edge\/\d+/.test(navigator.userAgent);
+            var isOldChrome = /Chrome\/([0-9]+)/.test(navigator.userAgent) && parseInt(RegExp.$1) < 50;
+            var isOldFirefox = /Firefox\/([0-9]+)/.test(navigator.userAgent) && parseInt(RegExp.$1) < 50;
+            var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // 检测关键API支持
+            var missingAPIs = [];
+            if (typeof fetch === 'undefined') missingAPIs.push('fetch API');
+            if (typeof Promise === 'undefined') missingAPIs.push('Promise');
+            if (typeof Set === 'undefined') missingAPIs.push('Set');
+            
+            if (isOldIE || isOldChrome || isOldFirefox || missingAPIs.length > 0) {
+                warning.style.display = 'block';
+                console.warn('浏览器兼容性问题检测到:', {
+                    isOldIE: isOldIE,
+                    isOldChrome: isOldChrome,
+                    isOldFirefox: isOldFirefox,
+                    missingAPIs: missingAPIs,
+                    userAgent: navigator.userAgent
+                });
+            }
+            
+            // 移动端特定优化
+            if (isMobile) {
+                // 移动端减少动画
+                document.documentElement.style.setProperty('--transition', '0.2s ease');
+                // 移动端禁用部分效果
+                localStorage.setItem('bgVisible', 'false');
+                document.getElementById('bgContainer').style.opacity = '0';
+            }
+            
+            return {
+                isModern: !isOldIE && !isOldChrome && !isOldFirefox && missingAPIs.length === 0,
+                isMobile: isMobile,
+                isIE: isOldIE
+            };
+        }
+        
         const ARTICLES_CONFIG_URL = 'assets/passage/articles.json';
         const ARTICLES_BASE_URL = 'assets/passage/';
         let allArticles = [];
         let currentArticleStats = null;
-
+        
+        // 页面初始化
         window.addEventListener('load', function() {
-            setTimeout(() => {
+            // 检查浏览器兼容性
+            var compatibility = checkBrowserCompatibility();
+            
+            // 设置加载超时
+            var loadingTimeout = setTimeout(function() {
                 document.getElementById('loading').style.opacity = '0';
-                setTimeout(() => {
+                setTimeout(function() {
                     document.getElementById('loading').style.display = 'none';
                 }, 500);
-            }, 800);
+            }, 1000);
             
+            // 加载文章数据
             loadArticles();
             initThemeSwitcher();
             initBackgroundToggle();
             initMarkdownViewer();
+            
+            // 如果加载完成，清除超时
+            clearTimeout(loadingTimeout);
+            setTimeout(function() {
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('loading').style.display = 'none';
+                }, 500);
+            }, 500);
         });
 
         // 智能超时计算函数
@@ -226,6 +321,68 @@
             }
         }
 
+        // 兼容性fetch函数
+        function safeFetch(url, options) {
+            options = options || {};
+            
+            // 如果原生fetch不可用，使用XMLHttpRequest
+            if (typeof fetch === 'undefined') {
+                return new Promise(function(resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open(options.method || 'GET', url, true);
+                    
+                    // 设置请求头
+                    if (options.headers) {
+                        for (var header in options.headers) {
+                            if (options.headers.hasOwnProperty(header)) {
+                                xhr.setRequestHeader(header, options.headers[header]);
+                            }
+                        }
+                    }
+                    
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                resolve({
+                                    ok: true,
+                                    status: xhr.status,
+                                    text: function() {
+                                        return Promise.resolve(xhr.responseText);
+                                    },
+                                    json: function() {
+                                        try {
+                                            return Promise.resolve(JSON.parse(xhr.responseText));
+                                        } catch (e) {
+                                            return Promise.reject(e);
+                                        }
+                                    }
+                                });
+                            } else {
+                                reject(new Error('HTTP错误! 状态: ' + xhr.status));
+                            }
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        reject(new Error('网络错误'));
+                    };
+                    
+                    xhr.ontimeout = function() {
+                        reject(new Error('请求超时'));
+                    };
+                    
+                    if (options.timeout) {
+                        xhr.timeout = options.timeout;
+                    }
+                    
+                    xhr.send(options.body);
+                });
+            }
+            
+            // 使用原生fetch
+            return fetch(url, options);
+        }
+
         async function loadArticles() {
             const articlesList = document.getElementById('articlesList');
             
@@ -240,67 +397,78 @@
                 console.log('正在加载文章配置文件:', ARTICLES_CONFIG_URL);
                 
                 // 自动调整超时时间
-                const timeout = calculateTimeout(0); // 配置文件通常较小
+                const timeout = calculateTimeout(0);
                 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                // 使用安全的fetch
+                const response = await safeFetch(ARTICLES_CONFIG_URL, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    },
+                    cache: 'no-cache',
+                    timeout: timeout
+                });
                 
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status} - ${response.statusText}`);
+                }
+                
+                const jsonText = await response.text();
+                console.log('原始JSON数据:', jsonText.substring(0, 500) + '...');
+                
+                // 处理可能的BOM头
+                const cleanJsonText = jsonText.trim().replace(/^\uFEFF/, '');
+                let articlesData;
+                
+                // 安全的JSON解析
                 try {
-                    const response = await fetch(ARTICLES_CONFIG_URL, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Cache-Control': 'no-cache'
-                        },
-                        cache: 'no-cache',
-                        signal: controller.signal
-                    });
+                    articlesData = JSON.parse(cleanJsonText);
+                } catch (e) {
+                    // 尝试修复常见的JSON格式问题
+                    const fixedJson = cleanJsonText
+                        .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":') // 修复键名引号
+                        .replace(/,\s*}/g, '}') // 修复尾部逗号
+                        .replace(/,\s*]/g, ']'); // 修复数组尾部逗号
                     
-                    clearTimeout(timeoutId);
+                    articlesData = JSON.parse(fixedJson);
+                }
+                
+                allArticles = articlesData.articles || [];
+                
+                if (!Array.isArray(allArticles) || allArticles.length === 0) {
+                    throw new Error('文章数据格式错误或为空');
+                }
+                
+                // 清理和验证文章数据
+                allArticles = cleanArticlesData(allArticles);
+                
+                articlesList.innerHTML = '';
+                
+                // 分批渲染文章卡片，避免阻塞UI
+                function renderArticlesBatch(startIndex, batchSize) {
+                    const endIndex = Math.min(startIndex + batchSize, allArticles.length);
                     
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误! 状态: ${response.status} - ${response.statusText}`);
-                    }
-                    
-                    const jsonText = await response.text();
-                    console.log('原始JSON数据:', jsonText.substring(0, 500) + '...');
-                    
-                    const cleanJsonText = jsonText.trim().replace(/^\uFEFF/, '');
-                    const articlesData = JSON.parse(cleanJsonText);
-                    
-                    allArticles = articlesData.articles || [];
-                    
-                    if (!Array.isArray(allArticles) || allArticles.length === 0) {
-                        throw new Error('文章数据格式错误或为空');
-                    }
-                    
-                    // 清理和验证文章数据
-                    allArticles = cleanArticlesData(allArticles);
-                    
-                    articlesList.innerHTML = '';
-                    
-                    allArticles.forEach((article, index) => {
-                        console.log(`处理文章 ${index + 1}:`, {
-                            title: article.title,
-                            description: article.description,
-                            descriptionType: typeof article.description
-                        });
-                        
+                    for (let i = startIndex; i < endIndex; i++) {
+                        const article = allArticles[i];
                         const articleElement = createArticleCard(article);
                         articlesList.appendChild(articleElement);
-                    });
-                    
-                    updateStats();
-                    initFilter();
-                    
-                    console.log('成功加载', allArticles.length, '篇文章');
-                    
-                } catch (fetchError) {
-                    clearTimeout(timeoutId);
-                    if (fetchError.name === 'AbortError') {
-                        throw new Error(`加载超时（${timeout/1000}秒）。请检查网络连接或稍后重试。`);
                     }
-                    throw fetchError;
+                    
+                    // 如果还有更多文章，继续分批渲染
+                    if (endIndex < allArticles.length) {
+                        setTimeout(function() {
+                            renderArticlesBatch(endIndex, batchSize);
+                        }, 50);
+                    } else {
+                        // 所有文章渲染完成
+                        updateStats();
+                        initFilter();
+                        console.log('成功加载', allArticles.length, '篇文章');
+                    }
                 }
+                
+                // 开始分批渲染
+                renderArticlesBatch(0, 5); // 每批渲染5篇文章
                 
             } catch (error) {
                 console.error('加载文章失败:', error);
@@ -320,38 +488,33 @@
                 cleaned.description = String(article.description || '暂无描述');
                 cleaned.file = String(article.file || '');
                 
-                // 添加字数统计 - 从配置文件读取或自动计算
+                // 添加字数统计
                 if (article.wordCount !== undefined) {
                     cleaned.wordCount = parseInt(article.wordCount) || 0;
                 } else if (article.words !== undefined) {
                     cleaned.wordCount = parseInt(article.words) || 0;
                 } else {
-                    // 如果没有配置字数，使用描述的长度作为估算
                     cleaned.wordCount = Math.max(
                         cleaned.description.length * 3,
                         800
                     );
                 }
                 
-                // 处理tags - 确保是数组
+                // 处理tags
                 if (Array.isArray(article.tags)) {
                     cleaned.tags = article.tags.map(tag => String(tag));
                 } else if (typeof article.tags === 'string') {
-                    // 处理逗号分隔的标签字符串
                     cleaned.tags = article.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
                 } else {
                     cleaned.tags = [];
                 }
                 
-                // 额外的安全检查和清理
+                // 安全检查和清理
                 if (cleaned.description === '[object Object]') {
-                    console.warn('检测到 [object Object] 描述，替换为默认描述');
                     cleaned.description = '暂无描述';
                 }
                 
-                // 清理描述中的特殊字符
                 if (cleaned.description && cleaned.description.includes('[project]')) {
-                    console.warn('检测到特殊描述模式，进行清理:', cleaned.description);
                     cleaned.description = cleaned.description.replace(/\[project\]\s*:\s*project/g, '项目说明');
                 }
                 
@@ -392,12 +555,10 @@
                 `<span class="article-tag tag-${tag.toLowerCase()}">${tag}</span>`
             ).join('');
             
-            // 使用事件监听器而不是onclick属性，避免转义问题
             const safeFile = article.file || '';
             const safeTitle = article.title || '无标题';
             const safeDescription = article.description || '暂无描述';
             
-            // 双重检查，防止 [object Object]
             const finalDescription = typeof safeDescription === 'object' ? '暂无描述' : safeDescription;
             
             // 格式化字数显示
@@ -449,27 +610,35 @@
             const articlesList = document.getElementById('articlesList');
             
             filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const filter = this.dataset.filter;
-                    const articleCards = document.querySelectorAll('.article-card');
-                    
-                    articleCards.forEach(card => {
-                        if (filter === 'all' || card.dataset.tags.includes(filter)) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                    
-                    articlesList.style.opacity = '0.5';
-                    setTimeout(() => {
-                        articlesList.style.opacity = '1';
-                    }, 300);
-                });
+                // 使用兼容性事件绑定
+                if (button.addEventListener) {
+                    button.addEventListener('click', filterHandler);
+                } else if (button.attachEvent) { // 兼容IE8及以下
+                    button.attachEvent('onclick', filterHandler);
+                }
             });
+            
+            function filterHandler() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter || this.getAttribute('data-filter');
+                const articleCards = document.querySelectorAll('.article-card');
+                
+                articleCards.forEach(card => {
+                    const cardTags = card.dataset.tags || card.getAttribute('data-tags');
+                    if (filter === 'all' || (cardTags && cardTags.includes(filter))) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                articlesList.style.opacity = '0.5';
+                setTimeout(() => {
+                    articlesList.style.opacity = '1';
+                }, 300);
+            }
         }
 
         function updateStats() {
@@ -482,7 +651,7 @@
             
             const totalArticles = allArticles.length;
             
-            // 计算总字数（从配置中读取）
+            // 计算总字数
             let totalWords = 0;
             let validWordCountArticles = 0;
             
@@ -493,9 +662,8 @@
                 }
             });
             
-            // 如果没有配置字数，使用估算
             if (totalWords === 0) {
-                totalWords = allArticles.length * 800; // 默认每篇800字
+                totalWords = allArticles.length * 800;
             }
             
             // 计算各类别文章数量
@@ -527,11 +695,10 @@
                 tag.toLowerCase().includes('document') || tag.toLowerCase() === 'document'
             )).length;
             
-            // 创建更合理的统计
-            const totalDays = Math.max(totalArticles * 3, 30); // 假设每篇文章平均间隔3天
+            // 创建统计
+            const totalDays = Math.max(totalArticles * 3, 30);
             const months = Math.floor(totalDays / 30);
             
-            // 格式化字数显示
             const wordsDisplay = formatWordCount(totalWords);
             
             // 统计文档类型
@@ -540,7 +707,6 @@
                 if (article.tags && Array.isArray(article.tags)) {
                     article.tags.forEach(tag => {
                         const lowerTag = tag.toLowerCase();
-                        // 主要文档类型
                         const docTypes = ['project', 'document', 'api', 'guide', 'tutorial', 'note', 'web', 'python', 'lua'];
                         const matchedType = docTypes.find(type => lowerTag.includes(type) || lowerTag === type);
                         
@@ -551,7 +717,6 @@
                 }
             });
             
-            // 生成文档类型徽章HTML
             let docTypeBadgesHtml = '';
             if (Object.keys(docTypeStats).length > 0) {
                 const docTypeNames = {
@@ -568,7 +733,7 @@
                 
                 const sortedTypes = Object.entries(docTypeStats)
                     .sort((a, b) => b[1] - a[1])
-                    .slice(0, 6); // 只显示前6个
+                    .slice(0, 6);
                 
                 docTypeBadgesHtml = `
                     <div class="stats-doc-types">
@@ -585,12 +750,9 @@
                 `;
             }
             
-            // 字数统计详情
             const avgWordsPerArticle = Math.round(totalWords / Math.max(totalArticles, 1));
             const maxWordsArticle = allArticles.reduce((max, article) => 
                 Math.max(max, article.wordCount || 0), 0);
-            const minWordsArticle = allArticles.reduce((min, article) => 
-                Math.min(min, article.wordCount > 0 ? article.wordCount : Infinity), Infinity);
             
             statsSection.innerHTML = `
                 <div class="stats-card">
@@ -680,27 +842,35 @@
             const markdownSidebar = document.getElementById('markdownSidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
             
-            backBtn.addEventListener('click', () => {
+            // 兼容性事件绑定
+            function addEvent(element, event, handler) {
+                if (element.addEventListener) {
+                    element.addEventListener(event, handler);
+                } else if (element.attachEvent) {
+                    element.attachEvent('on' + event, handler);
+                }
+            }
+            
+            addEvent(backBtn, 'click', function() {
                 markdownViewer.style.display = 'none';
                 resetArticleInfo();
             });
             
-            toggleSidebarBtn.addEventListener('click', () => {
+            addEvent(toggleSidebarBtn, 'click', function() {
                 markdownSidebar.classList.toggle('hidden');
             });
             
-            // 点击遮罩层关闭侧边栏
             if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', () => {
+                addEvent(sidebarOverlay, 'click', function() {
                     markdownSidebar.classList.add('hidden');
                 });
             }
             
-            // 移动端：点击文章内容区域也关闭侧边栏
+            // 移动端优化
             if (window.innerWidth <= 768) {
                 const markdownContent = document.getElementById('markdownContent');
                 if (markdownContent) {
-                    markdownContent.addEventListener('click', (e) => {
+                    addEvent(markdownContent, 'click', function(e) {
                         if (!markdownSidebar.classList.contains('hidden')) {
                             markdownSidebar.classList.add('hidden');
                         }
@@ -708,22 +878,27 @@
                 }
             }
             
-            copyBtn.addEventListener('click', () => {
+            addEvent(copyBtn, 'click', function() {
                 const content = document.getElementById('markdownContent').innerText;
                 if (!content || content.trim() === '') {
                     showCopyStatus('内容为空，无法复制', false);
                     return;
                 }
                 
-                navigator.clipboard.writeText(content).then(() => {
-                    showCopyStatus('已复制到剪贴板', true);
-                }).catch(err => {
-                    console.error('复制失败:', err);
-                    showCopyStatus('复制失败，请重试', false);
-                });
+                // 兼容性复制
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(content).then(() => {
+                        showCopyStatus('已复制到剪贴板', true);
+                    }).catch(err => {
+                        console.error('复制失败:', err);
+                        fallbackCopyToClipboard(content, copyBtn);
+                    });
+                } else {
+                    fallbackCopyToClipboard(content, copyBtn);
+                }
             });
             
-            codeThemeSelect.addEventListener('change', (e) => {
+            addEvent(codeThemeSelect, 'change', function(e) {
                 const theme = e.target.value;
                 changeCodeTheme(theme);
                 localStorage.setItem('codeTheme', theme);
@@ -733,12 +908,12 @@
             codeThemeSelect.value = savedTheme;
             changeCodeTheme(savedTheme);
             
-            themeToggleBtn.addEventListener('click', () => {
+            addEvent(themeToggleBtn, 'click', function() {
                 markdownSidebar.classList.remove('hidden');
             });
             
-            // 移动端：监听窗口大小变化
-            window.addEventListener('resize', () => {
+            // 窗口大小变化监听
+            addEvent(window, 'resize', function() {
                 if (window.innerWidth > 768) {
                     markdownSidebar.classList.remove('hidden');
                 }
@@ -784,11 +959,37 @@
             }, 2000);
         }
 
+        // 兼容性复制函数
+        function fallbackCopyToClipboard(text, button) {
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    showCopyStatus('已复制到剪贴板', true);
+                } else {
+                    showCopyStatus('复制失败，请手动复制', false);
+                }
+            } catch (err) {
+                console.error('备用复制方法失败:', err);
+                showCopyStatus('复制失败，请手动复制', false);
+            }
+        }
+
         function changeCodeTheme(theme) {
-            const link = document.querySelector('link[href*="highlight.js"]');
-            if (link) {
+            const links = document.querySelectorAll('link[href*="highlight.js"]');
+            if (links.length > 0) {
                 const newTheme = theme === 'github' ? 'github.min.css' : `${theme}.min.css`;
-                link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${newTheme}`;
+                links[0].href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${newTheme}`;
             }
         }
 
@@ -831,76 +1032,65 @@
             
             try {
                 // 先获取文件大小以动态调整超时时间
-                const headResponse = await fetch(`${ARTICLES_BASE_URL}${filename}`, { method: 'HEAD' });
-                const fileSize = headResponse.headers.get('content-length') || 0;
+                const headResponse = await safeFetch(`${ARTICLES_BASE_URL}${filename}`, { method: 'HEAD' });
+                const fileSize = headResponse.headers ? (headResponse.headers.get('content-length') || 0) : 0;
                 const timeout = calculateTimeout(fileSize);
                 
-                // 设置加载超时
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                // 加载文章内容
+                const response = await safeFetch(`${ARTICLES_BASE_URL}${filename}`, {
+                    timeout: timeout
+                });
                 
-                let response;
-                try {
-                    response = await fetch(`${ARTICLES_BASE_URL}${filename}`, {
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误! 状态: ${response.status}`);
-                    }
-                    
-                    const markdown = await response.text();
-                    const loadTime = Date.now() - loadStartTime;
-                    
-                    console.log('加载Markdown成功，长度:', markdown.length);
-                    
-                    // 更新文章统计信息
-                    const actualFileSize = markdown.length;
-                    const wordCount = countWords(markdown);
-                    const readTime = calculateReadTime(wordCount);
-                    
-                    currentArticleStats = {
-                        ...currentArticleStats,
-                        wordCount: wordCount,
-                        loadTime: loadTime,
-                        readTime: readTime,
-                        fileSize: formatFileSize(actualFileSize),
-                        loadSuccess: true
-                    };
-                    
-                    updateArticleInfo(currentArticleStats);
-                    
-                    // 使用rendermd.js中的renderMarkdown函数
-                    let renderedHtml = '';
-                    if (window.renderMarkdown) {
-                        renderedHtml = window.renderMarkdown(markdown);
-                    } else {
-                        // 如果rendermd.js不可用，使用内置的简单渲染器
-                        renderedHtml = renderSimpleMarkdown(markdown);
-                    }
-                    
-                    markdownContent.innerHTML = renderedHtml;
-                    
-                    // 为代码块添加事件监听器
-                    initializeCodeCopyButtons();
-                    
-                    generateTOC();
-                    if (window.hljs) {
+                if (!response.ok) {
+                    throw new Error(`HTTP错误! 状态: ${response.status}`);
+                }
+                
+                const markdown = await response.text();
+                const loadTime = Date.now() - loadStartTime;
+                
+                console.log('加载Markdown成功，长度:', markdown.length);
+                
+                // 更新文章统计信息
+                const actualFileSize = markdown.length;
+                const wordCount = countWords(markdown);
+                const readTime = calculateReadTime(wordCount);
+                
+                currentArticleStats = {
+                    ...currentArticleStats,
+                    wordCount: wordCount,
+                    loadTime: loadTime,
+                    readTime: readTime,
+                    fileSize: formatFileSize(actualFileSize),
+                    loadSuccess: true
+                };
+                
+                updateArticleInfo(currentArticleStats);
+                
+                // 使用rendermd.js中的renderMarkdown函数
+                let renderedHtml = '';
+                if (window.renderMarkdown) {
+                    renderedHtml = window.renderMarkdown(markdown);
+                } else {
+                    renderedHtml = renderSimpleMarkdown(markdown);
+                }
+                
+                markdownContent.innerHTML = renderedHtml;
+                
+                // 为代码块添加事件监听器
+                initializeCodeCopyButtons();
+                
+                generateTOC();
+                if (window.hljs) {
+                    try {
                         hljs.highlightAll();
+                    } catch (e) {
+                        console.warn('代码高亮失败:', e);
                     }
-                    
-                    // 移动端：优化阅读体验
-                    if (window.innerWidth <= 768) {
-                        optimizeMobileReading();
-                    }
-                    
-                } catch (fetchError) {
-                    clearTimeout(timeoutId);
-                    if (fetchError.name === 'AbortError') {
-                        throw new Error(`加载超时（${timeout/1000}秒）。请稍后重试。`);
-                    }
-                    throw fetchError;
+                }
+                
+                // 移动端：优化阅读体验
+                if (window.innerWidth <= 768) {
+                    optimizeMobileReading();
                 }
                 
             } catch (error) {
@@ -914,6 +1104,11 @@
                 
                 updateArticleInfo(currentArticleStats);
                 
+                // 安全地处理文件名中的引号
+                const safeFilename = filename.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitle = title ? title.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+                const safeArticleInfo = articleInfo ? JSON.stringify(articleInfo).replace(/"/g, '&quot;') : 'null';
+                
                 markdownContent.innerHTML = `
                     <div class="error-message">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -922,10 +1117,10 @@
                         <p>文件路径: ${ARTICLES_BASE_URL}${filename}</p>
                         <p>已用时: ${currentArticleStats.loadTime}ms</p>
                         <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
-                            <button onclick="openArticle('${filename}', '${title}', ${articleInfo ? JSON.stringify(articleInfo).replace(/"/g, '&quot;') : 'null'})" class="action-btn">
+                            <button onclick="openArticle('${safeFilename}', '${safeTitle}', ${safeArticleInfo})" class="action-btn">
                                 <i class="fas fa-redo"></i> 重试
                             </button>
-                            <button onclick="downloadArticle('${filename}')" class="action-btn">
+                            <button onclick="downloadArticle('${safeFilename}')" class="action-btn">
                                 <i class="fas fa-download"></i> 下载原始文件
                             </button>
                         </div>
@@ -972,32 +1167,26 @@
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
-        // HTML转义函数
-        function escapeHtml(text) {
-            if (typeof text !== 'string') {
-                text = String(text);
-            }
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-        }
-
         // 简单的markdown渲染函数 - 备用方案
         function renderSimpleMarkdown(markdown) {
             if (!markdown || typeof markdown !== 'string') {
                 return '<p>内容为空</p>';
             }
             
-            let html = markdown;
+            // 安全的HTML转义
+            function escapeHtml(text) {
+                if (typeof text !== 'string') text = String(text);
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
             
-            // 使用安全的ID生成器
-            const codeId = generateSafeId('code');
-            const inlineId = generateSafeId('inline');
+            let html = markdown;
             
             // 首先处理代码块
             html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, lang, code) {
@@ -1005,10 +1194,10 @@
                 const escapedCode = escapeHtml(code);
                 
                 return `
-                    <div class="code-block-wrapper" data-code-id="${codeId}">
+                    <div class="code-block-wrapper">
                         <div class="code-block-header">
                             <span class="code-language">${languageName}</span>
-                            <button class="copy-code-btn" data-copy-target="${codeId}">
+                            <button class="copy-code-btn">
                                 <i class="far fa-copy"></i><span>复制</span>
                             </button>
                         </div>
@@ -1020,11 +1209,11 @@
             // 转换标题
             html = html
                 .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
-                .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
-                .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
+                .replace(/^## (.*$)/gm, '<h2>$2</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$3</h3>')
+                .replace(/^#### (.*$)/gm, '<h4>$4</h4>')
+                .replace(/^##### (.*$)/gm, '<h5>$5</h5>')
+                .replace(/^###### (.*$)/gm, '<h6>$6</h6>')
                 // 转换加粗
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/__(.*?)__/g, '<strong>$1</strong>')
@@ -1034,11 +1223,10 @@
                 // 转换行内代码
                 .replace(/`([^`]+)`/g, function(match, code) {
                     if (code.length > 10) {
-                        const escapedCode = escapeHtml(code);
                         return `
-                            <span class="code-inline-wrapper" data-inline-id="${inlineId}" data-code="${escapedCode}">
-                                <code>${code}</code>
-                                <button class="inline-copy-btn" data-copy-inline="${inlineId}">
+                            <span class="code-inline-wrapper">
+                                <code>${escapeHtml(code)}</code>
+                                <button class="inline-copy-btn">
                                     <i class="far fa-copy"></i>
                                 </button>
                             </span>
@@ -1082,42 +1270,21 @@
             return html;
         }
 
-        // 安全的ID生成器
-        function generateSafeId(prefix) {
-            return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        }
-
         // 获取语言名称
         function getLanguageName(lang) {
             if (!lang) return '代码';
             
             const languageMap = {
-                'js': 'JavaScript',
-                'javascript': 'JavaScript',
-                'py': 'Python',
-                'python': 'Python',
-                'lua': 'Lua',
-                'html': 'HTML',
-                'css': 'CSS',
-                'json': 'JSON',
-                'xml': 'XML',
-                'bash': 'Bash',
-                'sh': 'Shell',
-                'md': 'Markdown',
-                'cpp': 'C++',
-                'c': 'C',
-                'java': 'Java',
-                'php': 'PHP',
-                'ruby': 'Ruby',
-                'go': 'Go',
-                'rust': 'Rust',
-                'ts': 'TypeScript',
-                'typescript': 'TypeScript',
-                'sql': 'SQL',
-                'yaml': 'YAML',
-                'yml': 'YAML',
-                'txt': 'Text',
-                'plaintext': 'Text'
+                'js': 'JavaScript', 'javascript': 'JavaScript',
+                'py': 'Python', 'python': 'Python',
+                'lua': 'Lua', 'html': 'HTML', 'css': 'CSS',
+                'json': 'JSON', 'xml': 'XML', 'bash': 'Bash',
+                'sh': 'Shell', 'md': 'Markdown', 'cpp': 'C++',
+                'c': 'C', 'java': 'Java', 'php': 'PHP',
+                'ruby': 'Ruby', 'go': 'Go', 'rust': 'Rust',
+                'ts': 'TypeScript', 'typescript': 'TypeScript',
+                'sql': 'SQL', 'yaml': 'YAML', 'yml': 'YAML',
+                'txt': 'Text', 'plaintext': 'Text'
             };
             
             return languageMap[lang.toLowerCase()] || lang.charAt(0).toUpperCase() + lang.slice(1);
@@ -1130,14 +1297,20 @@
             codeBlocks.forEach(wrapper => {
                 const copyBtn = wrapper.querySelector('.copy-code-btn');
                 if (copyBtn) {
-                    // 移除现有的onclick事件
                     copyBtn.onclick = null;
-                    
-                    // 添加新的事件监听器
                     copyBtn.addEventListener('click', function() {
                         const codeElement = wrapper.querySelector('code');
                         if (codeElement) {
-                            copyTextToClipboard(codeElement.textContent, this);
+                            const text = codeElement.textContent;
+                            if (navigator.clipboard) {
+                                navigator.clipboard.writeText(text).then(() => {
+                                    showCopySuccess(this, false);
+                                }).catch(() => {
+                                    fallbackCopyToClipboard(text, this);
+                                });
+                            } else {
+                                fallbackCopyToClipboard(text, this);
+                            }
                         }
                     });
                 }
@@ -1148,22 +1321,25 @@
             inlineCodeWrappers.forEach(wrapper => {
                 const copyBtn = wrapper.querySelector('.inline-copy-btn');
                 if (copyBtn) {
-                    // 移除现有的onclick事件
                     copyBtn.onclick = null;
-                    
-                    // 添加新的事件监听器
                     copyBtn.addEventListener('click', function() {
                         const codeElement = wrapper.querySelector('code');
                         let codeText = '';
                         
                         if (codeElement) {
                             codeText = codeElement.textContent;
-                        } else if (wrapper.dataset.code) {
-                            codeText = wrapper.dataset.code;
                         }
                         
                         if (codeText) {
-                            copyTextToClipboard(codeText, this, true);
+                            if (navigator.clipboard) {
+                                navigator.clipboard.writeText(codeText).then(() => {
+                                    showCopySuccess(this, true);
+                                }).catch(() => {
+                                    showCopyError(this, true);
+                                });
+                            } else {
+                                showCopyError(this, true);
+                            }
                         } else {
                             showCopyError(this, true);
                         }
@@ -1172,53 +1348,18 @@
             });
         }
 
-        // 通用复制文本到剪贴板函数
-        function copyTextToClipboard(text, button, isInline = false) {
-            navigator.clipboard.writeText(text).then(() => {
-                showCopySuccess(button, isInline);
-            }).catch(err => {
-                console.error('复制失败:', err);
-                
-                // 如果Clipboard API失败，尝试使用备用方法
-                if (fallbackCopyToClipboard(text)) {
-                    showCopySuccess(button, isInline);
-                } else {
-                    showCopyError(button, isInline);
-                }
-            });
-        }
-
-        // 备用复制方法
-        function fallbackCopyToClipboard(text) {
-            try {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                textArea.style.top = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                
-                const successful = document.execCommand('copy');
-                document.body.removeChild(textArea);
-                return successful;
-            } catch (err) {
-                console.error('备用复制方法失败:', err);
-                return false;
-            }
-        }
-
         // 显示复制成功状态
         function showCopySuccess(button, isInline) {
             if (isInline) {
                 const originalHTML = button.innerHTML;
+                const originalColor = button.style.color;
+                
                 button.innerHTML = '<i class="fas fa-check"></i>';
                 button.style.color = '#00ff00';
                 
                 setTimeout(() => {
                     button.innerHTML = originalHTML;
-                    button.style.color = '';
+                    button.style.color = originalColor || '';
                 }, 2000);
             } else {
                 const originalHTML = button.innerHTML;
@@ -1238,12 +1379,14 @@
         function showCopyError(button, isInline) {
             if (isInline) {
                 const originalHTML = button.innerHTML;
+                const originalColor = button.style.color;
+                
                 button.innerHTML = '<i class="fas fa-times"></i>';
                 button.style.color = '#ff0000';
                 
                 setTimeout(() => {
                     button.innerHTML = originalHTML;
-                    button.style.color = '';
+                    button.style.color = originalColor || '';
                 }, 2000);
             } else {
                 const originalHTML = button.innerHTML;
@@ -1304,22 +1447,25 @@
             
             headings.forEach((heading, index) => {
                 if (!heading.id) {
-                    heading.id = `heading-${index}`;
+                    heading.id = 'heading-' + index;
                 }
                 
                 const level = parseInt(heading.tagName.substring(1));
                 const listItem = document.createElement('li');
-                listItem.className = `toc-item toc-level-${level}`;
+                listItem.className = 'toc-item toc-level-' + level;
                 
                 const link = document.createElement('a');
-                link.href = `#${heading.id}`;
+                link.href = '#' + heading.id;
                 link.className = 'toc-link';
                 link.textContent = heading.textContent;
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    heading.scrollIntoView({ behavior: 'smooth' });
+                    try {
+                        heading.scrollIntoView({ behavior: 'smooth' });
+                    } catch (e) {
+                        heading.scrollIntoView();
+                    }
                     
-                    // 移动端：点击目录项后关闭侧边栏
                     if (window.innerWidth <= 768) {
                         document.getElementById('markdownSidebar').classList.add('hidden');
                     }
@@ -1337,7 +1483,7 @@
             }
             
             const link = document.createElement('a');
-            link.href = `${ARTICLES_BASE_URL}${filename}`;
+            link.href = ARTICLES_BASE_URL + filename;
             link.download = filename;
             document.body.appendChild(link);
             link.click();
@@ -1353,7 +1499,14 @@
             html.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
             
-            themeSwitcher.addEventListener('click', () => {
+            // 兼容性事件绑定
+            if (themeSwitcher.addEventListener) {
+                themeSwitcher.addEventListener('click', toggleTheme);
+            } else if (themeSwitcher.attachEvent) {
+                themeSwitcher.attachEvent('onclick', toggleTheme);
+            }
+            
+            function toggleTheme() {
                 const currentTheme = html.getAttribute('data-theme');
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                 
@@ -1365,7 +1518,7 @@
                 setTimeout(() => {
                     themeSwitcher.style.transform = '';
                 }, 200);
-            });
+            }
             
             function updateThemeIcon(theme) {
                 if (theme === 'dark') {
@@ -1383,7 +1536,18 @@
             const bgVisible = localStorage.getItem('bgVisible') !== 'false';
             updateBackgroundVisibility(bgVisible);
             
-            bgToggle.addEventListener('click', () => {
+            // 兼容性事件绑定
+            function addBgToggleEvent() {
+                if (bgToggle.addEventListener) {
+                    bgToggle.addEventListener('click', toggleBackground);
+                } else if (bgToggle.attachEvent) {
+                    bgToggle.attachEvent('onclick', toggleBackground);
+                }
+            }
+            
+            addBgToggleEvent();
+            
+            function toggleBackground() {
                 const isVisible = bgContainer.style.opacity !== '0';
                 updateBackgroundVisibility(!isVisible);
                 localStorage.setItem('bgVisible', !isVisible);
@@ -1396,7 +1560,7 @@
                     icon.className = 'fas fa-eye-slash';
                     bgToggle.title = '显示背景';
                 }
-            });
+            }
             
             function updateBackgroundVisibility(visible) {
                 if (visible) {
@@ -1411,26 +1575,42 @@
             }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.altKey && e.key === 't') {
-                document.getElementById('themeSwitcher').click();
-            }
-            if (e.altKey && e.key === 'b') {
-                document.getElementById('bgToggle').click();
-            }
-            if (e.altKey && e.key === 'h') {
-                window.location.href = 'index.html';
-            }
-            if (e.key === 'Escape') {
-                const markdownViewer = document.getElementById('markdownViewer');
-                if (markdownViewer.style.display === 'flex') {
-                    document.getElementById('backBtn').click();
+        // 键盘快捷键 - 兼容性处理
+        function addKeyboardShortcuts() {
+            function addKeyEvent(event, handler) {
+                if (document.addEventListener) {
+                    document.addEventListener(event, handler);
+                } else if (document.attachEvent) {
+                    document.attachEvent('on' + event, handler);
                 }
             }
-            if (e.altKey && e.key === 'r') {
-                loadArticles();
-            }
-        });
+            
+            addKeyEvent('keydown', function(e) {
+                if (!e) e = window.event;
+                
+                if (e.altKey && e.key === 't') {
+                    document.getElementById('themeSwitcher').click();
+                }
+                if (e.altKey && e.key === 'b') {
+                    document.getElementById('bgToggle').click();
+                }
+                if (e.altKey && e.key === 'h') {
+                    window.location.href = 'index.html';
+                }
+                if (e.key === 'Escape') {
+                    const markdownViewer = document.getElementById('markdownViewer');
+                    if (markdownViewer.style.display === 'flex') {
+                        document.getElementById('backBtn').click();
+                    }
+                }
+                if (e.altKey && e.key === 'r') {
+                    loadArticles();
+                }
+            });
+        }
+        
+        // 初始化键盘快捷键
+        addKeyboardShortcuts();
     </script>
 </body>
 </html>
