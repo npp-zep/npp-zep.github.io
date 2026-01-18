@@ -35,212 +35,222 @@
       text-decoration: underline;
       margin-left: 5px;
     }
-
-    /* 护眼模式样式 */
-    :root[data-eye-protection="true"] {
-      --eye-protection-bg: #C7EDCC !important;
-      --eye-protection-text: #333333 !important;
-      --eye-protection-code-bg: #f0f0f0 !important;
-    }
-
-    :root[data-eye-protection="true"][data-theme="dark"] {
-      --eye-protection-bg: #0A2F1C !important;
-      --eye-protection-text: #E8F5E9 !important;
-      --eye-protection-code-bg: #1A3B2A !important;
-    }
-
-    .eye-protection-active {
-      background-color: var(--eye-protection-bg, #C7EDCC) !important;
-      color: var(--eye-protection-text, #333333) !important;
-    }
-
-    .eye-protection-active .markdown-content {
-      background-color: var(--eye-protection-bg, #C7EDCC) !important;
-      color: var(--eye-protection-text, #333333) !important;
-    }
-
-    .eye-protection-active code,
-    .eye-protection-active pre {
-      background-color: var(--eye-protection-code-bg, #f0f0f0) !important;
-    }
-
+    
     /* 搜索框样式 */
     .search-container {
       margin: 1.5rem 0;
       position: relative;
     }
-
-    .search-box {
-      width: 100%;
-      padding: 0.8rem 1rem 0.8rem 2.5rem;
-      border: 1px solid var(--border-color, #ddd);
-      border-radius: 8px;
-      font-size: 1rem;
-      background-color: var(--card-bg, #fff);
-      color: var(--text-color, #333);
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .search-box:focus {
-      outline: none;
-      border-color: var(--primary-color, #4a90e2);
-      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 0.8rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-secondary, #666);
-    }
-
-    .search-actions {
+    
+    .search-wrapper {
       display: flex;
       gap: 0.5rem;
-      margin-top: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .search-btn {
-      padding: 0.4rem 0.8rem;
-      border: 1px solid var(--border-color, #ddd);
-      background-color: var(--card-bg, #fff);
-      color: var(--text-color, #333);
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-
-    .search-btn:hover {
-      background-color: var(--hover-bg, #f5f5f5);
-    }
-
-    .search-btn.active {
-      background-color: var(--primary-color, #4a90e2);
-      color: white;
-      border-color: var(--primary-color, #4a90e2);
-    }
-
-    .search-results-info {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: var(--text-secondary, #666);
-      display: flex;
-      justify-content: space-between;
       align-items: center;
     }
-
+    
+    .search-input {
+      flex: 1;
+      padding: 0.8rem 1rem 0.8rem 3rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+    
+    .search-clear {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.2rem;
+      display: none;
+    }
+    
+    .search-clear:hover {
+      color: var(--text-primary);
+    }
+    
+    .search-options {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+      flex-wrap: wrap;
+    }
+    
+    .search-option {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    
+    .search-option input[type="checkbox"] {
+      margin: 0;
+    }
+    
+    .search-stats {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: var(--card-bg);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+      display: none;
+    }
+    
+    .search-stats.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .search-results-info {
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+    
+    .search-results-info strong {
+      color: var(--primary-color);
+    }
+    
     .search-highlight {
-      background-color: rgba(255, 255, 0, 0.3);
-      padding: 0.1rem 0.2rem;
+      background-color: rgba(255, 235, 59, 0.3);
+      padding: 0 2px;
       border-radius: 2px;
-      transition: background-color 0.3s ease;
     }
-
-    .search-highlight.active {
-      background-color: rgba(255, 200, 0, 0.6);
-      animation: pulse 1s ease-in-out;
-    }
-
-    @keyframes pulse {
-      0% { background-color: rgba(255, 255, 0, 0.3); }
-      50% { background-color: rgba(255, 200, 0, 0.8); }
-      100% { background-color: rgba(255, 200, 0, 0.6); }
-    }
-
-    .article-card.search-match {
-      border-left: 4px solid var(--primary-color, #4a90e2);
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
+    
     .no-results {
       text-align: center;
       padding: 2rem;
-      color: var(--text-secondary, #666);
+      color: var(--text-secondary);
     }
-
+    
     .no-results i {
-      font-size: 3rem;
+      font-size: 2rem;
       margin-bottom: 1rem;
-      opacity: 0.5;
+      color: var(--text-tertiary);
     }
-
-    /* 护眼模式切换按钮 */
-    .eye-protection-toggle {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: var(--card-bg, #fff);
-      border: 2px solid var(--border-color, #ddd);
-      color: var(--text-color, #333);
-      cursor: pointer;
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 文章卡片搜索高亮 */
+    .article-card .search-highlight {
+      background-color: rgba(255, 235, 59, 0.5);
+      font-weight: bold;
+    }
+    
+    /* 筛选按钮优化 */
+    .filter-section {
+      position: relative;
+    }
+    
+    .filter-buttons {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
-
-    .eye-protection-toggle:hover {
-      transform: scale(1.1);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
     }
-
-    .eye-protection-toggle.active {
-      background-color: #4CAF50;
+    
+    .filter-btn:hover {
+      background: var(--hover-bg);
+      color: var(--text-primary);
+    }
+    
+    .filter-btn.active {
+      background: var(--primary-color);
       color: white;
-      border-color: #4CAF50;
+      border-color: var(--primary-color);
     }
-
-    /* 搜索结果导航 */
-    .search-navigation {
+    
+    /* 顶部操作栏 */
+    .top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .view-controls {
       display: flex;
       gap: 0.5rem;
-      margin-top: 0.5rem;
     }
-
-    .nav-btn {
-      padding: 0.3rem 0.6rem;
-      border: 1px solid var(--border-color, #ddd);
-      background-color: var(--card-bg, #fff);
-      color: var(--text-color, #333);
-      border-radius: 4px;
+    
+    .view-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 0.8rem;
       transition: all 0.2s ease;
     }
-
-    .nav-btn:hover:not(:disabled) {
-      background-color: var(--hover-bg, #f5f5f5);
+    
+    .view-btn:hover {
+      background: var(--hover-bg);
+      color: var(--text-primary);
     }
-
-    .nav-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    
+    .view-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
     }
-
-    .current-match {
-      font-weight: bold;
-      color: var(--primary-color, #4a90e2);
+    
+    /* 响应式优化 */
+    @media (max-width: 768px) {
+      .search-wrapper {
+        flex-direction: column;
+      }
+      
+      .search-input {
+        width: 100%;
+      }
+      
+      .top-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .view-controls {
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -254,11 +264,6 @@
     <button onclick="document.getElementById('browserWarning').style.display='none'"
       style="margin-left: 15px; background: #fff; border: 1px solid #ccc; padding: 2px 8px; cursor: pointer;">×</button>
   </div>
-
-  <!-- 护眼模式切换按钮 -->
-  <button class="eye-protection-toggle" id="eyeProtectionToggle" title="切换护眼模式">
-    <i class="fas fa-eye"></i>
-  </button>
 
   <div class="loading" id="loading">
     <div class="spinner"></div>
@@ -291,35 +296,25 @@
           <h3><i class="fas fa-info-circle"></i> 说明</h3>
           <p>这里是我在学习过程中的见解和想法，会非常的杂乱</p>
 
-          <!-- 搜索框 -->
-          <div class="search-container">
-            <div style="position: relative;">
-              <i class="fas fa-search search-icon"></i>
-              <input type="text" 
-                     id="searchInput" 
-                     class="search-box" 
-                     placeholder="搜索文章标题、描述或标签... 支持正则表达式"
-                     autocomplete="off">
-            </div>
-            
-            <div class="search-actions">
-              <button class="search-btn" id="searchTitleBtn" data-search-type="title">标题</button>
-              <button class="search-btn" id="searchContentBtn" data-search-type="content">内容</button>
-              <button class="search-btn" id="searchTagsBtn" data-search-type="tags">标签</button>
-              <button class="search-btn" id="searchAllBtn" data-search-type="all" class="active">全部</button>
-              <button class="search-btn" id="clearSearchBtn">
-                <i class="fas fa-times"></i> 清除
+          <div class="top-actions">
+            <div class="view-controls">
+              <button class="view-btn active" id="viewGridBtn" title="网格视图">
+                <i class="fas fa-th-large"></i>
+              </button>
+              <button class="view-btn" id="viewListBtn" title="列表视图">
+                <i class="fas fa-list"></i>
+              </button>
+              <button class="view-btn" id="sortDateBtn" title="按日期排序">
+                <i class="fas fa-calendar-alt"></i>
+              </button>
+              <button class="view-btn" id="sortTitleBtn" title="按标题排序">
+                <i class="fas fa-sort-alpha-down"></i>
               </button>
             </div>
-
-            <div class="search-results-info" id="searchResultsInfo" style="display: none;">
-              <span id="resultsCount">找到 0 个结果</span>
-              <div class="search-navigation" id="searchNavigation" style="display: none;">
-                <button class="nav-btn" id="prevMatchBtn" disabled>上一个</button>
-                <span id="currentMatch">0 / 0</span>
-                <button class="nav-btn" id="nextMatchBtn" disabled>下一个</button>
-              </div>
-            </div>
+            
+            <button class="btn" id="refreshBtn" title="刷新文章列表">
+              <i class="fas fa-sync-alt"></i> 刷新
+            </button>
           </div>
 
           <h3><i class="fas fa-filter"></i> 筛选文章</h3>
@@ -335,6 +330,44 @@
               <button class="filter-btn" data-filter="document">文档</button>
               <button class="filter-btn" data-filter="api">API文档</button>
               <button class="filter-btn" data-filter="guide">指南</button>
+            </div>
+            
+            <div class="search-container">
+              <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" 
+                       class="search-input" 
+                       id="searchInput" 
+                       placeholder="搜索文章标题、描述或标签...">
+                <button class="search-clear" id="searchClear" title="清除搜索">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              
+              <div class="search-options">
+                <label class="search-option">
+                  <input type="checkbox" id="searchTitle" checked> 标题
+                </label>
+                <label class="search-option">
+                  <input type="checkbox" id="searchDescription" checked> 描述
+                </label>
+                <label class="search-option">
+                  <input type="checkbox" id="searchTags" checked> 标签
+                </label>
+                <label class="search-option">
+                  <input type="checkbox" id="searchCaseSensitive"> 区分大小写
+                </label>
+                <label class="search-option">
+                  <input type="checkbox" id="searchUseRegex"> 使用正则表达式
+                </label>
+              </div>
+              
+              <div class="search-stats" id="searchStats">
+                <div class="search-results-info">
+                  找到 <strong id="resultsCount">0</strong> 个匹配结果
+                  <span id="searchTimeInfo"></span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -367,6 +400,16 @@
         </div>
 
         <div class="stats-section" id="statsSection">
+        </div>
+        
+        <div class="search-help">
+          <h4><i class="fas fa-search"></i> 搜索帮助</h4>
+          <ul>
+            <li>支持关键词搜索</li>
+            <li>使用空格分隔多个关键词</li>
+            <li>启用正则表达式进行高级搜索</li>
+            <li>点击标签快速筛选</li>
+          </ul>
         </div>
       </aside>
     </main>
@@ -524,13 +567,16 @@
     const ARTICLES_CONFIG_URL = 'assets/passage/articles.json';
     const ARTICLES_BASE_URL = 'assets/passage/';
     let allArticles = [];
+    let filteredArticles = [];
     let currentArticleStats = null;
-    
+    let currentSearchQuery = '';
+    let currentFilter = 'all';
+    let currentSort = 'date';
+    let currentView = 'grid';
+
     // 搜索相关变量
-    let currentSearchType = 'all';
-    let searchResults = [];
-    let currentMatchIndex = -1;
-    let searchHighlights = [];
+    let searchTimeout = null;
+    let lastSearchTime = 0;
 
     // 页面初始化
     window.addEventListener('load', function () {
@@ -550,8 +596,8 @@
       initThemeSwitcher();
       initBackgroundToggle();
       initMarkdownViewer();
-      initEyeProtection();
       initSearch();
+      initViewControls();
 
       // 如果加载完成，清除超时
       clearTimeout(loadingTimeout);
@@ -563,416 +609,332 @@
       }, 500);
     });
 
-    // 初始化护眼模式
-    function initEyeProtection() {
-      const eyeToggle = document.getElementById('eyeProtectionToggle');
-      const html = document.documentElement;
+    // 初始化视图控制
+    function initViewControls() {
+      const viewGridBtn = document.getElementById('viewGridBtn');
+      const viewListBtn = document.getElementById('viewListBtn');
+      const sortDateBtn = document.getElementById('sortDateBtn');
+      const sortTitleBtn = document.getElementById('sortTitleBtn');
+      const refreshBtn = document.getElementById('refreshBtn');
       
-      // 从本地存储获取护眼模式状态
-      const eyeProtectionEnabled = localStorage.getItem('eyeProtection') === 'true';
+      viewGridBtn.addEventListener('click', () => {
+        setView('grid');
+        viewGridBtn.classList.add('active');
+        viewListBtn.classList.remove('active');
+      });
       
-      // 设置初始状态
-      if (eyeProtectionEnabled) {
-        html.setAttribute('data-eye-protection', 'true');
-        eyeToggle.classList.add('active');
-        eyeToggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
-        eyeToggle.title = '关闭护眼模式';
+      viewListBtn.addEventListener('click', () => {
+        setView('list');
+        viewListBtn.classList.add('active');
+        viewGridBtn.classList.remove('active');
+      });
+      
+      sortDateBtn.addEventListener('click', () => {
+        setSort('date');
+        sortDateBtn.classList.add('active');
+        sortTitleBtn.classList.remove('active');
+        renderArticles();
+      });
+      
+      sortTitleBtn.addEventListener('click', () => {
+        setSort('title');
+        sortTitleBtn.classList.add('active');
+        sortDateBtn.classList.remove('active');
+        renderArticles();
+      });
+      
+      refreshBtn.addEventListener('click', () => {
+        loadArticles();
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刷新中...';
+        refreshBtn.disabled = true;
+        setTimeout(() => {
+          refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新';
+          refreshBtn.disabled = false;
+        }, 1000);
+      });
+      
+      // 从本地存储加载设置
+      const savedView = localStorage.getItem('articleView') || 'grid';
+      const savedSort = localStorage.getItem('articleSort') || 'date';
+      
+      setView(savedView);
+      setSort(savedSort);
+      
+      if (savedView === 'grid') {
+        viewGridBtn.classList.add('active');
+        viewListBtn.classList.remove('active');
       } else {
-        html.setAttribute('data-eye-protection', 'false');
-        eyeToggle.classList.remove('active');
-        eyeToggle.innerHTML = '<i class="fas fa-eye"></i>';
-        eyeToggle.title = '开启护眼模式';
+        viewListBtn.classList.add('active');
+        viewGridBtn.classList.remove('active');
       }
       
-      // 添加点击事件
-      eyeToggle.addEventListener('click', function() {
-        const currentState = html.getAttribute('data-eye-protection');
-        const newState = currentState === 'true' ? 'false' : 'true';
-        
-        html.setAttribute('data-eye-protection', newState);
-        localStorage.setItem('eyeProtection', newState);
-        
-        if (newState === 'true') {
-          eyeToggle.classList.add('active');
-          eyeToggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
-          eyeToggle.title = '关闭护眼模式';
-          
-          // 如果正在阅读文章，应用护眼模式到文章内容
-          const markdownViewer = document.getElementById('markdownViewer');
-          if (markdownViewer.style.display === 'flex') {
-            document.body.classList.add('eye-protection-active');
-          }
-        } else {
-          eyeToggle.classList.remove('active');
-          eyeToggle.innerHTML = '<i class="fas fa-eye"></i>';
-          eyeToggle.title = '开启护眼模式';
-          
-          // 移除护眼模式样式
-          document.body.classList.remove('eye-protection-active');
-        }
-        
-        // 添加点击动画
-        eyeToggle.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-          eyeToggle.style.transform = '';
-        }, 200);
-      });
+      if (savedSort === 'date') {
+        sortDateBtn.classList.add('active');
+        sortTitleBtn.classList.remove('active');
+      } else {
+        sortTitleBtn.classList.add('active');
+        sortDateBtn.classList.remove('active');
+      }
+    }
+    
+    function setView(view) {
+      currentView = view;
+      localStorage.setItem('articleView', view);
+      const articlesList = document.getElementById('articlesList');
+      if (view === 'grid') {
+        articlesList.classList.remove('list-view');
+        articlesList.classList.add('grid-view');
+      } else {
+        articlesList.classList.remove('grid-view');
+        articlesList.classList.add('list-view');
+      }
+    }
+    
+    function setSort(sort) {
+      currentSort = sort;
+      localStorage.setItem('articleSort', sort);
     }
 
     // 初始化搜索功能
     function initSearch() {
       const searchInput = document.getElementById('searchInput');
-      const searchTitleBtn = document.getElementById('searchTitleBtn');
-      const searchContentBtn = document.getElementById('searchContentBtn');
-      const searchTagsBtn = document.getElementById('searchTagsBtn');
-      const searchAllBtn = document.getElementById('searchAllBtn');
-      const clearSearchBtn = document.getElementById('clearSearchBtn');
-      const prevMatchBtn = document.getElementById('prevMatchBtn');
-      const nextMatchBtn = document.getElementById('nextMatchBtn');
-      const resultsInfo = document.getElementById('searchResultsInfo');
-      const searchNavigation = document.getElementById('searchNavigation');
-
-      // 设置初始搜索类型
-      setSearchType('all');
-
-      // 搜索类型按钮点击事件
-      searchTitleBtn.addEventListener('click', () => setSearchType('title'));
-      searchContentBtn.addEventListener('click', () => setSearchType('content'));
-      searchTagsBtn.addEventListener('click', () => setSearchType('tags'));
-      searchAllBtn.addEventListener('click', () => setSearchType('all'));
-
-      // 清除搜索
-      clearSearchBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        clearSearch();
-        updateSearchUI();
-      });
-
-      // 搜索输入事件（防抖）
-      let searchTimeout;
-      searchInput.addEventListener('input', (e) => {
+      const searchClear = document.getElementById('searchClear');
+      const searchTitle = document.getElementById('searchTitle');
+      const searchDescription = document.getElementById('searchDescription');
+      const searchTags = document.getElementById('searchTags');
+      const searchCaseSensitive = document.getElementById('searchCaseSensitive');
+      const searchUseRegex = document.getElementById('searchUseRegex');
+      
+      // 从本地存储加载搜索设置
+      const savedSearchTitle = localStorage.getItem('searchTitle') !== 'false';
+      const savedSearchDescription = localStorage.getItem('searchDescription') !== 'false';
+      const savedSearchTags = localStorage.getItem('searchTags') !== 'false';
+      const savedSearchCaseSensitive = localStorage.getItem('searchCaseSensitive') === 'true';
+      const savedSearchUseRegex = localStorage.getItem('searchUseRegex') === 'true';
+      
+      searchTitle.checked = savedSearchTitle;
+      searchDescription.checked = savedSearchDescription;
+      searchTags.checked = savedSearchTags;
+      searchCaseSensitive.checked = savedSearchCaseSensitive;
+      searchUseRegex.checked = savedSearchUseRegex;
+      
+      // 搜索输入事件
+      searchInput.addEventListener('input', function(e) {
+        currentSearchQuery = e.target.value.trim();
+        
+        // 显示/隐藏清除按钮
+        if (currentSearchQuery.length > 0) {
+          searchClear.style.display = 'block';
+        } else {
+          searchClear.style.display = 'none';
+        }
+        
+        // 防抖处理
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
-          performSearch(e.target.value);
+          performSearch();
         }, 300);
       });
-
-      // 搜索快捷键
-      searchInput.addEventListener('keydown', (e) => {
+      
+      // 清除搜索
+      searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        currentSearchQuery = '';
+        searchClear.style.display = 'none';
+        performSearch();
+        searchInput.focus();
+      });
+      
+      // 搜索选项变化
+      [searchTitle, searchDescription, searchTags, searchCaseSensitive, searchUseRegex].forEach(option => {
+        option.addEventListener('change', function() {
+          // 保存设置到本地存储
+          localStorage.setItem('searchTitle', searchTitle.checked);
+          localStorage.setItem('searchDescription', searchDescription.checked);
+          localStorage.setItem('searchTags', searchTags.checked);
+          localStorage.setItem('searchCaseSensitive', searchCaseSensitive.checked);
+          localStorage.setItem('searchUseRegex', searchUseRegex.checked);
+          
+          if (currentSearchQuery.length > 0) {
+            performSearch();
+          }
+        });
+      });
+      
+      // 回车键搜索
+      searchInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
-          performSearch(e.target.value);
-        }
-        if (e.key === 'Escape') {
-          searchInput.value = '';
-          clearSearch();
-          updateSearchUI();
+          performSearch();
         }
       });
-
-      // 搜索结果导航
-      prevMatchBtn.addEventListener('click', () => navigateSearch(-1));
-      nextMatchBtn.addEventListener('click', () => navigateSearch(1));
-
-      // 设置搜索类型
-      function setSearchType(type) {
-        currentSearchType = type;
-        
-        // 更新按钮状态
-        [searchTitleBtn, searchContentBtn, searchTagsBtn, searchAllBtn].forEach(btn => {
-          btn.classList.remove('active');
-        });
-        
-        document.getElementById(`search${type.charAt(0).toUpperCase() + type.slice(1)}Btn`).classList.add('active');
-        
-        // 如果搜索框有内容，重新搜索
-        if (searchInput.value.trim()) {
-          performSearch(searchInput.value);
+      
+      // 点击标签时自动填充搜索
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('article-tag')) {
+          const tagText = e.target.textContent.trim();
+          searchInput.value = tagText;
+          currentSearchQuery = tagText;
+          searchClear.style.display = 'block';
+          performSearch();
         }
+      });
+    }
+    
+    // 执行搜索
+    function performSearch() {
+      const startTime = performance.now();
+      
+      if (!allArticles || allArticles.length === 0) {
+        return;
       }
-
-      // 执行搜索
-      function performSearch(query) {
-        if (!query.trim()) {
-          clearSearch();
-          updateSearchUI();
-          return;
-        }
-
+      
+      const searchTitle = document.getElementById('searchTitle').checked;
+      const searchDescription = document.getElementById('searchDescription').checked;
+      const searchTags = document.getElementById('searchTags').checked;
+      const searchCaseSensitive = document.getElementById('searchCaseSensitive').checked;
+      const searchUseRegex = document.getElementById('searchUseRegex').checked;
+      
+      let results = allArticles;
+      
+      // 首先应用筛选
+      if (currentFilter !== 'all') {
+        results = results.filter(article => {
+          return article.tags && article.tags.some(tag => 
+            tag.toLowerCase().includes(currentFilter.toLowerCase())
+          );
+        });
+      }
+      
+      // 然后应用搜索
+      if (currentSearchQuery) {
         try {
-          // 尝试将查询作为正则表达式处理
-          let regex;
-          try {
-            regex = new RegExp(query, 'i');
-          } catch (e) {
-            // 如果正则表达式无效，使用普通字符串搜索
-            regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-          }
-
-          searchResults = [];
-          searchHighlights = [];
-
-          // 搜索文章
-          allArticles.forEach((article, index) => {
-            let matches = [];
-            let score = 0;
-
-            // 根据搜索类型匹配
-            switch (currentSearchType) {
-              case 'title':
-                if (article.title && regex.test(article.title)) {
-                  matches.push({ type: 'title', text: article.title });
-                  score += 10;
-                }
-                break;
-                
-              case 'content':
-                if (article.description && regex.test(article.description)) {
-                  matches.push({ type: 'description', text: article.description });
-                  score += 5;
-                }
-                break;
-                
-              case 'tags':
-                if (article.tags && article.tags.some(tag => regex.test(tag))) {
-                  matches.push({ type: 'tags', text: article.tags.join(', ') });
-                  score += 8;
-                }
-                break;
-                
-              case 'all':
-                if (article.title && regex.test(article.title)) {
-                  matches.push({ type: 'title', text: article.title });
-                  score += 10;
-                }
-                if (article.description && regex.test(article.description)) {
-                  matches.push({ type: 'description', text: article.description });
-                  score += 5;
-                }
-                if (article.tags && article.tags.some(tag => regex.test(tag))) {
-                  matches.push({ type: 'tags', text: article.tags.join(', ') });
-                  score += 8;
-                }
-                break;
-            }
-
-            if (matches.length > 0) {
-              searchResults.push({
-                article: article,
-                index: index,
-                matches: matches,
-                score: score
-              });
-            }
-          });
-
-          // 按分数排序
-          searchResults.sort((a, b) => b.score - a.score);
-
-          // 更新UI
-          updateSearchResults();
-          updateSearchUI();
+          let searchPattern;
           
-          // 如果有结果，导航到第一个
-          if (searchResults.length > 0) {
-            navigateToMatch(0);
+          if (searchUseRegex) {
+            // 使用正则表达式
+            try {
+              const flags = searchCaseSensitive ? 'g' : 'gi';
+              searchPattern = new RegExp(currentSearchQuery, flags);
+            } catch (e) {
+              // 正则表达式无效，回退到普通搜索
+              console.warn('无效的正则表达式:', e.message);
+              searchPattern = null;
+            }
           }
           
-        } catch (error) {
-          console.error('搜索错误:', error);
-          showSearchError('搜索错误: ' + error.message);
-        }
-      }
-
-      // 更新搜索结果显示
-      function updateSearchResults() {
-        const articlesList = document.getElementById('articlesList');
-        const articleCards = articlesList.querySelectorAll('.article-card');
-        
-        // 重置所有卡片
-        articleCards.forEach(card => {
-          card.classList.remove('search-match');
-          card.style.display = 'none';
-        });
-        
-        // 显示匹配的卡片
-        searchResults.forEach(result => {
-          const card = articleCards[result.index];
-          if (card) {
-            card.classList.add('search-match');
-            card.style.display = 'block';
+          results = results.filter(article => {
+            let found = false;
             
-            // 高亮匹配文本
-            highlightCardText(card, result);
-          }
-        });
-        
-        // 如果没有匹配结果，显示提示
-        if (searchResults.length === 0 && searchInput.value.trim()) {
-          articlesList.innerHTML += `
-            <div class="no-results">
-              <i class="fas fa-search"></i>
-              <h3>未找到匹配的文章</h3>
-              <p>尝试使用不同的关键词或搜索类型</p>
-            </div>
-          `;
-        }
-      }
-
-      // 高亮卡片文本
-      function highlightCardText(card, result) {
-        try {
-          let query = searchInput.value.trim();
-          let regex;
-          
-          try {
-            regex = new RegExp(query, 'gi');
-          } catch (e) {
-            regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-          }
-          
-          // 高亮标题
-          const titleElement = card.querySelector('.article-title');
-          if (titleElement) {
-            const originalTitle = titleElement.textContent;
-            const highlightedTitle = originalTitle.replace(regex, match => 
-              `<span class="search-highlight">${match}</span>`
-            );
-            titleElement.innerHTML = highlightedTitle;
-          }
-          
-          // 高亮描述
-          const descElement = card.querySelector('.article-description');
-          if (descElement) {
-            const originalDesc = descElement.textContent;
-            const highlightedDesc = originalDesc.replace(regex, match => 
-              `<span class="search-highlight">${match}</span>`
-            );
-            descElement.innerHTML = highlightedDesc;
-          }
-          
-          // 高亮标签
-          const tagElements = card.querySelectorAll('.article-tag');
-          tagElements.forEach(tag => {
-            const originalTag = tag.textContent;
-            if (regex.test(originalTag)) {
-              tag.innerHTML = originalTag.replace(regex, match => 
-                `<span class="search-highlight">${match}</span>`
-              );
+            // 搜索标题
+            if (searchTitle && article.title) {
+              if (searchUseRegex && searchPattern) {
+                found = searchPattern.test(article.title);
+              } else {
+                const title = searchCaseSensitive ? article.title : article.title.toLowerCase();
+                const query = searchCaseSensitive ? currentSearchQuery : currentSearchQuery.toLowerCase();
+                found = title.includes(query);
+              }
             }
+            
+            // 搜索描述
+            if (!found && searchDescription && article.description) {
+              if (searchUseRegex && searchPattern) {
+                found = searchPattern.test(article.description);
+              } else {
+                const description = searchCaseSensitive ? article.description : article.description.toLowerCase();
+                const query = searchCaseSensitive ? currentSearchQuery : currentSearchQuery.toLowerCase();
+                found = description.includes(query);
+              }
+            }
+            
+            // 搜索标签
+            if (!found && searchTags && article.tags) {
+              if (searchUseRegex && searchPattern) {
+                found = article.tags.some(tag => searchPattern.test(tag));
+              } else {
+                const query = searchCaseSensitive ? currentSearchQuery : currentSearchQuery.toLowerCase();
+                found = article.tags.some(tag => {
+                  const tagText = searchCaseSensitive ? tag : tag.toLowerCase();
+                  return tagText.includes(query);
+                });
+              }
+            }
+            
+            return found;
           });
-          
         } catch (error) {
-          console.error('高亮错误:', error);
+          console.error('搜索出错:', error);
         }
       }
-
-      // 清除搜索
-      function clearSearch() {
-        searchResults = [];
-        currentMatchIndex = -1;
-        searchHighlights = [];
-        
-        // 重置所有卡片
-        const articlesList = document.getElementById('articlesList');
-        const articleCards = articlesList.querySelectorAll('.article-card');
-        
-        articleCards.forEach(card => {
-          card.classList.remove('search-match');
-          card.style.display = 'block';
-          
-          // 移除高亮
-          const highlights = card.querySelectorAll('.search-highlight');
-          highlights.forEach(highlight => {
-            const parent = highlight.parentNode;
-            while (highlight.firstChild) {
-              parent.insertBefore(highlight.firstChild, highlight);
-            }
-            parent.removeChild(highlight);
-          });
-        });
-        
-        // 移除无结果提示
-        const noResults = articlesList.querySelector('.no-results');
-        if (noResults) {
-          noResults.remove();
-        }
+      
+      // 应用排序
+      results = sortArticles(results, currentSort);
+      
+      filteredArticles = results;
+      
+      // 更新搜索统计
+      const endTime = performance.now();
+      const searchDuration = Math.round(endTime - startTime);
+      lastSearchTime = searchDuration;
+      
+      updateSearchStats(results.length, searchDuration);
+      
+      // 渲染文章
+      renderArticles();
+    }
+    
+    // 更新搜索统计信息
+    function updateSearchStats(resultsCount, searchDuration) {
+      const searchStats = document.getElementById('searchStats');
+      const resultsCountElement = document.getElementById('resultsCount');
+      const searchTimeInfo = document.getElementById('searchTimeInfo');
+      
+      resultsCountElement.textContent = resultsCount;
+      
+      if (currentSearchQuery) {
+        searchStats.classList.add('show');
+        searchTimeInfo.textContent = ` · 搜索用时 ${searchDuration}ms`;
+      } else {
+        searchStats.classList.remove('show');
       }
-
-      // 更新搜索UI
-      function updateSearchUI() {
-        const resultsInfo = document.getElementById('searchResultsInfo');
-        const searchNavigation = document.getElementById('searchNavigation');
-        const resultsCount = document.getElementById('resultsCount');
-        const currentMatch = document.getElementById('currentMatch');
-        
-        if (searchInput.value.trim() && searchResults.length > 0) {
-          resultsInfo.style.display = 'flex';
-          searchNavigation.style.display = 'flex';
-          resultsCount.textContent = `找到 ${searchResults.length} 个结果`;
-          currentMatch.textContent = `${currentMatchIndex + 1} / ${searchResults.length}`;
-          
-          // 更新导航按钮状态
-          document.getElementById('prevMatchBtn').disabled = currentMatchIndex <= 0;
-          document.getElementById('nextMatchBtn').disabled = currentMatchIndex >= searchResults.length - 1;
-        } else if (searchInput.value.trim()) {
-          resultsInfo.style.display = 'flex';
-          searchNavigation.style.display = 'none';
-          resultsCount.textContent = `找到 0 个结果`;
+    }
+    
+    // 高亮搜索结果
+    function highlightSearchText(text) {
+      if (!currentSearchQuery || !text) return text;
+      
+      const searchTitle = document.getElementById('searchTitle').checked;
+      const searchDescription = document.getElementById('searchDescription').checked;
+      const searchTags = document.getElementById('searchTags').checked;
+      const searchCaseSensitive = document.getElementById('searchCaseSensitive').checked;
+      const searchUseRegex = document.getElementById('searchUseRegex').checked;
+      
+      try {
+        if (searchUseRegex) {
+          const flags = searchCaseSensitive ? 'g' : 'gi';
+          const regex = new RegExp(currentSearchQuery, flags);
+          return text.replace(regex, match => `<span class="search-highlight">${match}</span>`);
         } else {
-          resultsInfo.style.display = 'none';
-          searchNavigation.style.display = 'none';
-        }
-      }
-
-      // 导航到匹配项
-      function navigateToMatch(index) {
-        if (index < 0 || index >= searchResults.length) return;
-        
-        // 移除之前的高亮
-        searchHighlights.forEach(highlight => {
-          highlight.classList.remove('active');
-        });
-        
-        currentMatchIndex = index;
-        const result = searchResults[index];
-        
-        // 滚动到匹配的文章卡片
-        const articlesList = document.getElementById('articlesList');
-        const card = articlesList.querySelectorAll('.article-card')[result.index];
-        
-        if (card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const searchText = searchCaseSensitive ? currentSearchQuery : currentSearchQuery.toLowerCase();
+          const lowerText = searchCaseSensitive ? text : text.toLowerCase();
           
-          // 添加高亮动画
-          const highlights = card.querySelectorAll('.search-highlight');
-          highlights.forEach(highlight => {
-            highlight.classList.add('active');
-            searchHighlights.push(highlight);
-          });
+          let result = '';
+          let lastIndex = 0;
+          let index = lowerText.indexOf(searchText);
+          
+          while (index !== -1) {
+            result += text.substring(lastIndex, index);
+            result += `<span class="search-highlight">${text.substring(index, index + searchText.length)}</span>`;
+            lastIndex = index + searchText.length;
+            index = lowerText.indexOf(searchText, lastIndex);
+          }
+          
+          result += text.substring(lastIndex);
+          return result;
         }
-        
-        updateSearchUI();
-      }
-
-      // 导航搜索
-      function navigateSearch(direction) {
-        const newIndex = currentMatchIndex + direction;
-        if (newIndex >= 0 && newIndex < searchResults.length) {
-          navigateToMatch(newIndex);
-        }
-      }
-
-      // 显示搜索错误
-      function showSearchError(message) {
-        const articlesList = document.getElementById('articlesList');
-        articlesList.innerHTML += `
-          <div class="error-message">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>搜索错误</h3>
-            <p>${message}</p>
-            <p style="font-size: 0.85rem; margin-top: 1rem;">请检查您的搜索表达式是否正确。</p>
-          </div>
-        `;
+      } catch (error) {
+        console.error('高亮文本出错:', error);
+        return text;
       }
     }
 
@@ -1114,38 +1076,131 @@
         // 清理和验证文章数据
         allArticles = cleanArticlesData(allArticles);
 
-        articlesList.innerHTML = '';
+        // 应用初始筛选和搜索
+        filteredArticles = allArticles;
+        performSearch();
 
-        // 分批渲染文章卡片，避免阻塞UI
-        function renderArticlesBatch(startIndex, batchSize) {
-          const endIndex = Math.min(startIndex + batchSize, allArticles.length);
-
-          for (let i = startIndex; i < endIndex; i++) {
-            const article = allArticles[i];
-            const articleElement = createArticleCard(article);
-            articlesList.appendChild(articleElement);
-          }
-
-          // 如果还有更多文章，继续分批渲染
-          if (endIndex < allArticles.length) {
-            setTimeout(function () {
-              renderArticlesBatch(endIndex, batchSize);
-            }, 50);
-          } else {
-            // 所有文章渲染完成
-            updateStats();
-            initFilter();
-            console.log('成功加载', allArticles.length, '篇文章');
-          }
-        }
-
-        // 开始分批渲染
-        renderArticlesBatch(0, 5); // 每批渲染5篇文章
+        console.log('成功加载', allArticles.length, '篇文章');
 
       } catch (error) {
         console.error('加载文章失败:', error);
         showError('无法加载文章列表', error.message);
       }
+    }
+    
+    // 渲染文章列表
+    function renderArticles() {
+      const articlesList = document.getElementById('articlesList');
+      
+      if (!filteredArticles || filteredArticles.length === 0) {
+        articlesList.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h3>没有找到匹配的文章</h3>
+            <p>尝试使用不同的关键词或调整搜索选项</p>
+            ${currentSearchQuery ? `<button onclick="document.getElementById('searchInput').value='';performSearch();" class="article-btn" style="margin-top: 1rem;">
+              <i class="fas fa-times"></i> 清除搜索
+            </button>` : ''}
+          </div>
+        `;
+        return;
+      }
+      
+      articlesList.innerHTML = '';
+      
+      // 分批渲染文章卡片，避免阻塞UI
+      function renderArticlesBatch(startIndex, batchSize) {
+        const endIndex = Math.min(startIndex + batchSize, filteredArticles.length);
+
+        for (let i = startIndex; i < endIndex; i++) {
+          const article = filteredArticles[i];
+          const articleElement = createArticleCard(article);
+          articlesList.appendChild(articleElement);
+        }
+
+        // 如果还有更多文章，继续分批渲染
+        if (endIndex < filteredArticles.length) {
+          setTimeout(function () {
+            renderArticlesBatch(endIndex, batchSize);
+          }, 50);
+        } else {
+          // 所有文章渲染完成
+          updateStats();
+          initFilter();
+          console.log('渲染完成，共', filteredArticles.length, '篇文章');
+        }
+      }
+
+      // 开始分批渲染
+      renderArticlesBatch(0, 5); // 每批渲染5篇文章
+    }
+
+    // 排序文章
+    function sortArticles(articles, sortBy) {
+      const sorted = [...articles];
+      
+      switch (sortBy) {
+        case 'title':
+          sorted.sort((a, b) => {
+            const titleA = a.title || '';
+            const titleB = b.title || '';
+            return titleA.localeCompare(titleB, 'zh-CN');
+          });
+          break;
+          
+        case 'date':
+        default:
+          // 尝试按日期排序，如果不能解析日期，则保持原顺序
+          sorted.sort((a, b) => {
+            try {
+              const dateA = parseDate(a.date);
+              const dateB = parseDate(b.date);
+              return dateB - dateA; // 降序，最新的在前面
+            } catch (e) {
+              return 0;
+            }
+          });
+          break;
+      }
+      
+      return sorted;
+    }
+    
+    // 解析日期字符串
+    function parseDate(dateStr) {
+      if (!dateStr) return new Date(0);
+      
+      // 尝试多种日期格式
+      const formats = [
+        'YYYY-MM-DD',
+        'YYYY/MM/DD',
+        'MM-DD-YYYY',
+        'MM/DD/YYYY'
+      ];
+      
+      for (const format of formats) {
+        const parts = dateStr.split(/[-/]/);
+        if (parts.length === 3) {
+          let year, month, day;
+          
+          if (format === 'YYYY-MM-DD' || format === 'YYYY/MM/DD') {
+            year = parseInt(parts[0]);
+            month = parseInt(parts[1]) - 1;
+            day = parseInt(parts[2]);
+          } else {
+            month = parseInt(parts[0]) - 1;
+            day = parseInt(parts[1]);
+            year = parseInt(parts[2]);
+          }
+          
+          if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+            return new Date(year, month, day);
+          }
+        }
+      }
+      
+      // 如果无法解析，返回一个很旧的日期
+      return new Date(0);
     }
 
     // 清理和验证文章数据
@@ -1214,7 +1269,7 @@
 
     function createArticleCard(article) {
       const articleCard = document.createElement('div');
-      articleCard.className = 'article-card';
+      articleCard.className = `article-card ${currentView === 'list' ? 'list-view' : ''}`;
 
       // 确保tags是字符串数组
       const tagsArray = Array.isArray(article.tags) ? article.tags :
@@ -1232,6 +1287,15 @@
       const safeDescription = article.description || '暂无描述';
 
       const finalDescription = typeof safeDescription === 'object' ? '暂无描述' : safeDescription;
+      
+      // 高亮搜索结果
+      let highlightedTitle = safeTitle;
+      let highlightedDescription = finalDescription;
+      
+      if (currentSearchQuery) {
+        highlightedTitle = highlightSearchText(safeTitle);
+        highlightedDescription = highlightSearchText(finalDescription);
+      }
 
       // 格式化字数显示
       const wordCount = article.wordCount || 0;
@@ -1239,14 +1303,14 @@
 
       articleCard.innerHTML = `
                 <div class="article-header">
-                    <h4 class="article-title">${article.title || '无标题'}</h4>
+                    <h4 class="article-title">${highlightedTitle}</h4>
                     <div class="article-meta">
                         <span class="article-date"><i class="far fa-calendar"></i> ${article.date || '未知日期'}</span>
                         <span class="article-read-time"><i class="far fa-clock"></i> ${article.readTime || '未知'}</span>
                         <span class="article-word-count"><i class="fas fa-file-word"></i> ${wordCountFormatted}</span>
                     </div>
                 </div>
-                <p class="article-description">${finalDescription}</p>
+                <p class="article-description">${highlightedDescription}</p>
                 <div class="article-footer">
                     <div class="article-tags">
                         ${tagsHtml}
@@ -1294,18 +1358,9 @@
         filterButtons.forEach(btn => btn.classList.remove('active'));
         this.classList.add('active');
 
-        const filter = this.dataset.filter || this.getAttribute('data-filter');
-        const articleCards = document.querySelectorAll('.article-card');
-
-        articleCards.forEach(card => {
-          const cardTags = card.dataset.tags || card.getAttribute('data-tags');
-          if (filter === 'all' || (cardTags && cardTags.includes(filter))) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-
+        currentFilter = this.dataset.filter || this.getAttribute('data-filter');
+        performSearch();
+        
         articlesList.style.opacity = '0.5';
         setTimeout(() => {
           articlesList.style.opacity = '1';
@@ -1526,8 +1581,6 @@
       addEvent(backBtn, 'click', function () {
         markdownViewer.style.display = 'none';
         resetArticleInfo();
-        // 退出护眼模式
-        document.body.classList.remove('eye-protection-active');
       });
 
       addEvent(toggleSidebarBtn, 'click', function () {
@@ -1702,11 +1755,6 @@
       // 移动端默认隐藏侧边栏
       if (window.innerWidth <= 768) {
         document.getElementById('markdownSidebar').classList.add('hidden');
-      }
-
-      // 应用护眼模式
-      if (document.documentElement.getAttribute('data-eye-protection') === 'true') {
-        document.body.classList.add('eye-protection-active');
       }
 
       try {
@@ -2267,6 +2315,14 @@
       addKeyEvent('keydown', function (e) {
         if (!e) e = window.event;
 
+        // Ctrl/Cmd + F 聚焦搜索框
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+          e.preventDefault();
+          const searchInput = document.getElementById('searchInput');
+          searchInput.focus();
+          searchInput.select();
+        }
+        
         if (e.altKey && e.key === 't') {
           document.getElementById('themeSwitcher').click();
         }
@@ -2277,23 +2333,21 @@
           window.location.href = 'index.html';
         }
         if (e.key === 'Escape') {
-          const markdownViewer = document.getElementById('markdownViewer');
-          if (markdownViewer.style.display === 'flex') {
-            document.getElementById('backBtn').click();
+          const searchInput = document.getElementById('searchInput');
+          if (document.activeElement === searchInput && searchInput.value) {
+            searchInput.value = '';
+            currentSearchQuery = '';
+            document.getElementById('searchClear').style.display = 'none';
+            performSearch();
+          } else {
+            const markdownViewer = document.getElementById('markdownViewer');
+            if (markdownViewer.style.display === 'flex') {
+              document.getElementById('backBtn').click();
+            }
           }
         }
         if (e.altKey && e.key === 'r') {
           loadArticles();
-        }
-        // 护眼模式快捷键：Alt+E
-        if (e.altKey && e.key === 'e') {
-          document.getElementById('eyeProtectionToggle').click();
-        }
-        // 搜索快捷键：Ctrl+F 或 Cmd+F
-        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-          e.preventDefault();
-          document.getElementById('searchInput').focus();
-          document.getElementById('searchInput').select();
         }
       });
     }
