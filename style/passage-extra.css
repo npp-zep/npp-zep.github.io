@@ -141,6 +141,26 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1rem;
+  max-height: 90px; /* 限制高度，防止过长 */
+  overflow-y: auto;
+  padding: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--card-bg);
+}
+
+.filter-buttons::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.filter-buttons::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 3px;
+}
+
+.filter-buttons::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
 }
 
 .filter-btn {
@@ -152,6 +172,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .filter-btn:hover {
@@ -219,9 +240,13 @@
   .view-controls {
     justify-content: center;
   }
+  
+  .filter-buttons {
+    max-height: 70px;
+  }
 }
 
-/* 文章统计卡片 */
+/* 文章统计卡片 - 简化版 */
 .stats-card {
   background: var(--card-bg);
   border-radius: 8px;
@@ -231,7 +256,7 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 0.8rem;
   margin-top: 1rem;
 }
@@ -293,10 +318,4 @@
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
-}
-
-.word-count-details {
-  border-top: 1px solid var(--border-color);
-  margin-top: 1rem;
-  padding-top: 1rem;
 }
