@@ -35,8 +35,20 @@
       ],
       "readTime": "1分钟",
       "file": "sitehis.md"
-    }
+    },
+    {
+      "id": 3,
+      "title": "Wasm Mod for MC",
+      "description": "MC从Wasm焕发新生?",
+      "date": "2026-02-10",
+      "tags": [
+        "web",
+        "game"
+      ],
+      "readTime": "1分钟",
+      "file": "wasm-mcmods.md"
+    } 
   ],
-  "lastUpdated": "2026-01-24",
-  "totalArticles": 3
+  "lastUpdated": "2026-02-10",
+  "totalArticles": 4
 }
