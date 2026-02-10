@@ -8,6 +8,7 @@ let currentSearchQuery = '';
 let currentFilter = 'all';
 let currentSort = 'date';
 let currentView = 'grid';
+let currentArticleFromUrl = null; // 新增：URL参数中的文章
 
 // 搜索相关变量
 let searchTimeout = null;
@@ -27,13 +28,29 @@ window.addEventListener('load', function () {
   }, 1000);
 
   // 加载文章数据
-  loadArticles();
   initThemeSwitcher();
   initBackgroundToggle();
   initMarkdownViewer();
   initSearch();
   initViewControls();
   addKeyboardShortcuts();
+
+  // 检查URL参数
+  const urlParams = new URLSearchParams(window.location.search);
+  const articleFile = urlParams.get('article');
+  
+  if (articleFile) {
+    currentArticleFromUrl = articleFile;
+    console.log('从URL获取文章:', articleFile);
+  }
+
+  // 加载文章
+  loadArticles().then(() => {
+    // 如果URL中有文章参数，自动打开
+    if (currentArticleFromUrl) {
+      setTimeout(() => openArticleFromUrl(), 500);
+    }
+  });
 
   // 如果加载完成，清除超时
   clearTimeout(loadingTimeout);
@@ -44,6 +61,65 @@ window.addEventListener('load', function () {
     }, 500);
   }, 500);
 });
+
+// 新增：从URL打开文章
+async function openArticleFromUrl() {
+  if (!currentArticleFromUrl) return;
+  
+  // 在所有文章中查找匹配的文章
+  const article = allArticles.find(a => a.file === currentArticleFromUrl);
+  
+  if (article) {
+    console.log('自动打开文章:', article.title);
+    openArticle(article.file, article.title, article);
+  } else {
+    console.warn('未找到文章文件:', currentArticleFromUrl);
+    showNotification(`未找到文章: ${currentArticleFromUrl}`, 'warning');
+  }
+}
+
+// 新增：显示通知
+function showNotification(message, type = 'info') {
+  // 移除现有的通知
+  const existingNotification = document.querySelector('.notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+  
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  notification.innerHTML = `
+    <span>${message}</span>
+    <button class="notification-close"><i class="fas fa-times"></i></button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // 显示动画
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 10);
+  
+  // 自动隐藏
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 300);
+  }, 3000);
+  
+  // 关闭按钮事件
+  notification.querySelector('.notification-close').addEventListener('click', () => {
+    notification.classList.remove('show');
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 300);
+  });
+}
 
 // 浏览器兼容性检测
 function checkBrowserCompatibility() {
@@ -559,10 +635,12 @@ async function loadArticles() {
     performSearch();
 
     console.log('成功加载', allArticles.length, '篇文章');
+    return Promise.resolve();
 
   } catch (error) {
     console.error('加载文章失败:', error);
     showError('无法加载文章列表', error.message);
+    return Promise.reject(error);
   }
 }
 
@@ -755,6 +833,7 @@ function createArticleCard(article) {
       article.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []);
 
   articleCard.dataset.tags = tagsArray.join(' ');
+  articleCard.dataset.file = article.file; // 新增：存储文件路径
 
   const tagsHtml = tagsArray.map(tag =>
     `<span class="article-tag tag-${tag.toLowerCase()}">${tag}</span>`
@@ -797,6 +876,9 @@ function createArticleCard(article) {
         <button class="article-btn read-btn">
           <i class="fas fa-book-open"></i> 阅读
         </button>
+        <button class="article-btn share-btn" title="分享文章">
+          <i class="fas fa-share-alt"></i>
+        </button>
         <button class="article-btn download-btn">
           <i class="fas fa-download"></i> 下载
         </button>
@@ -807,6 +889,7 @@ function createArticleCard(article) {
   // 使用事件委托添加点击事件
   const readBtn = articleCard.querySelector('.read-btn');
   const downloadBtn = articleCard.querySelector('.download-btn');
+  const shareBtn = articleCard.querySelector('.share-btn'); // 新增：分享按钮
 
   readBtn.addEventListener('click', () => {
     openArticle(safeFile, safeTitle, article);
@@ -816,7 +899,154 @@ function createArticleCard(article) {
     downloadArticle(safeFile);
   });
 
+  // 新增：分享按钮事件
+  shareBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    shareArticle(article);
+  });
+
+  // 新增：点击卡片任意位置（除按钮外）也可以查看文章
+  articleCard.addEventListener('click', (e) => {
+    if (!e.target.closest('.article-actions')) {
+      openArticle(safeFile, safeTitle, article);
+    }
+  });
+
   return articleCard;
+}
+
+// 新增：分享文章功能
+function shareArticle(article) {
+  // 生成分享链接
+  const currentUrl = window.location.origin + window.location.pathname;
+  const shareUrl = `${currentUrl}?article=${encodeURIComponent(article.file)}`;
+  
+  // 创建分享对话框
+  const shareDialog = document.createElement('div');
+  shareDialog.className = 'share-dialog';
+  shareDialog.innerHTML = `
+    <div class="share-dialog-content">
+      <h3><i class="fas fa-share-alt"></i> 分享文章</h3>
+      <p>分享链接给其他人，点击链接即可直接打开这篇文章</p>
+      
+      <div class="share-url-container">
+        <input type="text" readonly value="${shareUrl}" class="share-url-input" id="shareUrlInput">
+        <button class="copy-url-btn" id="copyUrlBtn">
+          <i class="far fa-copy"></i> 复制
+        </button>
+      </div>
+      
+      <div class="share-actions">
+        <button class="share-action-btn" id="shareWhatsapp" title="分享到WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="share-action-btn" id="shareTelegram" title="分享到Telegram">
+          <i class="fab fa-telegram"></i>
+        </button>
+        <button class="share-action-btn" id="shareTwitter" title="分享到Twitter">
+          <i class="fab fa-twitter"></i>
+        </button>
+        <button class="share-action-btn" id="shareEmail" title="通过邮件分享">
+          <i class="fas fa-envelope"></i>
+        </button>
+      </div>
+      
+      <div class="share-dialog-footer">
+        <button class="share-close-btn" id="shareCloseBtn">关闭</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(shareDialog);
+  
+  // 显示动画
+  setTimeout(() => {
+    shareDialog.classList.add('show');
+  }, 10);
+  
+  // 事件处理
+  const copyUrlBtn = document.getElementById('copyUrlBtn');
+  const shareUrlInput = document.getElementById('shareUrlInput');
+  const shareCloseBtn = document.getElementById('shareCloseBtn');
+  
+  // 复制链接
+  copyUrlBtn.addEventListener('click', () => {
+    shareUrlInput.select();
+    shareUrlInput.setSelectionRange(0, 99999);
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        copyUrlBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+        copyUrlBtn.classList.add('success');
+        setTimeout(() => {
+          copyUrlBtn.innerHTML = '<i class="far fa-copy"></i> 复制';
+          copyUrlBtn.classList.remove('success');
+        }, 2000);
+      });
+    } else {
+      document.execCommand('copy');
+      copyUrlBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+      copyUrlBtn.classList.add('success');
+      setTimeout(() => {
+        copyUrlBtn.innerHTML = '<i class="far fa-copy"></i> 复制';
+        copyUrlBtn.classList.remove('success');
+      }, 2000);
+    }
+  });
+  
+  // 社交媒体分享
+  const shareText = encodeURIComponent(`查看文章: ${article.title}`);
+  
+  document.getElementById('shareWhatsapp').addEventListener('click', () => {
+    window.open(`https://wa.me/?text=${shareText}%20${shareUrl}`, '_blank');
+  });
+  
+  document.getElementById('shareTelegram').addEventListener('click', () => {
+    window.open(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`, '_blank');
+  });
+  
+  document.getElementById('shareTwitter').addEventListener('click', () => {
+    window.open(`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`, '_blank');
+  });
+  
+  document.getElementById('shareEmail').addEventListener('click', () => {
+    window.open(`mailto:?subject=${encodeURIComponent(article.title)}&body=${shareText}%20${shareUrl}`);
+  });
+  
+  // 关闭对话框
+  shareCloseBtn.addEventListener('click', () => {
+    shareDialog.classList.remove('show');
+    setTimeout(() => {
+      if (shareDialog.parentNode) {
+        shareDialog.remove();
+      }
+    }, 300);
+  });
+  
+  // 点击外部关闭
+  shareDialog.addEventListener('click', (e) => {
+    if (e.target === shareDialog) {
+      shareDialog.classList.remove('show');
+      setTimeout(() => {
+        if (shareDialog.parentNode) {
+          shareDialog.remove();
+        }
+      }, 300);
+    }
+  });
+  
+  // ESC键关闭
+  document.addEventListener('keydown', function closeOnEsc(e) {
+    if (e.key === 'Escape') {
+      shareDialog.classList.remove('show');
+      setTimeout(() => {
+        if (shareDialog.parentNode) {
+          shareDialog.remove();
+        }
+      }, 300);
+      document.removeEventListener('keydown', closeOnEsc);
+    }
+  });
 }
 
 function initFilter() {

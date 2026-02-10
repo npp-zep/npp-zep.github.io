@@ -15,8 +15,229 @@
 
   <!-- 文章页面特定样式 -->
   <link rel="stylesheet" href="style/passage-extra.css">
-
+  <!-- 分享和通知样式 -->
+<style>
+  /* 通知样式 */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    border-left: 4px solid var(--accent-color);
+  }
+  
+  .notification.show {
+    transform: translateX(0);
+  }
+  
+  .notification-info {
+    border-left-color: #2196f3;
+  }
+  
+  .notification-warning {
+    border-left-color: #ff9800;
+  }
+  
+  .notification-success {
+    border-left-color: #4caf50;
+  }
+  
+  .notification-error {
+    border-left-color: #f44336;
+  }
+  
+  .notification-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 10px;
+    font-size: 14px;
+  }
+  
+  .notification-close:hover {
+    color: var(--text-primary);
+  }
+  
+  /* 分享对话框样式 */
+  .share-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .share-dialog.show {
+    opacity: 1;
+  }
+  
+  .share-dialog-content {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+  
+  .share-dialog.show .share-dialog-content {
+    transform: translateY(0);
+  }
+  
+  .share-dialog h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .share-dialog p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  
+  .share-url-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .share-url-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: monospace;
+    font-size: 13px;
+  }
+  
+  .copy-url-btn {
+    padding: 10px 16px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s ease;
+  }
+  
+  .copy-url-btn:hover {
+    background: var(--accent-hover);
+  }
+  
+  .copy-url-btn.success {
+    background: #4caf50;
+  }
+  
+  .share-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  
+  .share-action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s ease;
+  }
+  
+  .share-action-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  .share-dialog-footer {
+    text-align: right;
+  }
+  
+  .share-close-btn {
+    padding: 8px 20px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .share-close-btn:hover {
+    background: var(--border-color);
+  }
+  
+  /* 文章卡片分享按钮样式 */
+  .share-btn {
+    width: 36px;
+    padding: 8px;
+    margin: 0 4px;
+  }
+  
+  /* 移动端适配 */
+  @media (max-width: 768px) {
+    .notification {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+      min-width: auto;
+      max-width: none;
+    }
+    
+    .share-dialog-content {
+      width: 95%;
+      padding: 20px;
+    }
+    
+    .share-url-container {
+      flex-direction: column;
+    }
+    
+    .copy-url-btn {
+      justify-content: center;
+    }
+  }
+</style>
   <!-- 浏览器兼容性提示样式 -->
+  
   <style>
     .browser-warning {
       display: none;
