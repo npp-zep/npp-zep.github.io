@@ -149,9 +149,9 @@ public class BatchRegistrar {
 - 系统调用过滤：Wasm Mod不能直接调用系统API，必须通过我们的桥接
 - 资源配额：CPU时间、内存、存储空间都有限制
 
-###优缺点总结
+### 优缺点总结
 
-####优点：
+#### 优点：
 
 1. 降低门槛 - 不用学Java也能开发MC Mod，Python、JavaScript、Rust开发者都能参与
 2. 安全隔离 - Wasm沙箱让Mod崩溃不影响主游戏
@@ -159,7 +159,7 @@ public class BatchRegistrar {
 4. 跨平台 - 一次编译，Windows/Mac/Linux都能跑
 5. 热重载 - 开发时改代码立即生效，提升开发效率
 
-####缺点/挑战：
+#### 缺点/挑战：
 
 1. 架构复杂 - 中间层多了，调试起来麻烦
 2. 性能损耗 - Java↔Wasm调用有额外开销
@@ -167,7 +167,7 @@ public class BatchRegistrar {
 4. 兼容性问题 - 要和Forge/Fabric各种版本保持兼容
 5. 学习成本 - 开发者要理解Wasm概念和我们的API
 
-####未来展望
+#### 未来展望
 
 如果这个项目真的做成了，MC Mod开发会变成什么样呢？
 
