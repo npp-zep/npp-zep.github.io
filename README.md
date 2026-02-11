@@ -3,6 +3,7 @@
 
 ## Tip
 - Well,my English is really poor,so I may have some grammar errors.
+- And I also use LOTS OF AI to fill up my website
 
 ## Technology stack
 - HTML5

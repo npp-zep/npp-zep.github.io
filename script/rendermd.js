@@ -1,15 +1,74 @@
 /**
- * Markdown渲染器 
+ * Markdown渲染器 - XSS安全版
  * 使用marked.js进行Markdown解析，highlight.js进行代码高亮
- * 包含一键复制代码
+ * 包含一键复制代码和XSS防御
  */
+
+// 等待DOMPurify加载
+let DOMPurifyReady = false;
+
+// 检查DOMPurify是否可用
+function checkDOMPurify() {
+    if (typeof DOMPurify !== 'undefined' && DOMPurify.sanitize) {
+        DOMPurifyReady = true;
+        return true;
+    }
+    return false;
+}
+
+// 安全HTML清理函数
+function safeSanitizeHTML(html, configOverride = {}) {
+    if (!DOMPurifyReady && !checkDOMPurify()) {
+        console.warn('DOMPurify未就绪，使用基础清理');
+        return basicHTMLSanitize(html);
+    }
+    
+    try {
+        // 使用DOMPurify清理，但允许代码高亮需要的元素
+        const cleanHTML = DOMPurify.sanitize(html, {
+            // 允许代码高亮相关的class
+            ADD_ATTR: ['data-code-id', 'data-copy-target', 'data-inline-id', 'data-copy-inline', 'data-code'],
+            ADD_TAGS: ['pre', 'code', 'span'],
+            ALLOW_DATA_ATTR: true,
+            ALLOWED_ATTR: [
+                'class', 'id', 'style', 'title',
+                'href', 'target', 'rel',
+                'src', 'alt', 'width', 'height', 'loading',
+                'data-code-id', 'data-copy-target', 'data-inline-id', 'data-copy-inline', 'data-code',
+                'aria-hidden'
+            ],
+            FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover', 'onmouseout']
+        });
+        
+        return cleanHTML;
+    } catch (error) {
+        console.error('HTML清理错误:', error);
+        return basicHTMLSanitize(html);
+    }
+}
+
+// 基础HTML清理（DOMPurify备选）
+function basicHTMLSanitize(html) {
+    if (typeof html !== 'string') return '';
+    
+    // 移除脚本标签
+    let clean = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    
+    // 移除事件处理器
+    clean = clean.replace(/\s(on\w+)=["'][^"']*["']/gi, '');
+    
+    // 移除javascript:伪协议
+    clean = clean.replace(/\s(href|src)=["']javascript:[^"']*["']/gi, '');
+    
+    return clean;
+}
 
 // 生成安全的唯一ID
 function generateUniqueId(prefix = 'id') {
     return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// HTML转义函数
+// HTML转义函数 - 用于纯文本
 function escapeHtml(text) {
     if (typeof text !== 'string') {
         text = String(text);
@@ -190,12 +249,12 @@ if (typeof marked !== 'undefined') {
         gfm: true,
         breaks: true,
         pedantic: false,
-        sanitize: false,
+        sanitize: false, // 注意：我们使用DOMPurify，所以这里关闭marked的内置清理
         smartLists: true,
         smartypants: true,
         highlight: function(code, lang) {
             if (typeof hljs === 'undefined') {
-                return code;
+                return escapeHtml(code); // 安全转义
             }
             
             if (lang && hljs.getLanguage(lang)) {
@@ -210,7 +269,7 @@ if (typeof marked !== 'undefined') {
                 return hljs.highlightAuto(code).value;
             } catch (err) {
                 console.error('Error auto-highlighting code:', err);
-                return code;
+                return escapeHtml(code); // 安全转义
             }
         }
     });
@@ -225,7 +284,7 @@ if (typeof marked !== 'undefined') {
             .replace(/^-+|-+$/g, '');
         return `
             <h${level} id="${escapedText}">
-                ${text}
+                ${escapeHtml(text)}
                 <a href="#${escapedText}" class="anchor" aria-hidden="true">#</a>
             </h${level}>
         `;
@@ -233,52 +292,59 @@ if (typeof marked !== 'undefined') {
 
     // 自定义链接渲染，添加target="_blank"到外部链接
     renderer.link = function(href, title, text) {
-        const escapedHref = escapeHtml(href);
+        // 清理href，防止javascript:伪协议
+        let safeHref = escapeHtml(href);
+        if (safeHref.toLowerCase().startsWith('javascript:')) {
+            safeHref = '#';
+        }
+        
         const escapedText = escapeHtml(text);
         const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
         
-        if (href.startsWith('http://') || href.startsWith('https://')) {
-            return `<a href="${escapedHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${escapedText}</a>`;
+        if (safeHref.startsWith('http://') || safeHref.startsWith('https://')) {
+            return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${escapedText}</a>`;
         }
-        return `<a href="${escapedHref}"${titleAttr}>${escapedText}</a>`;
+        return `<a href="${safeHref}"${titleAttr}>${escapedText}</a>`;
     };
 
-    // 自定义代码块渲染 - 修复版
+    // 自定义代码块渲染 - 安全版
     renderer.code = function(code, language, escaped) {
-        // 确保code是字符串
+        // 确保code是字符串并转义
         const codeString = String(code || '');
         const validLanguage = language && hljs && hljs.getLanguage(language) ? language : '';
         
-        let highlighted = codeString;
+        let highlighted = escapeHtml(codeString);
         if (validLanguage && hljs) {
             try {
                 highlighted = hljs.highlight(codeString, { language: validLanguage }).value;
+                // 高亮后的代码已经是HTML，需要确保安全
+                highlighted = safeSanitizeHTML(highlighted);
             } catch (err) {
                 console.error('代码高亮错误:', err);
                 highlighted = escapeHtml(codeString);
             }
-        } else {
-            highlighted = escapeHtml(codeString);
         }
         
         // 获取语言名称
-        const languageName = getLanguageName(validLanguage);
+        const languageName = escapeHtml(getLanguageName(validLanguage));
         
         // 生成唯一的ID
         const codeId = generateUniqueId('code');
         
-        return `
+        const codeBlockHTML = `
             <div class="code-block-wrapper" data-code-id="${codeId}">
                 <div class="code-block-header">
                     <span class="code-language">${languageName}</span>
-                    <button class="copy-code-btn" data-copy-target="${codeId}" 
-                            onclick="copyCodeBlock('${codeId}', this)">
+                    <button class="copy-code-btn" data-copy-target="${codeId}">
                         <i class="far fa-copy"></i><span>复制</span>
                     </button>
                 </div>
-                <pre><code class="hljs ${validLanguage}">${highlighted}</code></pre>
+                <pre><code class="hljs ${escapeHtml(validLanguage)}">${highlighted}</code></pre>
             </div>
         `;
+        
+        // 返回清理后的HTML
+        return safeSanitizeHTML(codeBlockHTML);
     };
 
     // 自定义内联代码渲染 - 添加复制按钮
@@ -287,22 +353,22 @@ if (typeof marked !== 'undefined') {
         if (codeString.length > 10) {
             const inlineId = generateUniqueId('inline');
             const escapedCode = escapeHtml(codeString);
-            return `
+            const inlineCodeHTML = `
                 <span class="code-inline-wrapper" data-inline-id="${inlineId}" data-code="${escapedCode}">
-                    <code>${codeString}</code>
-                    <button class="inline-copy-btn" data-copy-inline="${inlineId}"
-                            onclick="copyInlineCode('${inlineId}', this)">
+                    <code>${escapeHtml(codeString)}</code>
+                    <button class="inline-copy-btn" data-copy-inline="${inlineId}">
                         <i class="far fa-copy"></i>
                     </button>
                 </span>
             `;
+            return safeSanitizeHTML(inlineCodeHTML);
         }
-        return `<code>${codeString}</code>`;
+        return `<code>${escapeHtml(codeString)}</code>`;
     };
 
     // 自定义表格渲染
     renderer.table = function(header, body) {
-        return `
+        const tableHTML = `
             <div class="table-container">
                 <table>
                     <thead>${header}</thead>
@@ -310,36 +376,44 @@ if (typeof marked !== 'undefined') {
                 </table>
             </div>
         `;
+        return safeSanitizeHTML(tableHTML);
     };
 
     // 自定义图片渲染
     renderer.image = function(href, title, text) {
-        const escapedHref = escapeHtml(href);
+        // 清理href
+        let safeHref = escapeHtml(href);
+        if (safeHref.toLowerCase().startsWith('javascript:')) {
+            safeHref = '';
+        }
+        
         const escapedText = escapeHtml(text);
         const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
         
-        return `
+        const imageHTML = `
             <div class="image-container">
-                <img src="${escapedHref}" alt="${escapedText}"${titleAttr} loading="lazy">
+                <img src="${safeHref}" alt="${escapedText}"${titleAttr} loading="lazy">
                 ${text ? `<div class="image-caption">${escapedText}</div>` : ''}
             </div>
         `;
+        return safeSanitizeHTML(imageHTML);
     };
 
     // 自定义块引用渲染
     renderer.blockquote = function(quote) {
-        return `
+        const blockquoteHTML = `
             <blockquote>
                 <div class="quote-content">${quote}</div>
             </blockquote>
         `;
+        return safeSanitizeHTML(blockquoteHTML);
     };
 
-    // 主渲染函数
+    // 主渲染函数 - 安全版
     function renderMarkdown(markdown, options = {}) {
         const {
             highlightCode = true,
-            sanitize = false
+            sanitize = true // 默认启用清理
         } = options;
         
         // 如果marked不可用，使用简单渲染
@@ -357,7 +431,12 @@ if (typeof marked !== 'undefined') {
             // 清理输入
             const cleanMarkdown = markdown ? String(markdown) : '';
             
-            const html = marked.parse(cleanMarkdown, { renderer });
+            // 使用marked解析
+            const rawHTML = marked.parse(cleanMarkdown, { renderer });
+            
+            // 清理HTML（如果启用）
+            let html = sanitize ? safeSanitizeHTML(rawHTML) : rawHTML;
+            
             marked.setOptions(originalOptions);
             return html;
         } catch (error) {
@@ -390,18 +469,17 @@ if (typeof marked !== 'undefined') {
             // 转换代码块
             .replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, lang, code) {
                 const codeId = generateUniqueId('code');
-                const languageName = getLanguageName(lang);
+                const languageName = escapeHtml(getLanguageName(lang));
                 const escapedCode = escapeHtml(code);
                 return `
                     <div class="code-block-wrapper" data-code-id="${codeId}">
                         <div class="code-block-header">
                             <span class="code-language">${languageName}</span>
-                            <button class="copy-code-btn" data-copy-target="${codeId}"
-                                    onclick="copyCodeBlock('${codeId}', this)">
+                            <button class="copy-code-btn" data-copy-target="${codeId}">
                                 <i class="far fa-copy"></i><span>复制</span>
                             </button>
                         </div>
-                        <pre><code class="${lang || ''}">${escapedCode}</code></pre>
+                        <pre><code class="${escapeHtml(lang || '')}">${escapedCode}</code></pre>
                     </div>
                 `;
             })
@@ -412,9 +490,8 @@ if (typeof marked !== 'undefined') {
                     const escapedCode = escapeHtml(code);
                     return `
                         <span class="code-inline-wrapper" data-inline-id="${inlineId}" data-code="${escapedCode}">
-                            <code>${code}</code>
-                            <button class="inline-copy-btn" data-copy-inline="${inlineId}"
-                                    onclick="copyInlineCode('${inlineId}', this)">
+                            <code>${escapeHtml(code)}</code>
+                            <button class="inline-copy-btn" data-copy-inline="${inlineId}">
                                 <i class="far fa-copy"></i>
                             </button>
                         </span>
@@ -455,7 +532,8 @@ if (typeof marked !== 'undefined') {
             return match;
         });
         
-        return html;
+        // 清理HTML
+        return safeSanitizeHTML(html);
     }
 
     // 全局复制函数 - 修复事件委托问题
@@ -534,8 +612,11 @@ if (typeof marked !== 'undefined') {
     window.generateUniqueId = generateUniqueId;
     window.copyTextToClipboard = copyTextToClipboard;
     window.fallbackCopyToClipboard = fallbackCopyToClipboard;
+    window.safeSanitizeHTML = safeSanitizeHTML;
+    window.basicHTMLSanitize = basicHTMLSanitize;
+    window.escapeHtml = escapeHtml;
 
-    console.log('Markdown渲染器已加载（修复版）');
+    console.log('Markdown渲染器已加载（XSS安全版）');
 } else {
     // 如果marked不可用，提供简单的渲染函数
     window.renderMarkdown = function(markdown) {
@@ -555,11 +636,21 @@ if (typeof marked !== 'undefined') {
             .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/`([^`]+)`/g, '<code>$1</code>')
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, text, href) {
+                // 清理href
+                if (href.toLowerCase().startsWith('javascript:')) {
+                    return `<span>${text}</span>`;
+                }
+                if (href.startsWith('http://') || href.startsWith('https://')) {
+                    return `<a href="${escapeHtml(href)}" target="_blank">${escapeHtml(text)}</a>`;
+                }
+                return `<a href="${escapeHtml(href)}">${escapeHtml(text)}</a>`;
+            })
             .replace(/\n\n+/g, '</p><p>')
             .replace(/^([^<\n].*)/gm, '<p>$1</p>');
         
-        return html;
+        // 清理HTML
+        return safeSanitizeHTML ? safeSanitizeHTML(html) : basicHTMLSanitize(html);
     };
     
     console.warn('marked.js未加载，使用简单Markdown渲染器');
@@ -567,6 +658,14 @@ if (typeof marked !== 'undefined') {
 
 // 修复事件监听器问题
 document.addEventListener('DOMContentLoaded', function() {
+    // 等待DOMPurify就绪
+    const checkDOMPurifyInterval = setInterval(() => {
+        if (checkDOMPurify()) {
+            clearInterval(checkDOMPurifyInterval);
+            console.log('DOMPurify已就绪，XSS防御完全启用');
+        }
+    }, 100);
+    
     // 添加事件委托
     document.addEventListener('click', function(e) {
         // 处理代码块复制按钮

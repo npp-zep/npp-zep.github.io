@@ -78,7 +78,7 @@ async function openArticleFromUrl() {
   }
 }
 
-// 新增：显示通知
+// 新增：显示通知 - 安全版
 function showNotification(message, type = 'info') {
   // 移除现有的通知
   const existingNotification = document.querySelector('.notification');
@@ -86,14 +86,32 @@ function showNotification(message, type = 'info') {
     existingNotification.remove();
   }
   
-  const notification = document.createElement('div');
-  notification.className = `notification notification-${type}`;
-  notification.innerHTML = `
-    <span>${message}</span>
-    <button class="notification-close"><i class="fas fa-times"></i></button>
-  `;
+  // 转义消息内容，防止XSS
+  const safeMessage = escapeHtml(message);
   
-  document.body.appendChild(notification);
+  // 使用安全的HTML插入
+  if (window.safeInsertHTML) {
+    const notificationHTML = `
+      <div class="notification notification-${type}">
+        <span>${safeMessage}</span>
+        <button class="notification-close"><i class="fas fa-times"></i></button>
+      </div>
+    `;
+    
+    window.safeInsertHTML(document.body, notificationHTML);
+  } else {
+    // 备用方法
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+      <span>${safeMessage}</span>
+      <button class="notification-close"><i class="fas fa-times"></i></button>
+    `;
+    
+    document.body.appendChild(notification);
+  }
+  
+  const notification = document.querySelector('.notification');
   
   // 显示动画
   setTimeout(() => {
@@ -453,9 +471,9 @@ function updateSearchStats(resultsCount, searchDuration) {
   }
 }
 
-// 高亮搜索结果
+// 高亮搜索结果 - 安全版
 function highlightSearchText(text) {
-  if (!currentSearchQuery || !text) return text;
+  if (!currentSearchQuery || !text) return escapeHtml(text);
 
   const searchTitle = document.getElementById('searchTitle').checked;
   const searchDescription = document.getElementById('searchDescription').checked;
@@ -467,7 +485,7 @@ function highlightSearchText(text) {
     if (searchUseRegex) {
       const flags = searchCaseSensitive ? 'g' : 'gi';
       const regex = new RegExp(currentSearchQuery, flags);
-      return text.replace(regex, match => `<span class="search-highlight">${match}</span>`);
+      return escapeHtml(text).replace(regex, match => `<span class="search-highlight">${escapeHtml(match)}</span>`);
     } else {
       const searchText = searchCaseSensitive ? currentSearchQuery : currentSearchQuery.toLowerCase();
       const lowerText = searchCaseSensitive ? text : text.toLowerCase();
@@ -477,18 +495,18 @@ function highlightSearchText(text) {
       let index = lowerText.indexOf(searchText);
 
       while (index !== -1) {
-        result += text.substring(lastIndex, index);
-        result += `<span class="search-highlight">${text.substring(index, index + searchText.length)}</span>`;
+        result += escapeHtml(text.substring(lastIndex, index));
+        result += `<span class="search-highlight">${escapeHtml(text.substring(index, index + searchText.length))}</span>`;
         lastIndex = index + searchText.length;
         index = lowerText.indexOf(searchText, lastIndex);
       }
 
-      result += text.substring(lastIndex);
+      result += escapeHtml(text.substring(lastIndex));
       return result;
     }
   } catch (error) {
     console.error('高亮文本出错:', error);
-    return text;
+    return escapeHtml(text);
   }
 }
 
@@ -575,12 +593,19 @@ async function loadArticles() {
   const articlesList = document.getElementById('articlesList');
 
   try {
-    articlesList.innerHTML = `
+    // 安全地设置加载状态
+    const loadingHTML = `
       <div class="loading-articles">
         <div class="loading-spinner"></div>
         <p>正在加载文章列表...</p>
       </div>
     `;
+    
+    if (window.safeSetInnerHTML) {
+      window.safeSetInnerHTML(articlesList, loadingHTML);
+    } else {
+      articlesList.innerHTML = loadingHTML;
+    }
 
     console.log('正在加载文章配置文件:', ARTICLES_CONFIG_URL);
 
@@ -644,12 +669,12 @@ async function loadArticles() {
   }
 }
 
-// 渲染文章列表
+// 渲染文章列表 - 安全版
 function renderArticles() {
   const articlesList = document.getElementById('articlesList');
 
   if (!filteredArticles || filteredArticles.length === 0) {
-    articlesList.innerHTML = `
+    const noResultsHTML = `
       <div class="no-results">
         <i class="fas fa-search"></i>
         <h3>没有找到匹配的文章</h3>
@@ -659,9 +684,16 @@ function renderArticles() {
         </button>` : ''}
       </div>
     `;
+    
+    if (window.safeSetInnerHTML) {
+      window.safeSetInnerHTML(articlesList, noResultsHTML);
+    } else {
+      articlesList.innerHTML = noResultsHTML;
+    }
     return;
   }
 
+  // 清空列表
   articlesList.innerHTML = '';
 
   // 分批渲染文章卡片，避免阻塞UI
@@ -764,12 +796,12 @@ function cleanArticlesData(articles) {
   return articles.map(article => {
     const cleaned = {};
 
-    // 确保所有字段都是字符串
-    cleaned.title = String(article.title || '无标题');
-    cleaned.date = String(article.date || '未知日期');
-    cleaned.readTime = String(article.readTime || '未知');
-    cleaned.description = String(article.description || '暂无描述');
-    cleaned.file = String(article.file || '');
+    // 确保所有字段都是字符串并转义
+    cleaned.title = escapeHtml(String(article.title || '无标题'));
+    cleaned.date = escapeHtml(String(article.date || '未知日期'));
+    cleaned.readTime = escapeHtml(String(article.readTime || '未知'));
+    cleaned.description = escapeHtml(String(article.description || '暂无描述'));
+    cleaned.file = escapeHtml(String(article.file || ''));
 
     // 添加字数统计
     if (article.wordCount !== undefined) {
@@ -783,11 +815,11 @@ function cleanArticlesData(articles) {
       );
     }
 
-    // 处理tags
+    // 处理tags - 转义每个标签
     if (Array.isArray(article.tags)) {
-      cleaned.tags = article.tags.map(tag => String(tag));
+      cleaned.tags = article.tags.map(tag => escapeHtml(String(tag)));
     } else if (typeof article.tags === 'string') {
-      cleaned.tags = article.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+      cleaned.tags = article.tags.split(',').map(tag => escapeHtml(tag.trim())).filter(tag => tag);
     } else {
       cleaned.tags = [];
     }
@@ -808,17 +840,23 @@ function cleanArticlesData(articles) {
 function showError(title, message) {
   const articlesList = document.getElementById('articlesList');
 
-  articlesList.innerHTML = `
+  const errorHTML = `
     <div class="error-message">
       <i class="fas fa-exclamation-triangle"></i>
-      <h3>${title}</h3>
-      <p>${message}</p>
+      <h3>${escapeHtml(title)}</h3>
+      <p>${escapeHtml(message)}</p>
       <p style="font-size: 0.85rem; margin-top: 1rem;">请检查文件路径是否正确，并确保 <code>articles.json</code> 文件存在。</p>
       <button onclick="loadArticles()" class="article-btn" style="margin-top: 1rem;">
         <i class="fas fa-redo"></i> 重试加载
       </button>
     </div>
   `;
+
+  if (window.safeSetInnerHTML) {
+    window.safeSetInnerHTML(articlesList, errorHTML);
+  } else {
+    articlesList.innerHTML = errorHTML;
+  }
 
   document.getElementById('statsSection').innerHTML = '';
 }
@@ -852,19 +890,23 @@ function createArticleCard(article) {
   if (currentSearchQuery) {
     highlightedTitle = highlightSearchText(safeTitle);
     highlightedDescription = highlightSearchText(finalDescription);
+  } else {
+    highlightedTitle = escapeHtml(highlightedTitle);
+    highlightedDescription = escapeHtml(highlightedDescription);
   }
 
   // 格式化字数显示
   const wordCount = article.wordCount || 0;
   const wordCountFormatted = formatWordCount(wordCount);
 
-  articleCard.innerHTML = `
+  // 构建卡片HTML
+  const cardHTML = `
     <div class="article-header">
       <h4 class="article-title">${highlightedTitle}</h4>
       <div class="article-meta">
-        <span class="article-date"><i class="far fa-calendar"></i> ${article.date || '未知日期'}</span>
-        <span class="article-read-time"><i class="far fa-clock"></i> ${article.readTime || '未知'}</span>
-        <span class="article-word-count"><i class="fas fa-file-word"></i> ${wordCountFormatted}</span>
+        <span class="article-date"><i class="far fa-calendar"></i> ${escapeHtml(article.date || '未知日期')}</span>
+        <span class="article-read-time"><i class="far fa-clock"></i> ${escapeHtml(article.readTime || '未知')}</span>
+        <span class="article-word-count"><i class="fas fa-file-word"></i> ${escapeHtml(wordCountFormatted)}</span>
       </div>
     </div>
     <p class="article-description">${highlightedDescription}</p>
@@ -885,6 +927,13 @@ function createArticleCard(article) {
       </div>
     </div>
   `;
+
+  // 安全地设置innerHTML
+  if (window.safeSetInnerHTML) {
+    window.safeSetInnerHTML(articleCard, cardHTML);
+  } else {
+    articleCard.innerHTML = cardHTML;
+  }
 
   // 使用事件委托添加点击事件
   const readBtn = articleCard.querySelector('.read-btn');
@@ -915,7 +964,7 @@ function createArticleCard(article) {
   return articleCard;
 }
 
-// 新增：分享文章功能
+// 新增：分享文章功能 - 安全版
 function shareArticle(article) {
   // 生成分享链接
   const currentUrl = window.location.origin + window.location.pathname;
@@ -924,13 +973,15 @@ function shareArticle(article) {
   // 创建分享对话框
   const shareDialog = document.createElement('div');
   shareDialog.className = 'share-dialog';
-  shareDialog.innerHTML = `
+  
+  // 安全地构建对话框内容
+  const dialogContent = `
     <div class="share-dialog-content">
       <h3><i class="fas fa-share-alt"></i> 分享文章</h3>
       <p>分享链接给其他人，点击链接即可直接打开这篇文章</p>
       
       <div class="share-url-container">
-        <input type="text" readonly value="${shareUrl}" class="share-url-input" id="shareUrlInput">
+        <input type="text" readonly value="${escapeHtml(shareUrl)}" class="share-url-input" id="shareUrlInput">
         <button class="copy-url-btn" id="copyUrlBtn">
           <i class="far fa-copy"></i> 复制
         </button>
@@ -956,6 +1007,12 @@ function shareArticle(article) {
       </div>
     </div>
   `;
+  
+  if (window.safeSetInnerHTML) {
+    window.safeSetInnerHTML(shareDialog, dialogContent);
+  } else {
+    shareDialog.innerHTML = dialogContent;
+  }
   
   document.body.appendChild(shareDialog);
   
@@ -1176,7 +1233,7 @@ function updateStats() {
           ${sortedTypes.map(([type, count]) => `
             <span class="doc-type-badge">
               <span class="badge-count">${count}</span>
-              ${docTypeNames[type] || type}
+              ${escapeHtml(docTypeNames[type] || type)}
             </span>
           `).join('')}
         </div>
@@ -1188,7 +1245,7 @@ function updateStats() {
   const maxWordsArticle = allArticles.reduce((max, article) =>
     Math.max(max, article.wordCount || 0), 0);
 
-  statsSection.innerHTML = `
+  const statsHTML = `
     <div class="stats-card">
       <h4><i class="fas fa-chart-bar"></i> 文章统计</h4>
       <div class="stats-grid">
@@ -1197,7 +1254,7 @@ function updateStats() {
           <span class="stat-label">总文章数</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">${wordsDisplay}</span>
+          <span class="stat-number">${escapeHtml(wordsDisplay)}</span>
           <span class="stat-label">总字数</span>
         </div>
         <div class="stat-item">
@@ -1250,6 +1307,12 @@ function updateStats() {
       ${docTypeBadgesHtml}
     </div>
   `;
+
+  if (window.safeSetInnerHTML) {
+    window.safeSetInnerHTML(statsSection, statsHTML);
+  } else {
+    statsSection.innerHTML = statsHTML;
+  }
 }
 
 function formatWordCount(wordCount) {
@@ -1428,13 +1491,19 @@ async function openArticle(filename, title, articleInfo = null) {
 
   if (!filename) {
     console.error('文件名无效:', filename);
-    markdownContent.innerHTML = `
+    const errorHTML = `
       <div class="error-message">
         <i class="fas fa-exclamation-triangle"></i>
         <h3>文件错误</h3>
         <p>文章文件名为空或无效。</p>
       </div>
     `;
+    
+    if (window.safeSetInnerHTML) {
+      window.safeSetInnerHTML(markdownContent, errorHTML);
+    } else {
+      markdownContent.innerHTML = errorHTML;
+    }
     return;
   }
 
@@ -1449,7 +1518,14 @@ async function openArticle(filename, title, articleInfo = null) {
     loadSuccess: false
   };
 
-  markdownContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
+  // 设置加载状态
+  const loadingHTML = '<div style="text-align: center; padding: 3rem;"><div class="loading-spinner"></div><p style="margin-top: 1rem;">加载文章中...</p></div>';
+  if (window.safeSetInnerHTML) {
+    window.safeSetInnerHTML(markdownContent, loadingHTML);
+  } else {
+    markdownContent.innerHTML = loadingHTML;
+  }
+  
   markdownViewer.style.display = 'flex';
   markdownTitle.textContent = title || '文章阅读';
 
@@ -1502,7 +1578,12 @@ async function openArticle(filename, title, articleInfo = null) {
       renderedHtml = renderSimpleMarkdown(markdown);
     }
 
-    markdownContent.innerHTML = renderedHtml;
+    // 安全地设置内容
+    if (window.safeSetInnerHTML) {
+      window.safeSetInnerHTML(markdownContent, renderedHtml);
+    } else {
+      markdownContent.innerHTML = renderedHtml;
+    }
 
     // 为代码块添加事件监听器
     initializeCodeCopyButtons();
@@ -1537,12 +1618,12 @@ async function openArticle(filename, title, articleInfo = null) {
     const safeTitle = title ? title.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
     const safeArticleInfo = articleInfo ? JSON.stringify(articleInfo).replace(/"/g, '&quot;') : 'null';
 
-    markdownContent.innerHTML = `
+    const errorHTML = `
       <div class="error-message">
         <i class="fas fa-exclamation-triangle"></i>
         <h3>加载失败</h3>
-        <p>无法加载文章内容: ${error.message}</p>
-        <p>文件路径: ${ARTICLES_BASE_URL}${filename}</p>
+        <p>无法加载文章内容: ${escapeHtml(error.message)}</p>
+        <p>文件路径: ${escapeHtml(ARTICLES_BASE_URL + filename)}</p>
         <p>已用时: ${currentArticleStats.loadTime}ms</p>
         <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
           <button onclick="openArticle('${safeFilename}', '${safeTitle}', ${safeArticleInfo})" class="action-btn">
@@ -1554,6 +1635,12 @@ async function openArticle(filename, title, articleInfo = null) {
         </div>
       </div>
     `;
+
+    if (window.safeSetInnerHTML) {
+      window.safeSetInnerHTML(markdownContent, errorHTML);
+    } else {
+      markdownContent.innerHTML = errorHTML;
+    }
   }
 }
 
@@ -1601,24 +1688,11 @@ function renderSimpleMarkdown(markdown) {
     return '<p>内容为空</p>';
   }
 
-  // 安全的HTML转义
-  function escapeHtml(text) {
-    if (typeof text !== 'string') text = String(text);
-    const map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function (m) {return map[m];});
-  }
-
   let html = markdown;
 
   // 首先处理代码块
   html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, function (match, lang, code) {
-    const languageName = getLanguageName(lang);
+    const languageName = escapeHtml(getLanguageName(lang));
     const escapedCode = escapeHtml(code);
 
     return `
@@ -1629,7 +1703,7 @@ function renderSimpleMarkdown(markdown) {
             <i class="far fa-copy"></i><span>复制</span>
           </button>
         </div>
-        <pre><code class="${lang || ''}">${escapedCode}</code></pre>
+        <pre><code class="${escapeHtml(lang || '')}">${escapedCode}</code></pre>
       </div>
     `;
   });
@@ -1695,7 +1769,8 @@ function renderSimpleMarkdown(markdown) {
     return match;
   });
 
-  return html;
+  // 清理HTML
+  return window.safeSanitizeHTML ? window.safeSanitizeHTML(html) : html;
 }
 
 // 获取语言名称
@@ -1869,7 +1944,12 @@ function generateTOC() {
   tocList.innerHTML = '';
 
   if (headings.length === 0) {
-    tocList.innerHTML = '<li class="toc-item"><span class="toc-link">暂无目录</span></li>';
+    const noTocHTML = '<li class="toc-item"><span class="toc-link">暂无目录</span></li>';
+    if (window.safeSetInnerHTML) {
+      window.safeSetInnerHTML(tocList, noTocHTML);
+    } else {
+      tocList.innerHTML = noTocHTML;
+    }
     return;
   }
 
@@ -2051,4 +2131,19 @@ function addKeyboardShortcuts() {
       loadArticles();
     }
   });
+}
+
+// HTML转义函数 - 复制自rendermd.js
+function escapeHtml(text) {
+  if (typeof text !== 'string') {
+    text = String(text);
+  }
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
