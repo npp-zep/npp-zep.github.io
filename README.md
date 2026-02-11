@@ -14,7 +14,7 @@
 ### File System
 - This web's page which is for reading passage use an interesting to load file
 - It use config file to tell JS how to show UI and where is files.
-- You can look through `about.html` to know more.
+- You can look through `passage.html` to know more.
 - Config file in `assets/passage/articles.json`
 - You can also watch passage `FileSys.md`
 
