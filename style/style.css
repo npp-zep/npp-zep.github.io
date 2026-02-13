@@ -5,7 +5,6 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-  /* 添加字体显示策略 */
 }
 
 /* 颜色变量定义 - 夜间模式（默认） */
@@ -24,16 +23,75 @@
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* 日间模式颜色变量 - 修复：添加:root前缀 */
+/* 日间模式颜色变量 - 修复对比度问题 */
+[data-theme="light"],
 :root[data-theme="light"] {
   --primary-color: #f8fafc;
   --secondary-color: #f1f5f9;
   --accent-color: #e2e8f0;
-  --highlight-color: #3b82f6;
-  --text-color: #1e293b;
-  --text-secondary: #64748b;
-  --border-color: rgba(59, 130, 246, 0.1);
-  --card-bg: rgba(255, 255, 255, 0.95);
+  --highlight-color: #2563eb; /* 更深一点的蓝色，提高对比度 */
+  --text-color: #0f172a; /* 从 #1e293b 改为更深的 #0f172a，接近黑色 */
+  --text-secondary: #334155; /* 从 #64748b 改为更深的 #334155，提高可读性 */
+  --border-color: rgba(37, 99, 235, 0.15); /* 调整透明度，更明显 */
+  --card-bg: rgba(255, 255, 255, 0.98); /* 更不透明，提高对比度 */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* 确保日间模式下的卡片背景足够不透明 */
+[data-theme="light"] .description,
+[data-theme="light"] .card-bg {
+  background: var(--card-bg);
+  backdrop-filter: none; /* 日间模式取消毛玻璃效果，避免文字发灰 */
+  -webkit-backdrop-filter: none;
+}
+
+/* 日间模式下的命令项样式优化 */
+[data-theme="light"] .command-item {
+  background: white;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+[data-theme="light"] .command-item:hover {
+  background: var(--secondary-color);
+  border-color: var(--highlight-color);
+}
+
+/* 日间模式下的按钮样式优化 */
+[data-theme="light"] .btn {
+  color: var(--text-color);
+  border-color: var(--highlight-color);
+}
+
+[data-theme="light"] .btn:hover {
+  color: white;
+}
+
+[data-theme="light"] .btn:hover::before {
+  background: var(--highlight-color);
+}
+
+/* 日间模式下的快速链接样式优化 */
+[data-theme="light"] .quick-link {
+  color: var(--text-secondary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="light"] .quick-link:hover {
+  color: var(--highlight-color);
+  border-bottom-color: var(--highlight-color);
+}
+
+/* 日间模式下的标题装饰 */
+[data-theme="light"] h1::after,
+[data-theme="light"] .description h2::after {
+  background: linear-gradient(90deg, transparent, var(--highlight-color), transparent);
+}
+
+[data-theme="light"] .description h2::after {
+  background: var(--highlight-color);
 }
 
 /* 重置和基础样式 */
@@ -60,6 +118,14 @@ body {
   transition: var(--transition);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* 日间模式背景图调整 - 使用更淡的蓝色调 */
+[data-theme="light"] body {
+  background-image:
+    radial-gradient(at 40% 20%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(37, 99, 235, 0.03) 0px, transparent 50%);
 }
 
 /* 容器 */
@@ -94,7 +160,6 @@ header::before {
 
 h1 {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
-  /* 使用clamp实现响应式字体 */
   font-weight: 300;
   margin-bottom: 0.5rem;
   color: var(--text-color);
@@ -366,7 +431,6 @@ footer::before {
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -402,18 +466,22 @@ footer::before {
   transform: scale(0.95);
 }
 
-/* 高对比度模式支持 */
+/* 高对比度模式支持 - 优化日间模式对比度 */
 @media (prefers-contrast: high) {
   :root {
     --text-color: #ffffff;
-    --text-secondary: #cccccc;
-    --highlight-color: #00ffcc;
+    --text-secondary: #e6f1ff;
+    --highlight-color: #7effe6;
+    --border-color: rgba(126, 255, 230, 0.3);
   }
 
+  [data-theme="light"],
   :root[data-theme="light"] {
     --text-color: #000000;
-    --text-secondary: #333333;
-    --highlight-color: #0066cc;
+    --text-secondary: #1e1e1e;
+    --highlight-color: #0047ab;
+    --border-color: rgba(0, 71, 171, 0.3);
+    --card-bg: #ffffff;
   }
 }
 
@@ -488,7 +556,6 @@ footer::before {
 
 /* 打印样式 */
 @media print {
-
   .theme-switcher,
   .loading,
   .btn {
@@ -496,6 +563,12 @@ footer::before {
   }
 
   body {
+    background: white !important;
+    color: black !important;
+  }
+
+  [data-theme="light"] body,
+  :root body {
     background: white !important;
     color: black !important;
   }
