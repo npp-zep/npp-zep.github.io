@@ -10,6 +10,7 @@
         "tutorial"
       ],
       "readTime": "2分钟",
+      "wordCount": 109,
       "file": "test.md"
     },
     {
@@ -22,6 +23,7 @@
         "tutorial"
       ],
       "readTime": "15分钟",
+      "wordCount": 1197,
       "file": "FileSys.md"
     },
     {
@@ -34,6 +36,7 @@
         "history"
       ],
       "readTime": "1分钟",
+      "wordCount": 26,
       "file": "sitehis.md"
     },
     {
@@ -46,6 +49,7 @@
         "game"
       ],
       "readTime": "1分钟",
+      "wordCount": 1784,
       "file": "wasm-mcmods.md"
     } 
   ],
