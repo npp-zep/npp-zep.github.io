@@ -300,3 +300,185 @@
   margin-top: 1rem;
   padding-top: 1rem;
 }
+
+/* ========== 增强样式 - 解决日间/夜间对比度问题 ========== */
+
+/* 日间模式统计卡片增强 */
+[data-theme="light"] .stats-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .stats-card .stat-number {
+  color: #2563eb !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .stats-card .stat-label {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="light"] .stats-card .stat-item {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* 夜间模式统计卡片增强 */
+[data-theme="dark"] .stats-card {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .stats-card .stat-number {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .stats-card .stat-label {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="dark"] .stats-card .stat-item {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+}
+
+/* 日间模式文档类型徽章增强 */
+[data-theme="light"] .doc-type-badge {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .doc-type-badge .badge-count {
+  background: #3b82f6 !important;
+  color: white !important;
+}
+
+/* 夜间模式文档类型徽章增强 */
+[data-theme="dark"] .doc-type-badge {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .doc-type-badge .badge-count {
+  background: #38bdf8 !important;
+  color: #0f172a !important;
+}
+
+/* 日间模式搜索框文字增强 */
+[data-theme="light"] .search-input {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .search-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+[data-theme="light"] .search-stats {
+  background: #ffffff !important;
+  border-left-color: #3b82f6 !important;
+}
+
+[data-theme="light"] .search-results-info {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .search-results-info strong {
+  color: #3b82f6 !important;
+}
+
+/* 夜间模式搜索框文字增强 */
+[data-theme="dark"] .search-input {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .search-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .search-stats {
+  background: #1e293b !important;
+  border-left-color: #38bdf8 !important;
+}
+
+/* 日间模式筛选按钮增强 */
+[data-theme="light"] .filter-btn {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+[data-theme="light"] .filter-btn:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .filter-btn.active {
+  background: #3b82f6 !important;
+  color: white !important;
+  border-color: #3b82f6 !important;
+}
+
+/* 夜间模式筛选按钮增强 */
+[data-theme="dark"] .filter-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .filter-btn:hover {
+  background: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .filter-btn.active {
+  background: #38bdf8 !important;
+  color: #0f172a !important;
+  border-color: #38bdf8 !important;
+}
+
+/* 日间模式视图按钮增强 */
+[data-theme="light"] .view-btn {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+[data-theme="light"] .view-btn:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .view-btn.active {
+  background: #3b82f6 !important;
+  color: white !important;
+  border-color: #3b82f6 !important;
+}
+
+/* 夜间模式视图按钮增强 */
+[data-theme="dark"] .view-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .view-btn:hover {
+  background: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .view-btn.active {
+  background: #38bdf8 !important;
+  color: #0f172a !important;
+  border-color: #38bdf8 !important;
+}
