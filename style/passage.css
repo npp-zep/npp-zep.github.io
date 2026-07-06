@@ -1,41 +1,43 @@
 /* style/passage.css */
 /* 文章页面专用样式 */
 
-/* ========== 强制主题变量 - 增强对比度 ========== */
+/* ========== 主题变量增强 ========== */
+/* 日间模式 - 增强文字对比度 */
 [data-theme="light"] {
-  --text-primary: #0f172a !important;
-  --text-secondary: #334155 !important;
-  --text-tertiary: #475569 !important;
-  --card-bg: #ffffff !important;
-  --bg-color: #f8fafc !important;
-  --border-color: #e2e8f0 !important;
-  --hover-bg: #f1f5f9 !important;
-  --primary-color: #0f172a !important;
-  --secondary-color: #ffffff !important;
-  --accent-color: #f1f5f9 !important;
-  --highlight-color: #3b82f6 !important;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05) !important;
-  --transition: all 0.3s ease !important;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-tertiary: #475569;
+  --card-bg: #ffffff;
+  --bg-color: #f8fafc;
+  --border-color: #e2e8f0;
+  --hover-bg: #f1f5f9;
+  --primary-color: #0f172a;
+  --secondary-color: #ffffff;
+  --accent-color: #f1f5f9;
+  --highlight-color: #3b82f6;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
+  --transition: all 0.3s ease;
 }
 
+/* 夜间模式 - 增强对比度 */
 [data-theme="dark"] {
-  --text-primary: #f1f5f9 !important;
-  --text-secondary: #cbd5e1 !important;
-  --text-tertiary: #94a3b8 !important;
-  --card-bg: #1e293b !important;
-  --bg-color: #0f172a !important;
-  --border-color: #334155 !important;
-  --hover-bg: #334155 !important;
-  --primary-color: #0f172a !important;
-  --secondary-color: #1e293b !important;
-  --accent-color: #334155 !important;
-  --highlight-color: #38bdf8 !important;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3) !important;
-  --transition: all 0.3s ease !important;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --card-bg: #1e293b;
+  --bg-color: #0f172a;
+  --border-color: #334155;
+  --hover-bg: #334155;
+  --primary-color: #0f172a;
+  --secondary-color: #1e293b;
+  --accent-color: #334155;
+  --highlight-color: #38bdf8;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --transition: all 0.3s ease;
 }
 
 /* 背景图片样式 - 与index.html保持一致 */
@@ -521,25 +523,25 @@
 
 /* 日间模式文章卡片增强 */
 [data-theme="light"] .article-card {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="light"] .article-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
-    border-color: var(--highlight-color) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--highlight-color);
 }
 
 /* 夜间模式文章卡片增强 */
 [data-theme="dark"] .article-card {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
+    background: #1e293b;
+    border: 1px solid #334155;
 }
 
 [data-theme="dark"] .article-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-    border-color: var(--highlight-color) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    border-color: var(--highlight-color);
 }
 
 .article-card:hover {
@@ -563,8 +565,8 @@
 
 /* 日间模式文章标题增强 */
 [data-theme="light"] .article-title {
-    color: #0f172a !important;
-    font-weight: 600 !important;
+    color: #0f172a;
+    font-weight: 600;
 }
 
 .article-meta {
@@ -576,7 +578,7 @@
 
 /* 日间模式文章元信息增强 */
 [data-theme="light"] .article-meta {
-    color: #475569 !important;
+    color: #475569;
 }
 
 .article-meta i {
@@ -592,7 +594,7 @@
 
 /* 日间模式文章描述增强 */
 [data-theme="light"] .article-description {
-    color: #334155 !important;
+    color: #334155;
 }
 
 .article-footer {
@@ -717,7 +719,7 @@
     border-color: var(--highlight-color);
 }
 
-/* ========== 统计卡片 - 增强版 ========== */
+/* 统计卡片 - 增强版 */
 .stats-card {
     background: var(--card-bg);
     border-radius: 12px;
@@ -729,26 +731,26 @@
 
 /* 日间模式统计卡片增强 */
 [data-theme="light"] .stats-card {
-    background: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
-    border: 1px solid #e2e8f0 !important;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
 }
 
 [data-theme="light"] .stats-card h4 {
-    color: #0f172a !important;
-    font-weight: 600 !important;
+    color: #0f172a;
+    font-weight: 600;
 }
 
 /* 夜间模式统计卡片增强 */
 [data-theme="dark"] .stats-card {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    background: #1e293b;
+    border: 1px solid #334155;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .stats-card h4 {
-    color: #7dd3fc !important;
-    font-weight: 500 !important;
+    color: #7dd3fc;
+    font-weight: 500;
 }
 
 .stats-card h4 {
@@ -778,23 +780,23 @@
 
 /* 日间模式统计项增强 */
 [data-theme="light"] .stat-item {
-    background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
 }
 
 [data-theme="light"] .stat-item:hover {
-    background: #f1f5f9 !important;
+    background: #f1f5f9;
     transform: translateY(-2px);
 }
 
 /* 夜间模式统计项增强 */
 [data-theme="dark"] .stat-item {
-    background: #0f172a !important;
-    border: 1px solid #334155 !important;
+    background: #0f172a;
+    border: 1px solid #334155;
 }
 
 [data-theme="dark"] .stat-item:hover {
-    background: #1e293b !important;
+    background: #1e293b;
     transform: translateY(-2px);
 }
 
@@ -810,16 +812,16 @@
 
 /* 日间模式统计数字增强 */
 [data-theme="light"] .stat-number {
-    color: #2563eb !important;
-    font-weight: 700 !important;
-    font-size: 1.6rem !important;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 1.6rem;
 }
 
 /* 夜间模式统计数字增强 */
 [data-theme="dark"] .stat-number {
-    color: #38bdf8 !important;
-    font-weight: 700 !important;
-    font-size: 1.6rem !important;
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 1.6rem;
 }
 
 .stat-label {
@@ -830,88 +832,13 @@
 
 /* 日间模式统计标签增强 */
 [data-theme="light"] .stat-label {
-    color: #475569 !important;
-    font-weight: 500 !important;
+    color: #475569;
+    font-weight: 500;
 }
 
 /* 夜间模式统计标签增强 */
 [data-theme="dark"] .stat-label {
-    color: #94a3b8 !important;
-}
-
-/* 文档类型统计样式 */
-.stats-doc-types {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
-}
-
-/* 日间模式文档类型统计分隔线增强 */
-[data-theme="light"] .stats-doc-types {
-    border-top-color: #e2e8f0 !important;
-}
-
-/* 夜间模式文档类型统计分隔线增强 */
-[data-theme="dark"] .stats-doc-types {
-    border-top-color: #334155 !important;
-}
-
-.doc-type-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.8rem;
-}
-
-.doc-type-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.3rem 0.8rem;
-    background: var(--card-bg);
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-}
-
-/* 日间模式文档类型徽章增强 */
-[data-theme="light"] .doc-type-badge {
-    background: #f1f5f9 !important;
-    border: 1px solid #e2e8f0 !important;
-    color: #1e293b !important;
-}
-
-/* 夜间模式文档类型徽章增强 */
-[data-theme="dark"] .doc-type-badge {
-    background: #0f172a !important;
-    border: 1px solid #334155 !important;
-    color: #e2e8f0 !important;
-}
-
-.doc-type-badge .badge-count {
-    background: var(--highlight-color);
-    color: var(--primary-color);
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-/* 日间模式徽章计数增强 */
-[data-theme="light"] .doc-type-badge .badge-count {
-    background: #3b82f6 !important;
-    color: white !important;
-}
-
-/* 夜间模式徽章计数增强 */
-[data-theme="dark"] .doc-type-badge .badge-count {
-    background: #38bdf8 !important;
-    color: #0f172a !important;
+    color: #94a3b8;
 }
 
 /* 信息区域 */
@@ -956,6 +883,81 @@
     font-size: 2rem;
     margin-bottom: 1rem;
     color: #ff6b6b;
+}
+
+/* 文档类型统计样式 */
+.stats-doc-types {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 日间模式文档类型统计分隔线增强 */
+[data-theme="light"] .stats-doc-types {
+    border-top-color: #e2e8f0;
+}
+
+/* 夜间模式文档类型统计分隔线增强 */
+[data-theme="dark"] .stats-doc-types {
+    border-top-color: #334155;
+}
+
+.doc-type-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.doc-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    background: var(--card-bg);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+/* 日间模式文档类型徽章增强 */
+[data-theme="light"] .doc-type-badge {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+}
+
+/* 夜间模式文档类型徽章增强 */
+[data-theme="dark"] .doc-type-badge {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+}
+
+.doc-type-badge .badge-count {
+    background: var(--highlight-color);
+    color: var(--primary-color);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* 日间模式徽章计数增强 */
+[data-theme="light"] .doc-type-badge .badge-count {
+    background: #3b82f6;
+    color: white;
+}
+
+/* 夜间模式徽章计数增强 */
+[data-theme="dark"] .doc-type-badge .badge-count {
+    background: #38bdf8;
+    color: #0f172a;
 }
 
 /* 侧边栏遮罩 */
@@ -2005,4 +2007,156 @@
     background: var(--highlight-color);
     color: var(--primary-color);
     border-color: var(--highlight-color);
+}
+
+
+
+
+
+/* ============================================ */
+/* 强制日间模式样式覆盖 - 解决文字过淡问题 */
+/* ============================================ */
+
+/* 1. 强制文章卡片文字颜色 */
+html[data-theme="light"] .article-title,
+html[data-theme="light"] .article-card .article-title {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="light"] .article-description,
+html[data-theme="light"] .article-card .article-description {
+  color: #334155 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .article-meta,
+html[data-theme="light"] .article-card .article-meta {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .article-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* 2. 强制统计卡片样式 - 解决夜间模式过暗问题 */
+html[data-theme="light"] .stats-card,
+html[data-theme="light"] .stats-section .stats-card,
+html[data-theme="light"] aside .stats-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+html[data-theme="light"] .stats-card h4 {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="light"] .stats-card .stat-number,
+html[data-theme="light"] .stats-card .stat-number {
+  color: #2563eb !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+}
+
+html[data-theme="light"] .stats-card .stat-label {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+html[data-theme="light"] .stats-card .stat-item {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 0.8rem !important;
+}
+
+/* 3. 强制统计卡片夜间模式增强 */
+html[data-theme="dark"] .stats-card,
+html[data-theme="dark"] .stats-section .stats-card,
+html[data-theme="dark"] aside .stats-card {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-theme="dark"] .stats-card h4 {
+  color: #7dd3fc !important;
+  font-weight: 500 !important;
+}
+
+html[data-theme="dark"] .stats-card .stat-number {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="dark"] .stats-card .stat-label {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .stats-card .stat-item {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+}
+
+/* 4. 强制文档类型徽章样式 */
+html[data-theme="light"] .doc-type-badge {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+html[data-theme="light"] .doc-type-badge .badge-count {
+  background: #3b82f6 !important;
+  color: white !important;
+}
+
+html[data-theme="dark"] .doc-type-badge {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .doc-type-badge .badge-count {
+  background: #38bdf8 !important;
+  color: #0f172a !important;
+}
+
+/* 5. 强制筛选按钮样式 */
+html[data-theme="light"] .filter-btn {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .filter-btn:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .filter-btn.active {
+  background: #3b82f6 !important;
+  color: white !important;
+  border-color: #3b82f6 !important;
+}
+
+/* 6. 强制页面背景和文字颜色 */
+html[data-theme="light"] {
+  color-scheme: light !important;
+}
+
+html[data-theme="light"] body,
+html[data-theme="light"] .container {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .info-section h3 {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .info-section p {
+  color: #334155 !important;
 }
