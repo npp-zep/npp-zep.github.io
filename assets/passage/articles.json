@@ -40,7 +40,7 @@
       "file": "sitehis.md"
     },
     {
-      "id": 3,
+      "id": 4,
       "title": "Wasm Mod for MC",
       "description": "MC从Wasm焕发新生?",
       "date": "2026-02-10",
@@ -51,8 +51,21 @@
       "readTime": "1分钟",
       "wordCount": 1784,
       "file": "wasm-mcmods.md"
+    },
+    {
+      "id": 5,
+      "title":"LuaJavaNE",
+      "description": "Lua与Java的现代双调引擎",
+      "date": "2026-07-06",
+      "tags":[
+        "Lua",
+        "项目"
+      ],
+      "readTime":"2分钟",
+      "wordCount": 1145,
+      "file":"LuaJavaNE.md"
     } 
   ],
-  "lastUpdated": "2026-02-10",
-  "totalArticles": 4
+  "lastUpdated": "2026-07-6",
+  "totalArticles": 5
 }
