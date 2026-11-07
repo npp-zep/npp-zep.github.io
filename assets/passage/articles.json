@@ -43,16 +43,16 @@
       "id": 4,
       "title":"LuaJavaNE",
       "description": "Lua与Java的现代双调引擎",
-      "date": "2026-07-06",
+      "date": "2026-11-07",
       "tags":[
         "Lua",
         "项目"
       ],
-      "readTime":"2分钟",
-      "wordCount": 1145,
+      "readTime":"3分钟",
+      "wordCount": 2935,
       "file":"LuaJavaNE.md"
     } 
   ],
-  "lastUpdated": "2026-07-6",
+  "lastUpdated": "2026-11-07",
   "totalArticles": 5
 }
