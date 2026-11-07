@@ -41,19 +41,6 @@
     },
     {
       "id": 4,
-      "title": "Wasm Mod for MC",
-      "description": "MC从Wasm焕发新生?",
-      "date": "2026-02-10",
-      "tags": [
-        "web",
-        "game"
-      ],
-      "readTime": "1分钟",
-      "wordCount": 1784,
-      "file": "wasm-mcmods.md"
-    },
-    {
-      "id": 5,
       "title":"LuaJavaNE",
       "description": "Lua与Java的现代双调引擎",
       "date": "2026-07-06",
