@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Hello World! —— npp-zep</title>
   <link rel="stylesheet" href="style/style.css">
-  <link rel="stylesheel" href="style/passage.css">
+  <link rel="stylesheet" href="style/bg-only.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/206399566?v=4">
 </head>
@@ -19,10 +19,11 @@
   <div class="bg-container" id="bgContainer">
     <div class="bg-overlay"></div>
     <img src="assets/pic/bg.png" alt="背景" class="bg-image" id="bgImage">
-    <button class="bg-toggle" id="bgToggle" title="切换背景显示">
-      <i class="fas fa-eye"></i>
-    </button>
   </div>
+
+  <button class="bg-toggle" id="bgToggle" title="只看背景">
+    <i class="fas fa-eye"></i>
+  </button>
 
   <div class="container">
     <header>
@@ -69,13 +70,13 @@
           <i class="fas fa-book-open"></i> 文章导航
         </a>
         <div class="quick-links">
-        <h4>快速链接</h4>
-            <a href="#about" class="quick-link">关于本站</a>
-            <a href="https://github.com/npp-zep/npp-zep.github.io" target="_blank" class="quick-link">源代码</a>
+          <h4>快速链接</h4>
+          <a href="#about" class="quick-link">关于本站</a>
+          <a href="https://github.com/npp-zep/npp-zep.github.io" target="_blank" class="quick-link">源代码</a>
         </div>
       </aside>
     </main>
-    
+
     <footer>
       <p>遵循 <a href="https://opensource.org/licenses/MIT" target="_blank" class="license-link">MIT 协议</a></p>
       <p class="footer-note">全部代码开源，欢迎参考和贡献！<a href="https://github.com/npp-zep/npp-zep.github.io"
@@ -87,101 +88,9 @@
     <i class="fas fa-moon" id="themeIcon"></i>
   </button>
 
-  <script>
-    window.addEventListener('load', function () {
-      setTimeout(() => {
-        document.getElementById('loading').style.opacity = '0';
-        setTimeout(() => {
-          document.getElementById('loading').style.display = 'none';
-        }, 500);
-      }, 800);
-
-      initThemeSwitcher();
-      initBackgroundToggle();
-    });
-
-    function initThemeSwitcher() {
-      const themeSwitcher = document.getElementById('themeSwitcher');
-      const themeIcon = document.getElementById('themeIcon');
-      const html = document.documentElement;
-
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      html.setAttribute('data-theme', savedTheme);
-      updateThemeIcon(savedTheme);
-
-      themeSwitcher.addEventListener('click', () => {
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
-
-        themeSwitcher.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-          themeSwitcher.style.transform = '';
-        }, 200);
-      });
-
-      function updateThemeIcon(theme) {
-        if (theme === 'dark') {
-          themeIcon.className = 'fas fa-moon';
-        } else {
-          themeIcon.className = 'fas fa-sun';
-        }
-      }
-    }
-
-    function initBackgroundToggle() {
-      const bgToggle = document.getElementById('bgToggle');
-      const bgContainer = document.getElementById('bgContainer');
-
-      const bgVisible = localStorage.getItem('bgVisible') !== 'false';
-      updateBackgroundVisibility(bgVisible);
-
-      bgToggle.addEventListener('click', () => {
-        const isVisible = bgContainer.style.opacity !== '0';
-        updateBackgroundVisibility(!isVisible);
-        localStorage.setItem('bgVisible', !isVisible);
-
-        const icon = bgToggle.querySelector('i');
-        if (!isVisible) {
-          icon.className = 'fas fa-eye';
-          bgToggle.title = '隐藏背景';
-        } else {
-          icon.className = 'fas fa-eye-slash';
-          bgToggle.title = '显示背景';
-        }
-
-        // 添加点击反馈
-        bgToggle.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-          bgToggle.style.transform = '';
-        }, 200);
-      });
-
-      function updateBackgroundVisibility(visible) {
-        if (visible) {
-          bgContainer.style.opacity = '1';
-          bgToggle.title = '隐藏背景';
-          bgToggle.querySelector('i').className = 'fas fa-eye';
-        } else {
-          bgContainer.style.opacity = '0';
-          bgToggle.title = '显示背景';
-          bgToggle.querySelector('i').className = 'fas fa-eye-slash';
-        }
-      }
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.altKey && e.key === 't') {
-        document.getElementById('themeSwitcher').click();
-      }
-      if (e.altKey && e.key === 'b') {
-        document.getElementById('bgToggle').click();
-      }
-    });
-  </script>
+  <!-- 主题/背景模块 + 首页入口 -->
+  <script src="script/core/theme.js"></script>
+  <script src="script/app-index.js"></script>
 
   <style>
     .bg-container {
@@ -215,31 +124,6 @@
       opacity: 0.8;
       filter: blur(1px);
       transition: opacity 0.5s ease;
-    }
-
-    .bg-toggle {
-      position: fixed;
-      /* 改为fixed定位，确保在最上层 */
-      top: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--highlight-color);
-      color: var(--primary-color);
-      border: none;
-      cursor: pointer;
-      z-index: 1002;
-      /* 提高z-index确保在最上层 */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition);
-      box-shadow: var(--shadow-md);
-    }
-
-    .bg-toggle:hover {
-      transform: scale(1.1);
     }
 
     [data-theme="light"] .bg-overlay {
@@ -354,7 +238,6 @@
       margin-right: 0.5rem;
     }
 
-    /* 主题切换按钮 */
     .theme-switcher {
       position: fixed;
       bottom: 20px;
@@ -378,240 +261,57 @@
       transform: scale(1.1);
     }
 
-    /* 移动端适配优化 */
     @media (max-width: 768px) {
-      .container {
-        padding: 1rem;
-        max-width: 100%;
-      }
-
-      header {
-        padding: 1rem 0;
-        text-align: center;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-      }
-
-      header h1 small {
-        display: block;
-        font-size: 0.9rem;
-        margin-top: 0.3rem;
-      }
-
-      .tagline {
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-      }
-
-      .profile-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .avatar {
-        width: 80px;
-        height: 80px;
-      }
-
-      .profile-header h2 {
-        font-size: 1.4rem;
-      }
-
-      .info-section h3 {
-        font-size: 1.2rem;
-        margin: 1.2rem 0 0.6rem;
-      }
-
-      .info-section p {
-        font-size: 0.95rem;
-        line-height: 1.5;
-      }
-
-      .skills-list {
-        padding-left: 0.5rem;
-      }
-
-      .skills-list li {
-        font-size: 0.9rem;
-        padding-left: 1rem;
-      }
-
-      .tech-stack {
-        gap: 0.4rem;
-      }
-
-      .tech-tag {
-        padding: 0.3rem 0.7rem;
-        font-size: 0.8rem;
-      }
-
-      .cta-section {
-        padding: 1rem;
-        margin-top: 1.5rem;
-      }
-
-      .btn {
-        padding: 0.6rem 1.2rem;
-        font-size: 0.9rem;
-        margin: 0.3rem 0;
-        width: 100%;
-        text-align: center;
-      }
-
-      footer {
-        padding: 1rem 0;
-        margin-top: 1.5rem;
-        font-size: 0.8rem;
-        text-align: center;
-      }
-
-      .bg-toggle {
-        top: 10px;
-        right: 10px;
-        width: 36px;
-        height: 36px;
-        font-size: 0.9rem;
-        z-index: 1003;
-        /* 提高z-index确保在最上层 */
-      }
-
-      .theme-switcher {
-        bottom: 15px;
-        right: 15px;
-        width: 44px;
-        height: 44px;
-        font-size: 1rem;
-        z-index: 1002;
-      }
+      .container { padding: 1rem; max-width: 100%; }
+      header { padding: 1rem 0; text-align: center; }
+      header h1 { font-size: 1.5rem; }
+      header h1 small { display: block; font-size: 0.9rem; margin-top: 0.3rem; }
+      .tagline { font-size: 0.9rem; margin-top: 0.5rem; }
+      .profile-header { flex-direction: column; text-align: center; gap: 1rem; margin-bottom: 1.5rem; }
+      .avatar { width: 80px; height: 80px; }
+      .profile-header h2 { font-size: 1.4rem; }
+      .info-section h3 { font-size: 1.2rem; margin: 1.2rem 0 0.6rem; }
+      .info-section p { font-size: 0.95rem; line-height: 1.5; }
+      .skills-list { padding-left: 0.5rem; }
+      .skills-list li { font-size: 0.9rem; padding-left: 1rem; }
+      .tech-stack { gap: 0.4rem; }
+      .tech-tag { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+      .cta-section { padding: 1rem; margin-top: 1.5rem; }
+      .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; margin: 0.3rem 0; width: 100%; text-align: center; }
+      footer { padding: 1rem 0; margin-top: 1.5rem; font-size: 0.8rem; text-align: center; }
+      .theme-switcher { bottom: 15px; right: 15px; width: 44px; height: 44px; font-size: 1rem; z-index: 1002; }
     }
 
     @media (max-width: 480px) {
-      .container {
-        padding: 0.8rem;
-      }
-
-      header h1 {
-        font-size: 1.3rem;
-      }
-
-      .tagline {
-        font-size: 0.85rem;
-      }
-
-      .profile-header h2 {
-        font-size: 1.2rem;
-      }
-
-      .avatar {
-        width: 70px;
-        height: 70px;
-      }
-
-      .info-section h3 {
-        font-size: 1.1rem;
-      }
-
-      .info-section p {
-        font-size: 0.9rem;
-      }
-
-      .skills-list li {
-        font-size: 0.85rem;
-      }
-
-      .tech-tag {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.6rem;
-      }
-
-      .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
-      }
-
-      .bg-toggle {
-        width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
-      }
-
-      .theme-switcher {
-        width: 40px;
-        height: 40px;
-        font-size: 0.9rem;
-      }
+      .container { padding: 0.8rem; }
+      header h1 { font-size: 1.3rem; }
+      .tagline { font-size: 0.85rem; }
+      .profile-header h2 { font-size: 1.2rem; }
+      .avatar { width: 70px; height: 70px; }
+      .info-section h3 { font-size: 1.1rem; }
+      .info-section p { font-size: 0.9rem; }
+      .skills-list li { font-size: 0.85rem; }
+      .tech-tag { font-size: 0.75rem; padding: 0.25rem 0.6rem; }
+      .btn { padding: 0.5rem 1rem; font-size: 0.85rem; }
+      .theme-switcher { width: 40px; height: 40px; font-size: 0.9rem; }
     }
 
     @media (max-width: 360px) {
-      .container {
-        padding: 0.6rem;
-      }
-
-      header h1 {
-        font-size: 1.1rem;
-      }
-
-      .tagline {
-        font-size: 0.8rem;
-      }
-
-      .profile-header h2 {
-        font-size: 1rem;
-      }
-
-      .avatar {
-        width: 60px;
-        height: 60px;
-      }
-
-      .tech-tag {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.5rem;
-      }
-
-      .btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-      }
-
-      .bg-toggle {
-        width: 30px;
-        height: 30px;
-        font-size: 0.75rem;
-      }
-
-      .theme-switcher {
-        width: 36px;
-        height: 36px;
-        font-size: 0.85rem;
-      }
+      .container { padding: 0.6rem; }
+      header h1 { font-size: 1.1rem; }
+      .tagline { font-size: 0.8rem; }
+      .profile-header h2 { font-size: 1rem; }
+      .avatar { width: 60px; height: 60px; }
+      .tech-tag { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
+      .btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+      .theme-switcher { width: 36px; height: 36px; font-size: 0.85rem; }
     }
 
-    /* 横屏优化 */
     @media (max-height: 600px) and (orientation: landscape) {
-      .container {
-        padding: 0.5rem;
-      }
-
-      .profile-header {
-        flex-direction: row;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      .avatar {
-        width: 60px;
-        height: 60px;
-      }
-
-      .btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-      }
+      .container { padding: 0.5rem; }
+      .profile-header { flex-direction: row; gap: 1rem; margin-bottom: 1rem; }
+      .avatar { width: 60px; height: 60px; }
+      .btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
     }
   </style>
   <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9563c78e021e4638be152aec28488051"}'></script><!-- End Cloudflare Web Analytics -->

@@ -1,0 +1,82 @@
+/* ============================================
+   bg-only：点击眼睛按钮后，隐藏内容，只展示背景图
+   ============================================ */
+
+body.bg-only {
+  overflow: hidden; /* 防止滚动 */
+}
+
+/* 隐藏内容区域（首页 .container 与文章页 .container 都适用） */
+body.bg-only .container {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* 文章页阅读器也隐藏 */
+body.bg-only .markdown-viewer {
+  display: none !important;
+}
+
+/* 通知/分享弹窗也隐藏，避免盖在背景上 */
+body.bg-only .notification,
+body.bg-only .share-dialog {
+  display: none !important;
+}
+
+/* 背景容器铺满并增强可见性 */
+body.bg-only .bg-container {
+  opacity: 1 !important;
+  z-index: 0;
+}
+
+body.bg-only .bg-overlay {
+  background: rgba(10, 25, 47, 0.1); /* 降低遮罩，让图片更清晰 */
+  backdrop-filter: blur(0);
+}
+
+body.bg-only .bg-image {
+  opacity: 1;
+  filter: none;
+}
+
+/* ============================================
+   bg-toggle 层级：
+   - 普通状态：低于阅读器(1000)与主题按钮(1001)，避免遮挡
+   - bg-only：内容已隐藏，按钮需可见可点，抬高
+   ============================================ */
+.bg-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 900;
+}
+
+body:not(.bg-only) .bg-toggle {
+  z-index: 900;
+}
+
+body.bg-only .bg-toggle {
+  z-index: 100000;
+}
+
+body.bg-only .theme-switcher {
+  z-index: 100000;
+}
+
+@media (max-width: 768px) {
+  .bg-toggle {
+    top: 10px;
+    right: 10px;
+    z-index: 900;
+  }
+  body.bg-only .bg-toggle {
+    z-index: 100000;
+  }
+}
+
+/* 过渡：容器恢复时淡入 */
+.container {
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
