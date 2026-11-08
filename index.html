@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Hello World! —— npp-zep</title>
+  <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
   <link rel="stylesheet" href="style/bg-only.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,9 +13,7 @@
 </head>
 
 <body>
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-  </div>
+  <div class="loading" id="loading"><div class="spinner"></div></div>
 
   <div class="bg-container" id="bgContainer">
     <div class="bg-overlay"></div>
@@ -27,9 +26,7 @@
 
   <div class="container">
     <header>
-      <h1>个人简介
-        <small>npp-zep</small>
-      </h1>
+      <h1>个人简介<small>npp-zep</small></h1>
       <p class="tagline">代码编织梦想，技术创造未来</p>
     </header>
 
@@ -62,13 +59,8 @@
       </section>
 
       <aside class="cta-section">
-        <a href="https://github.com/npp-zep" target="_blank" class="btn">
-          <i class="fab fa-github"></i> GitHub 主页
-        </a>
-
-        <a href="passage.html" class="btn">
-          <i class="fas fa-book-open"></i> 文章导航
-        </a>
+        <a href="https://github.com/npp-zep" target="_blank" class="btn"><i class="fab fa-github"></i> GitHub 主页</a>
+        <a href="passage.html" class="btn"><i class="fas fa-book-open"></i> 文章导航</a>
         <div class="quick-links">
           <h4>快速链接</h4>
           <a href="#about" class="quick-link">关于本站</a>
@@ -79,241 +71,15 @@
 
     <footer>
       <p>遵循 <a href="https://opensource.org/licenses/MIT" target="_blank" class="license-link">MIT 协议</a></p>
-      <p class="footer-note">全部代码开源，欢迎参考和贡献！<a href="https://github.com/npp-zep/npp-zep.github.io"
-          target="_blank">查看源代码</a></p>
+      <p class="footer-note">全部代码开源，欢迎参考和贡献！<a href="https://github.com/npp-zep/npp-zep.github.io" target="_blank">查看源代码</a></p>
     </footer>
   </div>
 
-  <button class="theme-switcher" id="themeSwitcher">
-    <i class="fas fa-moon" id="themeIcon"></i>
-  </button>
+  <button class="theme-switcher" id="themeSwitcher"><i class="fas fa-moon" id="themeIcon"></i></button>
 
-  <!-- 主题/背景模块 + 首页入口 -->
   <script src="script/core/theme.js"></script>
   <script src="script/app-index.js"></script>
 
-  <style>
-    .bg-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      transition: opacity 0.5s ease;
-    }
-
-    .bg-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 25, 47, 0.3);
-      backdrop-filter: blur(3px);
-      z-index: 1;
-    }
-
-    .bg-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.8;
-      filter: blur(1px);
-      transition: opacity 0.5s ease;
-    }
-
-    [data-theme="light"] .bg-overlay {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    [data-theme="light"] .bg-image {
-      opacity: 0.9;
-      filter: blur(0.5px);
-    }
-
-    .profile-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 2rem;
-      gap: 1.5rem;
-    }
-
-    .avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid var(--highlight-color);
-      object-fit: cover;
-      box-shadow: var(--shadow-md);
-      transition: var(--transition);
-    }
-
-    .avatar:hover {
-      transform: scale(1.05);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .info-section h3 {
-      color: var(--highlight-color);
-      margin: 1.5rem 0 0.8rem;
-      font-size: 1.3rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .skills-list {
-      list-style: none;
-      margin: 1rem 0;
-      padding-left: 1rem;
-    }
-
-    .skills-list li {
-      margin-bottom: 0.5rem;
-      color: var(--text-secondary);
-      position: relative;
-      padding-left: 1.2rem;
-    }
-
-    .skills-list li::before {
-      content: '▸';
-      color: var(--highlight-color);
-      position: absolute;
-      left: 0;
-    }
-
-    .tech-stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .tech-tag {
-      background: var(--secondary-color);
-      color: var(--text-color);
-      padding: 0.4rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      border: 1px solid var(--border-color);
-      transition: var(--transition);
-    }
-
-    .tech-tag:hover {
-      background: var(--accent-color);
-      transform: translateY(-2px);
-    }
-
-    .license-link {
-      color: var(--highlight-color);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .license-link:hover {
-      text-decoration: underline;
-    }
-
-    .footer-note {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-    }
-
-    .footer-note a {
-      color: var(--highlight-color);
-      text-decoration: none;
-      margin-left: 0.3rem;
-    }
-
-    .footer-note a:hover {
-      text-decoration: underline;
-    }
-
-    .btn i,
-    .quick-link i {
-      margin-right: 0.5rem;
-    }
-
-    .theme-switcher {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: var(--highlight-color);
-      color: var(--primary-color);
-      border: none;
-      cursor: pointer;
-      z-index: 1001;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition);
-      box-shadow: var(--shadow-md);
-    }
-
-    .theme-switcher:hover {
-      transform: scale(1.1);
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 1rem; max-width: 100%; }
-      header { padding: 1rem 0; text-align: center; }
-      header h1 { font-size: 1.5rem; }
-      header h1 small { display: block; font-size: 0.9rem; margin-top: 0.3rem; }
-      .tagline { font-size: 0.9rem; margin-top: 0.5rem; }
-      .profile-header { flex-direction: column; text-align: center; gap: 1rem; margin-bottom: 1.5rem; }
-      .avatar { width: 80px; height: 80px; }
-      .profile-header h2 { font-size: 1.4rem; }
-      .info-section h3 { font-size: 1.2rem; margin: 1.2rem 0 0.6rem; }
-      .info-section p { font-size: 0.95rem; line-height: 1.5; }
-      .skills-list { padding-left: 0.5rem; }
-      .skills-list li { font-size: 0.9rem; padding-left: 1rem; }
-      .tech-stack { gap: 0.4rem; }
-      .tech-tag { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
-      .cta-section { padding: 1rem; margin-top: 1.5rem; }
-      .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; margin: 0.3rem 0; width: 100%; text-align: center; }
-      footer { padding: 1rem 0; margin-top: 1.5rem; font-size: 0.8rem; text-align: center; }
-      .theme-switcher { bottom: 15px; right: 15px; width: 44px; height: 44px; font-size: 1rem; z-index: 1002; }
-    }
-
-    @media (max-width: 480px) {
-      .container { padding: 0.8rem; }
-      header h1 { font-size: 1.3rem; }
-      .tagline { font-size: 0.85rem; }
-      .profile-header h2 { font-size: 1.2rem; }
-      .avatar { width: 70px; height: 70px; }
-      .info-section h3 { font-size: 1.1rem; }
-      .info-section p { font-size: 0.9rem; }
-      .skills-list li { font-size: 0.85rem; }
-      .tech-tag { font-size: 0.75rem; padding: 0.25rem 0.6rem; }
-      .btn { padding: 0.5rem 1rem; font-size: 0.85rem; }
-      .theme-switcher { width: 40px; height: 40px; font-size: 0.9rem; }
-    }
-
-    @media (max-width: 360px) {
-      .container { padding: 0.6rem; }
-      header h1 { font-size: 1.1rem; }
-      .tagline { font-size: 0.8rem; }
-      .profile-header h2 { font-size: 1rem; }
-      .avatar { width: 60px; height: 60px; }
-      .tech-tag { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
-      .btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-      .theme-switcher { width: 36px; height: 36px; font-size: 0.85rem; }
-    }
-
-    @media (max-height: 600px) and (orientation: landscape) {
-      .container { padding: 0.5rem; }
-      .profile-header { flex-direction: row; gap: 1rem; margin-bottom: 1rem; }
-      .avatar { width: 60px; height: 60px; }
-      .btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-    }
-  </style>
   <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9563c78e021e4638be152aec28488051"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 
