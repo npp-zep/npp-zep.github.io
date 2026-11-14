@@ -36,8 +36,26 @@
       App.sanitize.setInnerHTML(list, '<div class="loading-articles"><div class="loading-spinner"></div><p>正在加载文章列表...</p></div>');
       state.all = await App.data.load();
       state.filtered = state.all;
-      performSearch();
+
+      // 动态生成筛选按钮（根据实际标签）
+      App.filter.render(state.all);
+      // 重新绑定/保持委托（init 只绑一次）
       initFilter();
+
+      // 若当前 filter 已不在新标签集合里，回退到 all
+      if (state.filter !== 'all') {
+        const still = (state.all || []).some(a => (a.tags || []).some(t => String(t).toLowerCase() === state.filter));
+        if (!still) {
+          state.filter = 'all';
+          if (App.search) App.search.setFilter('all');
+          const container = document.querySelector('.filter-buttons');
+          if (container) {
+            container.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === 'all'));
+          }
+        }
+      }
+
+      performSearch();
       console.log('成功加载', state.all.length, '篇文章');
     } catch (e) {
       console.error('加载文章失败:', e);
@@ -184,7 +202,6 @@
       sel.addEventListener('change', e => { changeCodeTheme(e.target.value); localStorage.setItem('codeTheme', e.target.value); });
     }
 
-    // 字体缩放按钮
     if (fMinus) fMinus.addEventListener('click', () => App.reader.setFontScale(App.reader.getFontScale() - 0.1));
     if (fReset) fReset.addEventListener('click', () => App.reader.setFontScale(1));
     if (fPlus)  fPlus.addEventListener('click',  () => App.reader.setFontScale(App.reader.getFontScale() + 0.1));
