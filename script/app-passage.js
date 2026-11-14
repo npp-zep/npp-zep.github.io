@@ -152,7 +152,18 @@
   function initMarkdownViewer() {
     const back = $('backBtn'), toggle = $('toggleSidebarBtn'), copy = $('copyBtn'), themeBtn = $('themeToggleBtn');
     const sel = $('codeThemeSelect'), sb = $('markdownSidebar'), ov = $('sidebarOverlay');
-    if (back) back.addEventListener('click', () => { const v = $('markdownViewer'); if (v) v.style.display = 'none'; App.reader.resetInfo(); });
+    const fMinus = $('fontMinusBtn'), fReset = $('fontResetBtn'), fPlus = $('fontPlusBtn');
+
+    if (back) back.addEventListener('click', () => {
+      if (App.reader && typeof App.reader.closeReaderUI === 'function') {
+        App.reader.closeReaderUI();
+      } else {
+        const v = $('markdownViewer'); if (v) v.style.display = 'none';
+        document.body.classList.remove('reader-open');
+        if (App.reader && App.reader.resetInfo) App.reader.resetInfo();
+      }
+    });
+
     if (toggle && sb) toggle.addEventListener('click', () => sb.classList.toggle('hidden'));
     if (ov && sb) ov.addEventListener('click', () => sb.classList.add('hidden'));
     if (copy) copy.addEventListener('click', () => {
@@ -172,6 +183,12 @@
       changeCodeTheme(saved);
       sel.addEventListener('change', e => { changeCodeTheme(e.target.value); localStorage.setItem('codeTheme', e.target.value); });
     }
+
+    // 字体缩放按钮
+    if (fMinus) fMinus.addEventListener('click', () => App.reader.setFontScale(App.reader.getFontScale() - 0.1));
+    if (fReset) fReset.addEventListener('click', () => App.reader.setFontScale(1));
+    if (fPlus)  fPlus.addEventListener('click',  () => App.reader.setFontScale(App.reader.getFontScale() + 0.1));
+
     window.addEventListener('resize', () => { if (window.innerWidth > 768 && sb) sb.classList.remove('hidden'); });
   }
 
